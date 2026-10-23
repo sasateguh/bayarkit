@@ -23,6 +23,30 @@
     "chars": 5471,
     "since": "2026-10-23"
   },
+  "adyen/checkout-openapi-v72": {
+    "url": "https://raw.githubusercontent.com/Adyen/adyen-openapi/HEAD/json/CheckoutService-v72.json",
+    "sha256": "557713f9bc59b062a163f2e778c937d55d36c12ad94254f79d7f2d35b74948f5",
+    "chars": 737943,
+    "since": "2026-10-23"
+  },
+  "adyen/hosted-checkout-md": {
+    "url": "https://docs.adyen.com/standard/integration/hosted-checkout.md",
+    "sha256": "09303a877dceb7adb5a4372c5cd72fc8c04102f1c0829dc31876e8e251d51214",
+    "chars": 44072,
+    "since": "2026-10-23"
+  },
+  "adyen/node-hmac-spec": {
+    "url": "https://raw.githubusercontent.com/Adyen/adyen-node-api-library/HEAD/src/__tests__/hmacValidator.spec.ts",
+    "sha256": "408619715992428f9f5dbcc15404ba2d95da9c335029770bb2b7d5017d478318",
+    "chars": 8956,
+    "since": "2026-10-23"
+  },
+  "adyen/verify-hmac-md": {
+    "url": "https://docs.adyen.com/development-resources/webhooks/secure-webhooks/verify-hmac-signatures.md",
+    "sha256": "fb85be9a873ad82fcb684aeb9f33d385bb08af48a54c973d091fa60dcff4cb30",
+    "chars": 16439,
+    "since": "2026-10-23"
+  },
   "airwallex/ai-payments-notes": {
     "url": "https://www.airwallex.com/docs/developer-tools/ai-agent-payments-integration.md",
     "sha256": "5921890b35f34aee0528ee972d243f0f4699fd1d10b601cc97f66a5cb2f6662c",

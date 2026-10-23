@@ -729,9 +729,64 @@
       "id": "adyen",
       "name": "Adyen",
       "site": "https://www.adyen.com",
-      "sources": [],
+      "sandbox": "Separate test environment: https://checkout-test.adyen.com/v72 with test Customer Area ca-test.adyen.com and test API key; live is per-company https://[prefix]-checkout-live.adyenpayments.com/checkout/v72 (FPX in test uses the Adyen Payment Simulator page)",
+      "sources": [
+        {
+          "id": "checkout-openapi-v72",
+          "title": "Adyen Checkout API v72 OpenAPI (sessions, paymentLinks, refunds, Idempotency-Key)",
+          "url": "https://raw.githubusercontent.com/Adyen/adyen-openapi/HEAD/json/CheckoutService-v72.json",
+          "mustContain": [
+            "https://checkout-test.adyen.com/v72",
+            "CreateCheckoutSessionRequest",
+            "PaymentLinkRequest"
+          ]
+        },
+        {
+          "id": "verify-hmac-md",
+          "title": "Verify HMAC signatures (Standard webhooks, Markdown export with example key and signature)",
+          "url": "https://docs.adyen.com/development-resources/webhooks/secure-webhooks/verify-hmac-signatures.md",
+          "mustContain": [
+            "coqCmt/IZ4E3CzPvMY8zTjQVL5hYJUiBRg8UU+iCWo0=",
+            "44782DEF547AAA06C910C43932B1EB0C71FC68D9D0C057550C48EC2ACF6BA056",
+            "TestPayment-1407325143704"
+          ]
+        },
+        {
+          "id": "node-hmac-spec",
+          "title": "adyen-node-api-library HMAC validator tests (test vectors)",
+          "url": "https://raw.githubusercontent.com/Adyen/adyen-node-api-library/HEAD/src/__tests__/hmacValidator.spec.ts",
+          "mustContain": [
+            "ipnxGCaUZ4l8TUW75a71/ghd2Fe5ffvX0pV4TLTntIc=",
+            "DFB1EB5485895CFA84146406857104ABB4CBCABDC8AAF103A624C8F6A3EAAB00"
+          ]
+        },
+        {
+          "id": "hosted-checkout-md",
+          "title": "Hosted Checkout integration guide (Markdown export)",
+          "url": "https://docs.adyen.com/standard/integration/hosted-checkout.md",
+          "mustContain": ["sessionResult", "checkoutSessionId", "\"mode\": \"hosted\""]
+        }
+      ],
       "adapter": null,
-      "spec": false
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "GET /sessions/{id} needs the sessionResult that only arrives on the shopper's return redirect and its status never updates, and Hosted Checkout sends one AUTHORISATION webhook per attempt, so fulfil only from an AUTHORISATION webhook with success \"true\" matched on merchantReference, never from a first success \"false\".",
+          "source": "https://docs.adyen.com/standard/integration/hosted-checkout.md L825-831, L1117, L1228; CheckoutService-v72.json L14641"
+        },
+        {
+          "text": "The Standard-webhook HMAC is Base64(HMAC-SHA256(hex-decoded key, pspReference:originalReference:merchantAccountCode:merchantReference:value:currency:eventCode:success)) with empty slots kept and NO escaping of ':' or '\\' inside merchantReference.",
+          "source": "https://docs.adyen.com/development-resources/webhooks/secure-webhooks/verify-hmac-signatures.md L194-229; adyen-java-api-library src/test/resources/mocks/hmac-validation-webhook.json"
+        },
+        {
+          "text": "The live host is not the test host with 'test' swapped for 'live': it is a per-company prefix host with an extra /checkout path segment (https://[prefix]-checkout-live.adyenpayments.com/checkout/v72/...).",
+          "source": "https://docs.adyen.com/development-resources/live-endpoints.md L71"
+        },
+        {
+          "text": "Status enums contain undocumented values (payment link 'paid', session 'active'), so treat unknown statuses as non-final instead of switching on a closed list.",
+          "source": "CheckoutService-v72.json L11680-11681 (PaymentLinkResponse.status), L14641-14642 (SessionResultResponse.status)"
+        }
+      ]
     },
     {
       "id": "airwallex",
