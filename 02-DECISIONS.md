@@ -38,3 +38,10 @@ Bayarcash (GitBook) dan FPX Stripe hanya kerangka JavaScript — tanpa pengawal 
 sumber kini `llms-full.txt` dan `.md` Stripe. Dua ambilan berturut = cap jari sama pada 12/12 sumber (bukan bunyi).
 Skil dijana hanya untuk gateway yang ada sumber rasmi; fail dijana tidak membawa tarikh harian (gerbang tidak basi
 setiap hari). Inventori (9 gateway) = laman rasmi disahkan menjawab; e-GHL (tiada jawapan) dan Xendit (403) belum.
+
+**D9 — 23 Okt 2026 — Billplz, CHIP, Stripe dibina serentak (3 ejen, worktree masing-masing) daripada `gateways/<id>/spec.md`,
+semuanya `docs`.** Setiap satu: palsu dahulu, set ujian piawai, ujian khusus (Billplz: 3 vektor X Signature rasmi;
+CHIP: RSA atas badan MENTAH; Stripe: `Stripe-Version` dipin + `allowed_payment_method_types`, putaran `v1`, had masa),
+3–4 sabotaj setiap satu. Pilihan bila spesifikasi UNCONFIRMED direkod dalam komen kepala setiap adapter (bukan di
+sini). Ujian asap kini satu gelung: setiap gateway menolak callback awal, mengesahkan yang dibayar, menolak yang
+dipalsu — daripada tarball yang dibungkus. Sabotaj silang (confirmPayment percaya callback) = 5/5 gateway gagal.

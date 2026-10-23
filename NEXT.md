@@ -10,13 +10,10 @@ Keadaan: tanya sistem (`npm run gate`, `git log`). Fail ini = apa seterusnya.
 
 ## Seterusnya (satu demi satu)
 
-0. **Adapter Billplz, CHIP, Stripe** daripada `gateways/<id>/spec.md` (label `docs`). Spesifikasi + vektor ujian rasmi
-   Billplz sudah ada; Stripe: pin `Stripe-Version`, `allowed_payment_method_types`; CHIP: RSA `X-Signature` atas badan mentah.
-   0b. Kaji gateway inventori satu demi satu (sumber rasmi + spec + gotchas); sahkan e-GHL dan Xendit (laman tidak menjawab /
-   403 pada 23 Okt).
-
-1. Ukur Bayarcash pada sandbox bila kunci ada → betulkan palsu dahulu, kemudian adapter → `evidence: measured`.
-2. Adapter CHIP (dokumen rasmi dahulu, label `docs`), kemudian Stripe (Checkout Session, mod ujian percuma).
+1. ~~Adapter Billplz, CHIP, Stripe~~ SIAP 23 Okt (D9, label `docs`). Untuk `measured`: akaun sandbox pemilik + larian set
+   ujian piawai terhadap sandbox sebenar (Bayarcash, Billplz, CHIP, Stripe).
+2. Kaji gateway inventori satu demi satu (sumber rasmi + spec + gotchas), senangPay dahulu; sahkan e-GHL dan Xendit
+   (laman tidak menjawab / 403 pada 23 Okt).
 3. CI (Depot semasa private, D21 gilap) + Perisai sebelum awam (D7).
 4. Pakej Laravel untuk projek PHP pemilik (tempahan, OSIS, HomestayPro, Dulang) — kongsi gateway palsu yang sama.
 5. Laman demo BM/EN (bayar RM1 sandbox) + kajian kes /work.
