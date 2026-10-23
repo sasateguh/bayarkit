@@ -13,4 +13,7 @@ All notable changes to this project are documented here. The format follows
   gateways verify; JSON, url-encoded, multipart), integer-sen money helpers.
 - `@bayarkit/toyyibpay`: measured on the toyyibPay sandbox (10 October 2026).
 - `@bayarkit/bayarcash`: Bayarcash API v3, from the official docs and PHP SDK (not yet measured).
-- `@bayarkit/testing`: fake toyyibPay and Bayarcash servers, and the conformance suite every adapter runs.
+- `@bayarkit/chip`: CHIP Collect, from the official OpenAPI (not yet measured): RSA `X-Signature` checked over the
+  raw callback body, `fetchPublicKey()` (decodes CHIP's JSON-encoded PEM), callback URLs with a port refused before
+  calling CHIP, optional `environment` guard against test purchases confirming live orders.
+- `@bayarkit/testing`: fake toyyibPay, Bayarcash and CHIP servers, and the conformance suite every adapter runs.

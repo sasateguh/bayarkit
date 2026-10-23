@@ -25,8 +25,9 @@ Write your checkout once; switch gateways by changing one line.
 | ------------------------------ | --------------------- | ---------------------------------------------------------------------------- |
 | toyyibPay                      | `@bayarkit/toyyibpay` | Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment |
 | Bayarcash (also behind BCL.my) | `@bayarkit/bayarcash` | Official API v3 docs and PHP SDK; not yet measured on the sandbox            |
+| CHIP (CHIP Collect)            | `@bayarkit/chip`      | Official CHIP Collect OpenAPI; not yet measured in test mode                 |
 
-Planned next: CHIP, Billplz, senangPay, Stripe (Malaysia). An adapter is listed as _measured_ only after the
+Planned next: Billplz, senangPay, Stripe (Malaysia). An adapter is listed as _measured_ only after the
 conformance suite has run against that gateway's sandbox.
 
 Amounts are always integer **sen** (`1050` = RM10.50), so nothing compares floating-point ringgit.
@@ -61,6 +62,11 @@ if (result.ok) {
 A complete checkout and callback with Web-standard handlers (Next.js, Hono, Bun, Deno) is in
 [examples/web-standard/checkout.ts](examples/web-standard/checkout.ts). To use Bayarcash instead, replace the
 `toyyibpay(...)` call with `bayarcash({ token, secretKey, portalKey, environment: 'sandbox' })`.
+
+For CHIP, use `chip({ secretKey, brandId, publicKey })`. CHIP has one host: a test-mode secret key makes test
+purchases. Callbacks are signed with CHIP's RSA key over the raw body, so read them with `readCallback` (not a parsed
+body). Get the public key once with `await chip({ secretKey, brandId }).fetchPublicKey()` (same secret key), store it,
+and pass it as `publicKey`; without it every callback is refused. CHIP rejects a `callbackUrl` with a port, even `:443`.
 
 ## What `confirmPayment` checks
 

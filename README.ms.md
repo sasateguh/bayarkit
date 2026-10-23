@@ -26,8 +26,9 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 | ----------------------------------- | --------------------- | ------------------------------------------------------------------------------------- |
 | toyyibPay                           | `@bayarkit/toyyibpay` | Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian |
 | Bayarcash (juga di belakang BCL.my) | `@bayarkit/bayarcash` | Dokumen rasmi API v3 dan SDK PHP; belum diukur pada sandbox                           |
+| CHIP (CHIP Collect)                 | `@bayarkit/chip`      | OpenAPI rasmi CHIP Collect; belum diukur dalam mod ujian                              |
 
-Seterusnya dirancang: CHIP, Billplz, senangPay, Stripe (Malaysia). Satu adapter disenaraikan sebagai _diukur_ hanya
+Seterusnya dirancang: Billplz, senangPay, Stripe (Malaysia). Satu adapter disenaraikan sebagai _diukur_ hanya
 selepas set ujian piawai dijalankan terhadap sandbox gateway itu.
 
 Amaun sentiasa dalam **sen** integer (`1050` = RM10.50), jadi tiada ringgit titik terapung dibandingkan.
@@ -62,6 +63,12 @@ if (result.ok) {
 Contoh lengkap checkout dan callback dengan pengendali piawai web (Next.js, Hono, Bun, Deno) ada dalam
 [examples/web-standard/checkout.ts](examples/web-standard/checkout.ts). Untuk guna Bayarcash, gantikan panggilan
 `toyyibpay(...)` dengan `bayarcash({ token, secretKey, portalKey, environment: 'sandbox' })`.
+
+Untuk CHIP, guna `chip({ secretKey, brandId, publicKey })`. CHIP ada satu hos sahaja: kunci rahsia mod ujian membuat
+pembelian ujian. Callback ditandatangani dengan kunci RSA CHIP atas badan mentah, jadi bacalah dengan `readCallback`
+(bukan badan yang sudah dihurai). Dapatkan kunci awam sekali dengan
+`await chip({ secretKey, brandId }).fetchPublicKey()` (kunci rahsia yang sama), simpan, dan hantar sebagai `publicKey`;
+tanpanya setiap callback ditolak. CHIP menolak `callbackUrl` yang ada port, walaupun `:443`.
 
 ## Apa yang `confirmPayment` semak
 
