@@ -5,7 +5,7 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 
 [English](README.md)
 
-> **Status:** pra-keluaran (0.1.0), belum ada di npm. Sebelas gateway; yang lain dirancang di bawah.
+> **Status:** pra-keluaran (0.1.0), belum ada di npm. Dua belas gateway; yang lain dirancang di bawah.
 
 ## Kenapa
 
@@ -23,19 +23,20 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 ## Gateway
 
 <!-- gateways:table (generated from gateways/registry.json by `node tools/rujukan.mjs skills`) -->
-| Gateway                                     | Pakej                 | Bukti                                                                                                                                         |
-| ------------------------------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| toyyibPay                                   | `@bayarkit/toyyibpay` | Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian                                                         |
-| Bayarcash (juga di belakang BCL.my)         | `@bayarkit/bayarcash` | Dokumen rasmi API v3 dan SDK PHP; belum diukur pada sandbox                                                                                   |
-| Billplz                                     | `@bayarkit/billplz`   | Dokumen rasmi API (V3 Bills, vektor ujian X Signature) dan plugin WooCommerce rasmi; belum diukur pada sandbox                                |
-| CHIP (CHIP Collect)                         | `@bayarkit/chip`      | OpenAPI rasmi CHIP Collect; belum diukur dalam mod ujian                                                                                      |
-| Stripe (Malaysia): kad + FPX                | `@bayarkit/stripe`    | Dokumen rasmi (Checkout Sessions, API `2026-09-30.endive`) dan semakan webhook stripe-node; belum diukur dalam mod ujian                      |
-| senangPay (di platform DOKU)                | `@bayarkit/senangpay` | Rujukan API rasmi DOKU Malaysia (Checkout, Signature `HMACSHA256=`) dan Soalan Lazim DOKU senangPay; belum diukur pada sandbox                |
-| iPay88 (NTT DATA Payment Services Malaysia) | `@bayarkit/ipay88`    | Alat tandatangan dan skrip HMAC rasmi pada hos gateway (tiga vektor), enquiry.asp diuji secara langsung; tiada dokumen API awam; belum diukur |
-| 2C2P (PGW Payment API v4.x)                 | `@bayarkit/2c2p`      | Dokumen pembangun rasmi (Payment Token + JWT HS256, tiga vektor ujian JWT rasmi); belum diukur pada sandbox                                   |
-| Razorpay Curlec                             | `@bayarkit/curlec`    | Dokumen rasmi (Payment Links + Orders, tiga tandatangan, kelima-lima vektor ujian rasmi); belum diukur dalam mod ujian                        |
-| HitPay                                      | `@bayarkit/hitpay`    | Dokumen rasmi (OpenAPI, Payment Requests, kedua-dua tandatangan webhook) dan SDK PHP rasmi; belum diukur pada sandbox                         |
-| Gkash                                       | `@bayarkit/gkash`     | Dokumen rasmi (vektor ujian tandatangan SHA-512), plugin WooCommerce dan SDK gkashmy; belum diukur pada staging                               |
+| Gateway                                     | Pakej                 | Bukti                                                                                                                                                                |
+| ------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| toyyibPay                                   | `@bayarkit/toyyibpay` | Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian                                                                                |
+| Bayarcash (juga di belakang BCL.my)         | `@bayarkit/bayarcash` | Dokumen rasmi API v3 dan SDK PHP; belum diukur pada sandbox                                                                                                          |
+| Billplz                                     | `@bayarkit/billplz`   | Dokumen rasmi API (V3 Bills, vektor ujian X Signature) dan plugin WooCommerce rasmi; belum diukur pada sandbox                                                       |
+| CHIP (CHIP Collect)                         | `@bayarkit/chip`      | OpenAPI rasmi CHIP Collect; belum diukur dalam mod ujian                                                                                                             |
+| Stripe (Malaysia): kad + FPX                | `@bayarkit/stripe`    | Dokumen rasmi (Checkout Sessions, API `2026-09-30.endive`) dan semakan webhook stripe-node; belum diukur dalam mod ujian                                             |
+| senangPay (di platform DOKU)                | `@bayarkit/senangpay` | Rujukan API rasmi DOKU Malaysia (Checkout, Signature `HMACSHA256=`) dan Soalan Lazim DOKU senangPay; belum diukur pada sandbox                                       |
+| iPay88 (NTT DATA Payment Services Malaysia) | `@bayarkit/ipay88`    | Alat tandatangan dan skrip HMAC rasmi pada hos gateway (tiga vektor), enquiry.asp diuji secara langsung; tiada dokumen API awam; belum diukur                        |
+| 2C2P (PGW Payment API v4.x)                 | `@bayarkit/2c2p`      | Dokumen pembangun rasmi (Payment Token + JWT HS256, tiga vektor ujian JWT rasmi); belum diukur pada sandbox                                                          |
+| Razorpay Curlec                             | `@bayarkit/curlec`    | Dokumen rasmi (Payment Links + Orders, tiga tandatangan, kelima-lima vektor ujian rasmi); belum diukur dalam mod ujian                                               |
+| HitPay                                      | `@bayarkit/hitpay`    | Dokumen rasmi (OpenAPI, Payment Requests, kedua-dua tandatangan webhook) dan SDK PHP rasmi; belum diukur pada sandbox                                                |
+| Gkash                                       | `@bayarkit/gkash`     | Dokumen rasmi (vektor ujian tandatangan SHA-512), plugin WooCommerce dan SDK gkashmy; belum diukur pada staging                                                      |
+| Xendit (Malaysia): Payment Sessions         | `@bayarkit/xendit`    | Dokumen rasmi (Payment Sessions, payment request v3, webhook `x-callback-token`: token statik, bukan tandatangan) dan skil agen Xendit; belum diukur dalam mod ujian |
 <!-- /gateways:table -->
 
 Seterusnya dirancang: gateway dalam [gateways/README.md](gateways/README.md). Satu adapter disenaraikan sebagai _diukur_ hanya

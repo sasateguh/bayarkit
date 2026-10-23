@@ -55,3 +55,8 @@ All notable changes to this project are documented here. The format follows
   amount (the official tool strips only the first of each); the checkout is a form POST (`form` + `html`, not a
   redirect); re-query through `enquiry.asp` where only the exact text `00` is paid; `BACKEND_ACK` = `RECEIVEOK`.
   `startFakeIPay88` in `@bayarkit/testing`.
+- `@bayarkit/xendit`: Xendit (Malaysia) Payment Sessions plus the v3 payment request lookup, from the official docs (not
+  yet measured): Basic auth, the key prefix picks test or live; amounts in ringgit at the API, sen at the interface.
+  Webhooks carry NO signature, only a static `x-callback-token`, compared in constant time before the RAW body is
+  parsed; `confirmPayment`'s fresh GET is the real protection. Reads `payment_session.*` and `payment.*` events.
+  `startFakeXendit` in `@bayarkit/testing`.
