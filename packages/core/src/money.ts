@@ -1,13 +1,21 @@
-/** 1050 → "10.50". */
+/** 1050 → "10.50". Integer arithmetic only, so no float ever decides a digit. */
 export function toRinggit(sen: number): string {
   if (!Number.isInteger(sen)) throw new RangeError(`amount must be integer sen, got ${sen}`)
-  return (sen / 100).toFixed(2)
+  const abs = Math.abs(sen)
+  return `${sen < 0 ? '-' : ''}${Math.floor(abs / 100)}.${String(abs % 100).padStart(2, '0')}`
 }
 
-/** "10.50" / "10.5" / 10.5 → 1050. `NaN` when the value is not a finite number. */
+/**
+ * "10.50" / "10.5" / 10.5 → 1050. A string is parsed as a decimal, never through a float (a third decimal rounds half
+ * up: "10.505" → 1051); `NaN` when it is not a plain number ("1,050.00", "1e3", ".5", "RM10"). The PHP twin
+ * (`Bayarkit\Money::toSen`) agrees on every row of test/money-vectors.json.
+ */
 export function toSen(ringgit: unknown): number {
-  if (typeof ringgit !== 'number' && typeof ringgit !== 'string') return Number.NaN
-  if (typeof ringgit === 'string' && ringgit.trim() === '') return Number.NaN
-  const n = Number(ringgit)
-  return Number.isFinite(n) ? Math.round(n * 100) : Number.NaN
+  if (typeof ringgit === 'number') return Number.isFinite(ringgit) ? Math.round(ringgit * 100) : Number.NaN
+  if (typeof ringgit !== 'string') return Number.NaN
+  const m = /^\s*(-?)(\d+)(?:\.(\d*))?\s*$/.exec(ringgit)
+  if (!m) return Number.NaN
+  const decimals = (m[3] ?? '').padEnd(3, '0')
+  const sen = Number(m[2]) * 100 + Number(decimals.slice(0, 2)) + (Number(decimals[2]) >= 5 ? 1 : 0)
+  return m[1] === '-' ? -sen : sen
 }

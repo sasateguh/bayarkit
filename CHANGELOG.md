@@ -14,6 +14,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- `toSen` parses ringgit strings as exact decimals ("10.505" → 1051, not 1050 through a float) and refuses
+  `"1e3"`, `".5"`, `"+10"`; `toRinggit` uses integer arithmetic. The TS and PHP twins now share
+  `packages/core/test/money-vectors.json`.
 - toyyibPay (TS + PHP): `getPayment` sends the owner's `userSecretKey`. toyyibPay's API reference (changed 23 Oct 2026)
   now empties the fee (`transactionCharge`) and payer fields without it, and returns nothing for another account's key,
   so a bill code from someone else's account can never read as paid. Not yet measured on the sandbox.
@@ -25,7 +28,8 @@ All notable changes to this project are documented here. The format follows
 - `php/` — `bayarkit/bayarkit` for PHP 8.2+ and Laravel 11/12: the core interface, `Confirm::payment`, `Checkout`,
   toyyibPay (measured) and CHIP (docs) adapters, a service provider configured from `.env`, `Callback::from($request)`,
   `Checkout::response()`, `php artisan bayarkit:chip-public-key`. Tested against the same `bayarkit-fake` gateways as
-  the TypeScript adapters (`scripts/php-gate.sh`, in the gate), plus phpstan level 8.
+  the TypeScript adapters (`scripts/php-gate.sh`, in the gate), plus phpstan level 8. `scripts/php-compat.sh` proves
+  the composer promises: PHP 8.2 with the lowest dependencies (Laravel 11) and PHP 8.4 with the newest (Laravel 12).
 - `@bayarkit/core`: `checkoutResponse(payment, label?)` sends the customer to pay — a 303 redirect, or, for
   gateways that take a POSTed form (`CreatedPayment.form`: iPay88, eGHL, Fiuu), an HTML-escaped self-submitting page
   with a visible button, `no-store`, `noindex` and a hash-pinned CSP. `autoPostHtml` and the `PaymentForm` type are

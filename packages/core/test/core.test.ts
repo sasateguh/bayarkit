@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { confirmPayment, type Gateway, toRinggit, toSen } from '../src/index.js'
+import vectors from './money-vectors.json' with { type: 'json' }
+
+describe('money vectors shared with the PHP twin', () => {
+  it.each(vectors.toSen as [string | number, number | null][])('toSen(%j) → %j', (input, sen) => {
+    expect(toSen(input)).toBe(sen ?? Number.NaN)
+  })
+  it.each(vectors.toRinggit as [number, string][])('toRinggit(%j) → %j', (sen, text) => {
+    expect(toRinggit(sen)).toBe(text)
+  })
+})
 
 describe('money', () => {
   it('converts without floating-point drift', () => {

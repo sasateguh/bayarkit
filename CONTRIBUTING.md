@@ -6,7 +6,8 @@ Thanks for helping. This library moves money, so the bar is evidence, not opinio
 
 ```bash
 npm install          # Node.js 22.12 or newer
-npm run gate         # typecheck, lint, tests, build, and an install of the packed packages
+npm run gate         # typecheck, lint, tests, build, an install of the packed packages, and the PHP package
+                     # (PHP 8.2+ and composer, or Docker: scripts/php-gate.sh uses a pinned image)
 git config core.hooksPath .githooks   # secret scan + gate before every commit
 ```
 
@@ -38,7 +39,15 @@ and `node tools/rujukan.mjs skills`.
    Where the sandbox differs from the docs, change the fake first (so the tests fail), then the adapter, and record the
    difference in the adapter's header comment. Only then set `evidence.kind` to `'measured'` with the date.
 
-A pull request that adds a gateway lists, in its description, which steps are done.
+A pull request that adds a gateway lists, in its description, which steps are done. Its fake must keep its callbacks
+self-consistent (a form or JSON body says what its fields say, also after `tamper`): the conformance suite checks it.
+
+## The PHP twin (`php/`)
+
+toyyibPay and CHIP also exist in PHP. A rule changed in one twin is changed in the other in the same pull request; both
+run the same conformance cases against the same `bayarkit-fake` gateways, and money parsing is pinned by
+`packages/core/test/money-vectors.json`, which both test suites read. After changing `php/composer.json`, run
+`bash scripts/php-compat.sh` (PHP 8.2 with the lowest dependencies, PHP 8.4 with the newest).
 
 ## Before you open a pull request
 

@@ -1,6 +1,6 @@
 # bayarkit
 
-One TypeScript interface for Malaysian payment gateways, and the safe way to confirm a payment.
+One interface for Malaysian payment gateways, in TypeScript and PHP/Laravel, and the safe way to confirm a payment.
 Write your checkout once; switch gateways by changing one line.
 
 [Bahasa Melayu](README.ms.md)

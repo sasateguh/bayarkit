@@ -1,6 +1,6 @@
 # bayarkit
 
-Satu antara muka TypeScript untuk gateway pembayaran Malaysia, dan cara selamat untuk mengesahkan bayaran.
+Satu antara muka untuk gateway pembayaran Malaysia, dalam TypeScript dan PHP/Laravel, dan cara selamat untuk mengesahkan bayaran.
 Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 
 [English](README.md)
