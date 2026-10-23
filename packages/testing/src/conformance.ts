@@ -136,6 +136,23 @@ export function gatewayConformance(name: string, setup: () => Promise<Conformanc
       expect(result).toMatchObject({ ok: false, reason: 'mismatch' })
     })
 
+    it("the fake's callbacks are self-consistent (a form body says what its fields say, tampered or not)", async () => {
+      const created = await gateway.createPayment(sampleInput())
+      const cb = fake.callbackFor(created.id)
+      for (const c of [cb, fake.tamper(cb)]) {
+        const type = c.headers['content-type'] ?? ''
+        if (c.rawBody && type.includes('application/x-www-form-urlencoded')) {
+          expect(Object.fromEntries(new URLSearchParams(c.rawBody))).toEqual(c.fields)
+        }
+        if (c.rawBody && type.includes('application/json')) {
+          const json = JSON.parse(c.rawBody) as Record<string, unknown>
+          for (const [k, v] of Object.entries(c.fields)) expect(String(json[k]), k).toBe(v)
+        }
+      }
+      // And tampering changes something an adapter reads.
+      expect(fake.tamper(cb)).not.toEqual(cb)
+    })
+
     it('never throws on a malformed callback body', () => {
       const junk: CallbackInput[] = [
         { fields: {}, rawBody: '', headers: {} },

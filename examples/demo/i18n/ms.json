@@ -1,0 +1,86 @@
+{
+  "lang": "ms",
+  "otherLang": {
+    "label": "English",
+    "prefix": "/en"
+  },
+  "title": "Demo bayarkit",
+  "tagline": "Satu antara muka untuk gateway pembayaran Malaysia. Pesanan hanya ditanda dibayar bila gateway sendiri mengesahkannya.",
+  "simulatedNote": "Semua gateway di sini PALSU dan berjalan dalam pelayan demo ini. Tiada wang bergerak, tiada kunci sebenar.",
+  "form": {
+    "heading": "Cuba satu bayaran",
+    "gateway": "Gateway",
+    "amount": "Jumlah (RM)",
+    "submit": "Teruskan ke pembayaran",
+    "measured": "diukur pada sandbox",
+    "docs": "dari dokumen rasmi"
+  },
+  "errors": {
+    "amount": "Masukkan jumlah dalam ringgit, contohnya 1.00.",
+    "minimum": "Jumlah minimum untuk gateway ini ialah RM{min}.",
+    "gateway": "Gateway tidak dikenali.",
+    "refused": "Gateway menolak: {message}",
+    "order": "Pesanan tidak ditemui. Pesanan demo disimpan dalam memori dan hilang bila pelayan dimulakan semula."
+  },
+  "pay": {
+    "banner": "Halaman bayaran SIMULASI · {gateway} palsu · tiada wang bergerak",
+    "heading": "Bayar {amount}",
+    "reference": "Rujukan pesanan",
+    "paymentId": "ID bayaran gateway",
+    "method": "Cara pelanggan dihantar",
+    "methodRedirect": "Redirect 303",
+    "methodForm": "Borang POST (dihantar sendiri)",
+    "choose": "Pilih apa yang berlaku:",
+    "actions": {
+      "pay": {
+        "label": "Bayar",
+        "hint": "Gateway merekod bayaran, kemudian menghantar callback bertandatangan."
+      },
+      "decline": {
+        "label": "Tidak bayar, tetapi callback tetap sampai",
+        "hint": "Callback bertandatangan betul tiba, tetapi gateway tidak merekod bayaran (ulang main atau kunci bocor)."
+      },
+      "forge": {
+        "label": "Bayar, tetapi callback dipalsukan",
+        "hint": "Seseorang mengubah tandatangan callback dalam perjalanan."
+      }
+    }
+  },
+  "order": {
+    "heading": "Pesanan {reference}",
+    "paid": "DIBAYAR",
+    "notPaid": "BELUM DIBAYAR",
+    "waiting": "Menunggu callback",
+    "steps": {
+      "received": "Callback diterima oleh pelayan kedai",
+      "signature": "Tandatangan callback disemak",
+      "query": "Gateway ditanya semula (bukan percaya callback)",
+      "match": "Rujukan, jumlah dan mata wang sepadan dengan pesanan"
+    },
+    "stepState": {
+      "ok": "lulus",
+      "fail": "gagal",
+      "skip": "tidak dijalankan"
+    },
+    "gatewaySays": "Gateway kata: {status}",
+    "reasons": {
+      "ok": "Pesanan ditanda dibayar kerana gateway sendiri mengesahkan bayaran untuk rujukan dan jumlah ini.",
+      "invalid_signature": "Ditolak: tandatangan tidak sah. Callback ini bukan dari gateway, jadi gateway tidak ditanya pun.",
+      "not_paid": "Ditolak: tandatangan sah, tetapi gateway kata belum dibayar. Callback yang sah sahaja tidak cukup.",
+      "mismatch": "Ditolak: gateway kata dibayar, tetapi rujukan atau jumlahnya tidak sama dengan pesanan ini.",
+      "gateway_error": "Ditolak buat masa ini: gateway tidak dapat dihubungi. Cuba lagi bila callback dihantar semula."
+    },
+    "detail": "Butiran",
+    "again": "Cuba gateway atau senario lain",
+    "code": "Kod yang menjalankan semakan ini",
+    "status": {
+      "pending": "belum dibayar",
+      "paid": "dibayar",
+      "failed": "gagal",
+      "cancelled": "dibatalkan",
+      "expired": "tamat tempoh",
+      "unknown": "tidak diketahui"
+    }
+  },
+  "footer": "bayarkit · demo dengan gateway palsu daripada @bayarkit/testing"
+}

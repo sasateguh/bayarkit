@@ -202,7 +202,11 @@ export async function startFakeGkash(opts: { cid: string; signatureKey: string }
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
       }
     },
-    tamper: (cb) => ({ ...cb, fields: { ...cb.fields, signature: flip(cb.fields.signature ?? '') } }),
+    tamper: (cb) => {
+      const fields = { ...cb.fields, signature: flip(cb.fields.signature ?? '') }
+      // The body must say what the fields say: a real tampered POST carries the altered value in its bytes too.
+      return { ...cb, fields, rawBody: cb.rawBody ? new URLSearchParams(fields).toString() : '' }
+    },
     close: () => new Promise<void>((r) => server.close(() => r())),
   }
 }

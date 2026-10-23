@@ -143,6 +143,14 @@ satu baris JSON dengan `url`nya dan URL `control`. Halakan aplikasi anda ke `url
 `POST <control>/paid/<id>` menanda bayaran dibayar, `GET <control>/callback/<id>` memulangkan callback bertandatangan
 yang tepat (`/tampered` untuk callback palsu) untuk dihantar ke laluan callback anda. Ia tidak memerlukan vitest.
 
+## Demo
+
+`npm run build && npm run demo` membuka http://127.0.0.1:4317/ (BM di `/`, Inggeris di `/en`): pilih mana-mana
+gateway, kemudian pilih apa yang berlaku pada halaman bayaran simulasi (bayar, callback bertandatangan betul untuk
+bayaran yang belum dibayar, atau callback yang dipalsukan) dan lihat setiap semakan yang dibuat `confirmPayment`.
+Setiap gateway ialah gateway palsu daripada `@bayarkit/testing`, jadi tiada kunci dan tiada wang terlibat. Sumber:
+[examples/demo](examples/demo/app.mjs).
+
 ## PHP dan Laravel
 
 [`php/`](php/README.ms.md) ialah kembar PHP untuk projek Laravel: antara muka yang sama dan peraturan `confirmPayment`

@@ -8,6 +8,15 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `examples/demo` (`npm run demo`): every adapter against its fake, BM + EN, no browser JavaScript; pay / unpaid
+  signed callback / forged callback, with each `confirmPayment` check shown. Tested for all gateways in vitest and on
+  WebKit iPhone 13 (`scripts/demo-webkit.py`).
+
+### Fixed
+
+- `@bayarkit/testing`: the Billplz and Gkash fakes' `tamper()` changed `fields` but left `rawBody` with the original,
+  valid signature — a callback that cannot exist. The conformance suite now requires every fake's form/JSON body to say
+  what its fields say, tampered or not.
 - `php/` — `bayarkit/bayarkit` for PHP 8.2+ and Laravel 11/12: the core interface, `Confirm::payment`, `Checkout`,
   toyyibPay (measured) and CHIP (docs) adapters, a service provider configured from `.env`, `Callback::from($request)`,
   `Checkout::response()`, `php artisan bayarkit:chip-public-key`. Tested against the same `bayarkit-fake` gateways as

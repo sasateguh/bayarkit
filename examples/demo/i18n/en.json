@@ -1,0 +1,86 @@
+{
+  "lang": "en",
+  "otherLang": {
+    "label": "Bahasa Melayu",
+    "prefix": ""
+  },
+  "title": "bayarkit demo",
+  "tagline": "One interface for Malaysian payment gateways. An order is marked paid only when the gateway itself confirms it.",
+  "simulatedNote": "Every gateway here is FAKE and runs inside this demo server. No money moves and no real keys are used.",
+  "form": {
+    "heading": "Try a payment",
+    "gateway": "Gateway",
+    "amount": "Amount (RM)",
+    "submit": "Continue to payment",
+    "measured": "measured on the sandbox",
+    "docs": "from the official docs"
+  },
+  "errors": {
+    "amount": "Enter an amount in ringgit, for example 1.00.",
+    "minimum": "The minimum for this gateway is RM{min}.",
+    "gateway": "Unknown gateway.",
+    "refused": "The gateway refused: {message}",
+    "order": "Order not found. Demo orders live in memory and are gone when the server restarts."
+  },
+  "pay": {
+    "banner": "SIMULATED payment page · fake {gateway} · no money moves",
+    "heading": "Pay {amount}",
+    "reference": "Order reference",
+    "paymentId": "Gateway payment id",
+    "method": "How the customer is sent",
+    "methodRedirect": "303 redirect",
+    "methodForm": "POST form (self-submitting)",
+    "choose": "Choose what happens:",
+    "actions": {
+      "pay": {
+        "label": "Pay",
+        "hint": "The gateway records the payment, then sends a signed callback."
+      },
+      "decline": {
+        "label": "Don't pay, but a callback arrives anyway",
+        "hint": "A correctly signed callback arrives, but the gateway has no payment on record (a replay or a leaked key)."
+      },
+      "forge": {
+        "label": "Pay, but the callback is forged",
+        "hint": "Someone altered the callback's signature on the way."
+      }
+    }
+  },
+  "order": {
+    "heading": "Order {reference}",
+    "paid": "PAID",
+    "notPaid": "NOT PAID",
+    "waiting": "Waiting for a callback",
+    "steps": {
+      "received": "The shop's server received the callback",
+      "signature": "The callback signature was checked",
+      "query": "The gateway was asked again (the callback is not trusted)",
+      "match": "Reference, amount and currency match the order"
+    },
+    "stepState": {
+      "ok": "passed",
+      "fail": "failed",
+      "skip": "not run"
+    },
+    "gatewaySays": "Gateway says: {status}",
+    "reasons": {
+      "ok": "The order is marked paid because the gateway itself confirmed a payment for this reference and amount.",
+      "invalid_signature": "Refused: invalid signature. This callback did not come from the gateway, so the gateway was not even asked.",
+      "not_paid": "Refused: the signature is valid, but the gateway says it is not paid. A valid callback alone is not enough.",
+      "mismatch": "Refused: the gateway says paid, but the reference or amount does not match this order.",
+      "gateway_error": "Refused for now: the gateway could not be reached. Try again when the callback is retried."
+    },
+    "detail": "Detail",
+    "again": "Try another gateway or scenario",
+    "code": "The code that runs these checks",
+    "status": {
+      "pending": "pending",
+      "paid": "paid",
+      "failed": "failed",
+      "cancelled": "cancelled",
+      "expired": "expired",
+      "unknown": "unknown"
+    }
+  },
+  "footer": "bayarkit · demo with fake gateways from @bayarkit/testing"
+}

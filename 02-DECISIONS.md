@@ -94,3 +94,12 @@ Semakan semula 23 Okt: `scripts/security.sh` menyenaraikan pakej dengan TANGAN, 
 Curlec, HitPay, 2C2P, Gkash, iPay88, Xendit, Fiuu, eGHL) tidak pernah diimbas semgrep walaupun "security lulus". Kini
 glob `packages/*/src` + `php/` + `p/php`, dan skrip GAGAL bila mana-mana folder sumber tiada dalam senarai yang diimbas
 (48 → 86 fail, 0 penemuan; `eval` ditanam dalam PHP ditangkap).
+
+**D15 — 23 Okt 2026 — Demo = gateway PALSU, bukan sandbox RM1; dalam repo, belum dihos.** Demo sandbox perlukan kunci
+akaun pemilik pada pelayan awam, dan hanya meliputi gateway yang ada akaun. Demo atas `bayarkit-fake` meliputi SEMUA
+adapter, tanpa kunci/wang, dan menunjukkan perkara yang sandbox tidak boleh tunjuk (callback palsu, callback sah tanpa
+bayaran). Setup setiap gateway = fail asap yang sama (`scripts/smoke/<id>.mjs`), senarai = registry, teks = i18n BM/EN,
+tiada JS pelayar (CSP tanpa `script-src`), noindex. Penemuan semasa membina: fake Billplz + Gkash menghasilkan callback
+dipalsukan yang `rawBody`-nya masih sah (mustahil di dunia sebenar) — dibaiki + invarian keakuran untuk semua fake.
+MENGHOS demo (nama hos, laman awam atas nama pemilik) = FLAG, ditunda bersama D7 (repo masih private). Undur: buang
+`examples/demo` + skrip `demo`.

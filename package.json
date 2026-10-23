@@ -13,7 +13,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "lint": "biome check .",
-    "gate": "bash scripts/gate.sh"
+    "gate": "bash scripts/gate.sh",
+    "demo": "node examples/demo/server.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.2",

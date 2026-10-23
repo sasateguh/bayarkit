@@ -256,7 +256,9 @@ export async function startFakeBillplz(opts: {
     },
     tamper: (cb) => {
       const k = 'billplz[x_signature]' in cb.fields ? 'billplz[x_signature]' : 'x_signature'
-      return { ...cb, fields: { ...cb.fields, [k]: flip(cb.fields[k] ?? '') } }
+      const fields = { ...cb.fields, [k]: flip(cb.fields[k] ?? '') }
+      // The body must say what the fields say: a real tampered POST carries the altered value in its bytes too.
+      return { ...cb, fields, rawBody: cb.rawBody ? new URLSearchParams(fields).toString() : '' }
     },
     close: () => new Promise<void>((r) => server.close(() => r())),
   }

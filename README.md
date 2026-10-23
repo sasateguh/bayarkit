@@ -139,6 +139,13 @@ with its `url` and a `control` URL. Point your app at `url`, then drive it over 
 payment paid, `GET <control>/callback/<id>` returns the exact signed callback (`/tampered` for a forged one) to post to
 your callback route. It does not need vitest.
 
+## Demo
+
+`npm run build && npm run demo` opens http://127.0.0.1:4317/ (BM at `/`, English at `/en`): pick any gateway, then
+choose what happens on a simulated payment page (pay, a correctly signed callback for an unpaid payment, or a forged
+callback) and see each check `confirmPayment` makes. Every gateway is a fake from `@bayarkit/testing`, so no keys and
+no money are involved. Source: [examples/demo](examples/demo/app.mjs).
+
 ## PHP and Laravel
 
 [`php/`](php/README.md) is the PHP twin for Laravel projects: the same interface and the same `confirmPayment` rule

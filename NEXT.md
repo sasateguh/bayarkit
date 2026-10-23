@@ -17,4 +17,5 @@ Keadaan: tanya sistem (`npm run gate`, `git log`). Fail ini = apa seterusnya.
 3. ~~CI + keselamatan~~ SIAP (D10): `scripts/security.sh` lulus; Actions sedia untuk awam; Depot CI LULUS (run sl4gj00z4c, 23 Okt).
 4. ~~Pakej Laravel~~ SIAP 23 Okt (D14): `php/`, toyyibPay + CHIP, diuji atas `bayarkit-fake` yang sama. Baki: gateway PHP
    lain bila projek memerlukannya; memindah projek pemilik = kerja repo masing-masing (bukan dari sini).
-5. Laman demo BM/EN (bayar RM1 sandbox) + kajian kes /work.
+5. ~~Laman demo~~ SIAP dalam repo 23 Okt (D15, `npm run demo`, gateway palsu). Menghos + kajian kes /work = FLAG
+   bersama D7 (teks awam atas nama pemilik; repo masih private).
