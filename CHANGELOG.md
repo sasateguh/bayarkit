@@ -35,3 +35,8 @@ All notable changes to this project are documented here. The format follows
   measured): HS256 JWT with node:crypto (secret key used as ASCII text, any `alg` but HS256 refused), all three
   official JWT test vectors reproduced, backend notification verified, the unsigned frontend return never trusted,
   decimal ringgit converted to sen without rounding. `startFake2C2P` in `@bayarkit/testing`.
+- `@bayarkit/senangpay`: senangPay on the DOKU platform (Checkout API), from the official DOKU Malaysia API Reference
+  (not yet measured): `Signature: HMACSHA256=` over Client-Id, Request-Timestamp, path and the base64 SHA-256 digest of
+  the RAW body, per the written rules and the Java/Ruby samples (the Python/Node `Digest:` form is refused);
+  notifications verified over the merchant's notification path; sen ↔ ringgit only at the edge. `startFakeSenangPay` in
+  `@bayarkit/testing`.

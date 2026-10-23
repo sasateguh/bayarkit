@@ -14,6 +14,7 @@ import { startFakeBayarcash } from './fakes/bayarcash.js'
 import { startFakeBillplz } from './fakes/billplz.js'
 import { startFakeChip } from './fakes/chip.js'
 import { startFakeHitPay } from './fakes/hitpay.js'
+import { startFakeSenangPay } from './fakes/senangpay.js'
 import { startFakeStripe } from './fakes/stripe.js'
 import { startFakeToyyibPay } from './fakes/toyyibpay.js'
 import type { FakeGateway } from './fakes/types.js'
@@ -60,6 +61,21 @@ const FAKES: Record<
   '2c2p': {
     defaults: { merchantId: 'JT07', secretKey: 'FAKE2C2PSECRETKEY' },
     start: (o) => startFake2C2P({ merchantId: o.merchantId ?? '', secretKey: o.secretKey ?? '' }),
+  },
+  senangpay: {
+    defaults: {
+      clientId: 'BRN-fake-0001',
+      secretKey: 'fake-secret',
+      apiKey: 'fake-api-key',
+      notificationPath: '/notifications/doku',
+    },
+    start: (o) =>
+      startFakeSenangPay({
+        clientId: o.clientId ?? '',
+        secretKey: o.secretKey ?? '',
+        apiKey: o.apiKey ?? '',
+        notificationPath: o.notificationPath ?? '',
+      }),
   },
 }
 

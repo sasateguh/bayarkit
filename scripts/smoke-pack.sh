@@ -4,7 +4,7 @@
 # Every gateway goes through the same steps: an early callback is refused, a paid one confirms, a tampered one is refused.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-GATEWAYS=(toyyibpay bayarcash billplz stripe chip hitpay 2c2p)
+GATEWAYS=(toyyibpay bayarcash billplz stripe chip hitpay 2c2p senangpay)
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 for p in core testing "${GATEWAYS[@]}"; do (cd "packages/$p" && npm pack --silent --pack-destination "$tmp" >/dev/null); done
@@ -54,6 +54,12 @@ const setups = {
     const fake = await testing.startFake2C2P({ merchantId: 'JT07', secretKey: 'SMOKEKEY' })
     const { twoc2p } = await import('@bayarkit/2c2p')
     return { fake, gateway: twoc2p({ merchantId: 'JT07', secretKey: 'SMOKEKEY', environment: 'sandbox', baseUrl: fake.url }) }
+  },
+  senangpay: async () => {
+    const keys = { clientId: 'BRN-smoke', secretKey: 's', apiKey: 'k', notificationPath: '/doku' }
+    const fake = await testing.startFakeSenangPay(keys)
+    const { senangpay } = await import('@bayarkit/senangpay')
+    return { fake, gateway: senangpay({ ...keys, environment: 'sandbox', baseUrl: fake.url }) }
   },
 }
 

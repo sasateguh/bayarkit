@@ -254,7 +254,13 @@
           "mustContain": ["53-784", "0bde51ff340f110ab7331a902aa969e7", "74422328b44d30bf"]
         }
       ],
-      "adapter": null,
+      "adapter": {
+        "package": "@bayarkit/senangpay",
+        "factory": "senangpay",
+        "evidence": "docs",
+        "configExample": "{ clientId, secretKey, apiKey, environment, notificationPath }",
+        "fake": "startFakeSenangPay"
+      },
       "spec": true,
       "gotchas": [
         {
