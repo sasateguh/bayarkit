@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Refuses the commit when a secret is staged or the gate fails. Once per clone: git config core.hooksPath .githooks
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+for d in "$HOME"/.nvm/versions/node/v22*/bin "$HOME/.local/bin"; do PATH="$d:$PATH"; done
+if command -v gitleaks >/dev/null; then gitleaks protect --staged --no-banner; else echo "pre-commit: gitleaks not installed, secret scan skipped" >&2; fi
+bash scripts/gate.sh

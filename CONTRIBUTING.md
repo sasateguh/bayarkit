@@ -7,6 +7,7 @@ Thanks for helping. This library moves money, so the bar is evidence, not opinio
 ```bash
 npm install          # Node.js 22.12 or newer
 npm run gate         # typecheck, lint, tests, build, and an install of the packed packages
+git config core.hooksPath .githooks   # secret scan + gate before every commit
 ```
 
 ## Adding what bayarkit knows about a gateway
