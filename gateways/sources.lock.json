@@ -1,4 +1,28 @@
 {
+  "2c2p/backend-notification": {
+    "url": "https://developer.2c2p.com/docs/api-payment-response-backend.md",
+    "sha256": "2bf277b64bfc48e410aa20f98ff99e5b9cfbfefbc3def3081b5920919aebda02",
+    "chars": 1862,
+    "since": "2026-10-23"
+  },
+  "2c2p/jwt-guide": {
+    "url": "https://developer.2c2p.com/docs/json-web-tokens-jwt.md",
+    "sha256": "8deb4857f44c4cf5fd38de61fd80289560c36644ad7f80dd1622922be9164618",
+    "chars": 1739,
+    "since": "2026-10-23"
+  },
+  "2c2p/payment-token-params": {
+    "url": "https://developer.2c2p.com/docs/api-payment-token-request-parameter.md",
+    "sha256": "0d4d67a5b9c80e22588370914015e5ac50c7dabebb1e570dd91c8c2824bf7ad0",
+    "chars": 78808,
+    "since": "2026-10-23"
+  },
+  "2c2p/sandbox-setup": {
+    "url": "https://developer.2c2p.com/docs/sandbox-setup.md",
+    "sha256": "31ae392080a37e3b71404f6c689a6ed8a72c4c4e92fac3ad5a6a9d0db3875666",
+    "chars": 5471,
+    "since": "2026-10-23"
+  },
   "bayarcash/api-docs": {
     "url": "https://api.webimpian.support/bayarcash/llms-full.txt",
     "sha256": "866d411e0bcc47ce1622c5436db9ecf4f4b82c82bc91cd834d6f0ec974ab7f7b",
@@ -41,6 +65,150 @@
     "chars": 146377,
     "since": "2026-10-23"
   },
+  "curlec/checkout-integration-steps": {
+    "url": "https://curlec.com/docs/payments/payment-gateway/web-integration/standard/integration-steps.md",
+    "sha256": "38fde1bbde022b727f12cda91888f837c1221dbf3302eb454bbcab43394d60f9",
+    "chars": 39478,
+    "since": "2026-10-23"
+  },
+  "curlec/node-sdk-utils": {
+    "url": "https://raw.githubusercontent.com/razorpay/razorpay-node/HEAD/lib/utils/razorpay-utils.js",
+    "sha256": "dbd6123646fbb9bde46edc5e08efbdd8861785fe96f2934905c26b2428803efd",
+    "chars": 4111,
+    "since": "2026-10-23"
+  },
+  "curlec/orders-create": {
+    "url": "https://curlec.com/docs/api/orders/create.md",
+    "sha256": "45f0384a61ad0f5a09e1f58d69137a8f0e61356d5ce88aa09e79df7238c3f901",
+    "chars": 12811,
+    "since": "2026-10-23"
+  },
+  "curlec/webhooks-validate": {
+    "url": "https://curlec.com/docs/webhooks/validate-test.md",
+    "sha256": "713af2155d1d1075bba6e3b76c10d0cee360494849b7b315b6169732203c64da",
+    "chars": 7280,
+    "since": "2026-10-23"
+  },
+  "eghl/eghl-hash-lib": {
+    "url": "https://bitbucket.org/eghl/eghl_hash/raw/HEAD/eGHL_HASH.php",
+    "sha256": "02c436a43d33279124e4ad4db800f35c7301e9a26dc36ddd40267b2cb4a31ffb",
+    "chars": 4078,
+    "since": "2026-10-23"
+  },
+  "eghl/merchantapi-base": {
+    "url": "https://bitbucket.org/eghl/merchantapi/raw/HEAD/src/core/APIBase.php",
+    "sha256": "7267e6a7ead56faf9617f6f9cf28f3bfd08933e82c57f75475f4e7321c2f3244",
+    "chars": 3315,
+    "since": "2026-10-23"
+  },
+  "eghl/merchantapi-query": {
+    "url": "https://bitbucket.org/eghl/merchantapi/raw/HEAD/src/Query.php",
+    "sha256": "23dda9cffe3943edc365e11732048c33f23b5be4deccfa37777894e3cd5c2c37",
+    "chars": 2214,
+    "since": "2026-10-23"
+  },
+  "eghl/omnipay-test-vector": {
+    "url": "https://bitbucket.org/eghl/eghl-omnipay/raw/HEAD/tests/GatewayTest.php",
+    "sha256": "f4ad4d0cf68b132e720542ce130fdc162f6ee1bb4417318717f90410cd16239d",
+    "chars": 2978,
+    "since": "2026-10-23"
+  },
+  "fiuu/fiuu-api-spec-readme": {
+    "url": "https://raw.githubusercontent.com/FiuuPayment/Documentation-Fiuu_API_Spec/HEAD/README.md",
+    "sha256": "7f2865c3e907d1dcc9613dec65fccb987b3342668a6da1149fd80e87a9434e12",
+    "chars": 2578,
+    "since": "2026-10-23"
+  },
+  "fiuu/fiuu-cheatsheet": {
+    "url": "https://raw.githubusercontent.com/FiuuPayment/Cheatsheet-BestPractices-Fiuu_API/HEAD/README.md",
+    "sha256": "2a8352b7dbeecdb91ccada4dc2d294de76e72cca1af2c3cc0059034522215f2c",
+    "chars": 17465,
+    "since": "2026-10-23"
+  },
+  "fiuu/fiuu-php-sdk": {
+    "url": "https://raw.githubusercontent.com/FiuuPayment/SDK-Fiuu_PHP/HEAD/src/lib/Payment.php",
+    "sha256": "7c57950a42bad32aba46ba61bbef36178505254635822776b4e096570a4afb06",
+    "chars": 1397,
+    "since": "2026-10-23"
+  },
+  "fiuu/fiuu-woocommerce-gateway": {
+    "url": "https://raw.githubusercontent.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce/HEAD/WooCommerce/woocommerce_rms_normal/class-gateway.php",
+    "sha256": "e27d0b6ada7730156887e2e5c6d3c4e88c37d08a74f6120ca24b27bd0487ec53",
+    "chars": 33277,
+    "since": "2026-10-23"
+  },
+  "fiuu/spec-pdf-listing": {
+    "url": "https://api.github.com/repos/FiuuPayment/Documentation-Fiuu_API_Spec/contents",
+    "sha256": "72a571339e1d78e16ef170be8b5fb6a90a136cdf76b665d7982e8ba255cb1690",
+    "chars": 16216,
+    "since": "2026-10-23"
+  },
+  "gkash/android-hosts": {
+    "url": "https://raw.githubusercontent.com/gkashmy/gkash-android-sdk/HEAD/gkash-android-sdk/src/main/java/com/gkash/gkashandroidsdk/GkashPayment.java",
+    "sha256": "e8ce7658f356852b5d8f855e179af974582b73fda6461fd58e713a8eb524415e",
+    "chars": 4310,
+    "since": "2026-10-23"
+  },
+  "gkash/android-response-sig": {
+    "url": "https://raw.githubusercontent.com/gkashmy/gkash-android-sdk/HEAD/gkash-android-sdk/src/main/java/com/gkash/gkashandroidsdk/PaymentResponse.java",
+    "sha256": "514a876a301a56d013b28d543fc534d01d0f8a370da18a77e49a5801164ed9bc",
+    "chars": 1260,
+    "since": "2026-10-23"
+  },
+  "gkash/ios-request-sig": {
+    "url": "https://raw.githubusercontent.com/gkashmy/gkash-ios-sdk/HEAD/GkashPayment/PaymentRequest.swift",
+    "sha256": "62b4c71447d949a19d5d8aa2d98c1b10b400fa9e0fb72e1f5afd84b6ed801a85",
+    "chars": 4245,
+    "since": "2026-10-23"
+  },
+  "gkash/woo-gkash-plugin": {
+    "url": "https://plugins.svn.wordpress.org/woo-gkash/trunk/wc-gkash.php",
+    "sha256": "7a63e1c19189e004c13cdce5c76f65084ef156d3892873aa09056e9f82baf3e7",
+    "chars": 21885,
+    "since": "2026-10-23"
+  },
+  "hitpay/online-payments-md": {
+    "url": "https://docs.hitpayapp.com/apis/guide/online-payments.md",
+    "sha256": "701c2bf6add9628107a63fc0b70e1c0aca14db5628086a90c3e4ce7419ae86fd",
+    "chars": 13268,
+    "since": "2026-10-23"
+  },
+  "hitpay/openapi": {
+    "url": "https://docs.hitpayapp.com/openapi.json",
+    "sha256": "0f7f6e5df411f9d1223e25124b9495a5678c374cfd4717a681ba99c4e1dc4492",
+    "chars": 362290,
+    "since": "2026-10-23"
+  },
+  "hitpay/php-sdk-client": {
+    "url": "https://raw.githubusercontent.com/hit-pay/php-sdk/HEAD/src/Client.php",
+    "sha256": "40c8014f3d2970462dc440d453064151847df3442064df3e388b466ae7a79360",
+    "chars": 5337,
+    "since": "2026-10-23"
+  },
+  "hitpay/webhooks-md": {
+    "url": "https://docs.hitpayapp.com/apis/guide/events.md",
+    "sha256": "5813d6300eac6d97125582f733a18e17feed3b809679a66c8753dc99e07788c1",
+    "chars": 41457,
+    "since": "2026-10-23"
+  },
+  "ipay88/hmac-sha512-js": {
+    "url": "https://payment.ipay88.com.my/epayment/Security/hmac-sha512.js",
+    "sha256": "b4c38bd810de079f786c4c93a5129a01c1e8541fa778f4d2e3f501d4f1fbb7cf",
+    "chars": 9039,
+    "since": "2026-10-23"
+  },
+  "ipay88/hmac-signature-tool": {
+    "url": "https://payment.ipay88.com.my/epayment/testing/TestSignatureIpay88.asp",
+    "sha256": "e3ac4e7a20402c399ad63af8eeaf332139cd51dad85e54021197d60bcb683bb8",
+    "chars": 562,
+    "since": "2026-10-23"
+  },
+  "ipay88/sha256-signature-tool": {
+    "url": "https://payment.ipay88.com.my/epayment/testing/testsignature_256.asp",
+    "sha256": "089059a187de4918582e8a63bb909b7154ca8d747992a28e4307eefbeaaad11d",
+    "chars": 463,
+    "since": "2026-10-23"
+  },
   "stripe/checkout-create": {
     "url": "https://docs.stripe.com/api/checkout/sessions/create.md",
     "sha256": "3a9250dbab14917fa17471987ce88c33d190c7fcacd6f524a75812597694039b",
@@ -69,6 +237,30 @@
     "url": "https://toyyibpay.com/apireference/",
     "sha256": "486909c4e86c0e67d29424663ff4dcf53fa7916d0941c9ea7fa1a96a19f94d71",
     "chars": 24289,
+    "since": "2026-10-23"
+  },
+  "xendit/create-session-openapi": {
+    "url": "https://docs.xendit.co/apidocs/create-session.md",
+    "sha256": "436303ec811ace8ea4541d60248a6452274d94966732ee3bac04a5d92f86755e",
+    "chars": 42208,
+    "since": "2026-10-23"
+  },
+  "xendit/payment-webhook-openapi": {
+    "url": "https://docs.xendit.co/apidocs/payment-webhook-notification.md",
+    "sha256": "6f042bbfb90f396ac12ca0e0ef50ded85ab41de02db5e4feb06602c1af716243",
+    "chars": 19384,
+    "since": "2026-10-23"
+  },
+  "xendit/xendit-ai-sessions": {
+    "url": "https://raw.githubusercontent.com/xendit/xendit-ai/HEAD/skills/xendit-integrate/references/sessions.md",
+    "sha256": "aaeb17302dce3b27a5dafc7e1feec9004acb3901300e8cd2098f074923cef838",
+    "chars": 6097,
+    "since": "2026-10-23"
+  },
+  "xendit/xendit-ai-skill": {
+    "url": "https://raw.githubusercontent.com/xendit/xendit-ai/HEAD/skills/xendit-integrate/SKILL.md",
+    "sha256": "6158785d9214f249f001d75c45277f5cbd23d2824749d90f66d587eaaf472c72",
+    "chars": 7095,
     "since": "2026-10-23"
   }
 }

@@ -229,51 +229,311 @@
     },
     {
       "id": "ipay88",
-      "name": "iPay88 (now NTT DATA Pay)",
+      "name": "NTT DATA Payment Services Malaysia (formerly iPay88) — iPay88 OPSG / ADAPTIS e-Commerce",
       "site": "https://my.nttdatapay.com",
-      "sources": [],
+      "sandbox": "No public sandbox documentation. Host https://sandbox.ipay88.com.my/epayment/entry.asp answers but is undocumented in public material; the iPay88-authored spec (not officially hosted) says test against production https://payment.ipay88.com.my/epayment/entry.asp with MYR 1.00 from the Request URL registered with iPay88 support (localhost not allowed).",
+      "sources": [
+        {
+          "id": "hmac-signature-tool",
+          "title": "iPay88 Signature Testing tool (SHA-1 / SHA-256 / HMAC-SHA512) on the live gateway host",
+          "url": "https://payment.ipay88.com.my/epayment/testing/TestSignatureIpay88.asp",
+          "mustContain": ["HMAC-SHA512", "HMAC-SHA512 only", "String to Hash"]
+        },
+        {
+          "id": "hmac-sha512-js",
+          "title": "Gateway's own HMAC-SHA512 helper used by the signature tool (CryptoJS HmacSHA512, hex output)",
+          "url": "https://payment.ipay88.com.my/epayment/Security/hmac-sha512.js",
+          "mustContain": ["GetHmacSHA512", "CryptoJS.HmacSHA512"]
+        },
+        {
+          "id": "sha256-signature-tool",
+          "title": "iPay88 SHA-256 Signature Testing tool (legacy request signature)",
+          "url": "https://payment.ipay88.com.my/epayment/testing/testsignature_256.asp",
+          "mustContain": ["iPay88 SHA-256 Signature Testing", "should take out"]
+        }
+      ],
       "adapter": null,
-      "spec": false
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "The signature is HMAC-SHA512 (lower-case hex, 128 chars) keyed with the MerchantKey, but the MerchantKey is ALSO the first part of the hashed message (key+code+refno+amount+currency), so a 'normal' HMAC over the fields alone will never match.",
+          "source": "https://payment.ipay88.com.my/epayment/testing/TestSignatureIpay88.asp lines 35 and 46 (strBeforehash = MerchantKey + ...; GetHmacSHA512(strBeforehash, MerchantKey))"
+        },
+        {
+          "text": "Amount is posted in ringgit with two decimals (e.g. 1.00) but must be signed with '.' and ',' removed (100); the gateway's own tool removes only the FIRST '.' and FIRST ',' (JS String.replace), so amounts with two thousands separators (1,000,000.00) give a different string there than a full strip.",
+          "source": "https://payment.ipay88.com.my/epayment/testing/TestSignatureIpay88.asp line 31"
+        },
+        {
+          "text": "enquiry.asp answers with a bare text/html body, not JSON: only the exact string '00' means paid; 'Invalid parameters' and 'Record not found' are returned with HTTP 200.",
+          "source": "https://payment.ipay88.com.my/epayment/enquiry.asp (live probe 2026-10-23: empty POST -> 'Invalid parameters', unknown RefNo -> 'Record not found', both HTTP 200)"
+        }
+      ]
     },
     {
       "id": "fiuu",
-      "name": "Fiuu",
+      "name": "Fiuu (formerly Razer Merchant Services / MOLPay)",
       "site": "https://fiuu.com",
-      "sources": [],
+      "sandbox": "Separate sandbox account (merchant ID typically SB_xxx, own verify/secret key); swap hosts pay.fiuu.com -> sandbox-payment.fiuu.com and api.fiuu.com -> sandbox-api.fiuu.com; demo bank needs your IP whitelisted in the sandbox portal",
+      "sources": [
+        {
+          "id": "spec-pdf-listing",
+          "title": "Official API spec repository (file list with a hash per PDF; a new or changed spec PDF changes it)",
+          "url": "https://api.github.com/repos/FiuuPayment/Documentation-Fiuu_API_Spec/contents",
+          "mustContain": ["Fiuu API Spec for Merchant", "\"sha\""]
+        },
+        {
+          "id": "fiuu-woocommerce-gateway",
+          "title": "Official Fiuu WooCommerce plugin gateway class (skey verify, vcode, IPN ack, requery)",
+          "url": "https://raw.githubusercontent.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce/HEAD/WooCommerce/woocommerce_rms_normal/class-gateway.php",
+          "mustContain": ["CBTOKEN:MPSTATOK", "returnipn.php", "verifySkey"]
+        },
+        {
+          "id": "fiuu-php-sdk",
+          "title": "Official Fiuu PHP SDK Payment.php (hosts, vcode, skey verification)",
+          "url": "https://raw.githubusercontent.com/FiuuPayment/SDK-Fiuu_PHP/HEAD/src/lib/Payment.php",
+          "mustContain": ["sandbox-payment.fiuu.com", "verifySignature", "vcode"]
+        },
+        {
+          "id": "fiuu-cheatsheet",
+          "title": "Fiuu API Cheatsheet & Best Practices (official)",
+          "url": "https://raw.githubusercontent.com/FiuuPayment/Cheatsheet-BestPractices-Fiuu_API/HEAD/README.md",
+          "mustContain": ["x-www-form-urlencoded", "maximum of 4 retries", "Notification URL"]
+        },
+        {
+          "id": "fiuu-api-spec-readme",
+          "title": "Fiuu API Spec repository README (index of the official PDF spec v13.97)",
+          "url": "https://raw.githubusercontent.com/FiuuPayment/Documentation-Fiuu_API_Spec/HEAD/README.md",
+          "mustContain": ["API Specification documents", "Razer API Spec for Merchant", "Recurring API"]
+        }
+      ],
       "adapter": null,
-      "spec": false
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "The callback skey is a double MD5 over the raw POSTed strings, keyed with the SECRET key (not the verify key): md5(paydate.domain.md5(tranID.orderid.status.domain.amount.currency).appcode.secret_key).",
+          "source": "API Spec v13.97 PDF p.20 (pdf page 21); WooCommerce class-gateway.php L1060-1077"
+        },
+        {
+          "text": "Callback URL must ACK with plain-text CBTOKEN:MPSTATOK while return/notification URLs ACK by re-POSTing all fields plus treq=1 to returnipn.php; retry count is 3 in the spec but 4 in the cheatsheet.",
+          "source": "API Spec v13.97 PDF p.52-59 (pdf 53-60); Cheatsheet README L38"
+        },
+        {
+          "text": "When 'extended vcode' is enabled in the portal the currency must be appended to the vcode hash, but the official PHP SDK never appends it, so its payment links fail with error P03.",
+          "source": "API Spec v13.97 PDF p.18-19 (pdf 19-20); SDK-Fiuu_PHP src/lib/Payment.php L36"
+        },
+        {
+          "text": "Callback currency can arrive as 'RM' instead of 'MYR' (the official plugin normalises it), so compare currencies after normalising but hash the raw value.",
+          "source": "WooCommerce class-gateway.php L977-978"
+        }
+      ]
     },
     {
       "id": "2c2p",
       "name": "2C2P",
       "site": "https://2c2p.com",
-      "sources": [],
+      "sandbox": "https://sandbox-pgw.2c2p.com (production https://pgw.2c2p.com); public demo merchant for Malaysia JT07/MYR with a published secret key",
+      "sources": [
+        {
+          "id": "jwt-guide",
+          "title": "JWT (Generate / Decode JWT) - HS256 sample with secret key and expected token",
+          "url": "https://developer.2c2p.com/docs/json-web-tokens-jwt.md",
+          "mustContain": ["1F4EDB965BBB3094", "ElmhOULUdK63FnriSs2XyhH1LxULoTVIopTUuQ77DvA", "HMAC SHA256"]
+        },
+        {
+          "id": "backend-notification",
+          "title": "Payment Response (Backend) - JSON {payload: JWT} POST to backendReturnUrl",
+          "url": "https://developer.2c2p.com/docs/api-payment-response-backend.md",
+          "mustContain": ["Payment Response (Backend)", "280520075921", "backend responses"]
+        },
+        {
+          "id": "payment-token-params",
+          "title": "Payment Token Request Parameters (amount, invoiceNo, paymentExpiry, return URLs, idempotencyID)",
+          "url": "https://developer.2c2p.com/docs/api-payment-token-request-parameter.md",
+          "mustContain": ["backendReturnUrl", "paymentExpiry", "idempotencyID"]
+        },
+        {
+          "id": "sandbox-setup",
+          "title": "Sandbox Setup - base URLs, JWT auth, first API call",
+          "url": "https://developer.2c2p.com/docs/sandbox-setup.md",
+          "mustContain": ["sandbox-pgw.2c2p.com", "pgw.2c2p.com", "Go Live Checklist"]
+        }
+      ],
       "adapter": null,
-      "spec": false
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "The JWT HMAC key is the secret-key hex string used as ASCII bytes (not hex-decoded), and the official response-decoding recipe verifies a token with the JT01 key although that token is actually signed with the JT04 key, so copy-pasted sample code fails.",
+          "source": "https://developer.2c2p.com/docs/json-web-tokens-jwt.md L44-47; https://developer.2c2p.com/recipes/process-response-payload-with-jwt.md L78-91 (verified locally)"
+        },
+        {
+          "text": "Only the backend notification (JSON {payload: HS256 JWT}) is signed; the frontendReturnUrl POST is unsigned base64 form data (paymentResponse=...) whose respCode 2000 only means 'do a payment inquiry', so it must never mark an order paid.",
+          "source": "https://developer.2c2p.com/docs/api-payment-response-frontend.md L21-29; https://developer.2c2p.com/docs/response-code-payment-flow.md"
+        },
+        {
+          "text": "The official WooCommerce plugin (2026 build v8.1.0) does not use the documented v4 JWT API but legacy RedirectV3 with an HMAC-SHA256 concatenated-field hash and 12-digit zero-padded minor-unit amounts, while the v4 API expects decimal major units (e.g. 2500.90000), so do not port amount or signing logic from the plugin.",
+          "source": "wordpress-2c2p-build20260612.zip: 2c2p_woocommerce_new/2c2p.php L191, Includes/wc-2c2p-hash-helper.php L15-87, Includes/wc-2c2p-validation-helper.php L59-89 vs https://developer.2c2p.com/docs/api-payment-token-request-parameter.md L146"
+        },
+        {
+          "text": "Docs disagree on the API version path (4.3 in Sandbox Setup and the OpenAPI reference, 4.5 on the Payment Token and Payment Inquiry pages); both answer on sandbox, so pin one version explicitly and keep it in config.",
+          "source": "https://developer.2c2p.com/docs/sandbox-setup.md L68; https://developer.2c2p.com/docs/api-payment-token.md L18-21"
+        }
+      ]
     },
     {
       "id": "curlec",
-      "name": "Curlec",
+      "name": "Razorpay Curlec",
       "site": "https://curlec.com",
-      "sources": [],
+      "sandbox": "No separate host: https://api.razorpay.com/v1 for both; Test mode = Test-mode API key pair generated on the Dashboard (mock bank page with Success/Failure buttons)",
+      "sources": [
+        {
+          "id": "checkout-integration-steps",
+          "title": "Standard Checkout Integration Steps (order -> checkout -> payment signature)",
+          "url": "https://curlec.com/docs/payments/payment-gateway/web-integration/standard/integration-steps.md",
+          "mustContain": ["hmac_sha256(order_id", "EnLs21M47BllR3X8PSFtjtbd", "in sen"]
+        },
+        {
+          "id": "webhooks-validate",
+          "title": "Validate and Test Webhooks (X-Razorpay-Signature, idempotency)",
+          "url": "https://curlec.com/docs/webhooks/validate-test.md",
+          "mustContain": ["X-Razorpay-Signature", "x-razorpay-event-id", "Do Not Parse or Cast"]
+        },
+        {
+          "id": "orders-create",
+          "title": "Create an Order API",
+          "url": "https://curlec.com/docs/api/orders/create.md",
+          "mustContain": ["MYR 1.00", "order_RB58MiP5SPFYyM", "receipt"]
+        },
+        {
+          "id": "node-sdk-utils",
+          "title": "razorpay-node signature utilities (official SDK linked from Curlec docs)",
+          "url": "https://raw.githubusercontent.com/razorpay/razorpay-node/HEAD/lib/utils/razorpay-utils.js",
+          "mustContain": ["validateWebhookSignature", "paymentLinkRefId", "createHmac"]
+        }
+      ],
       "adapter": null,
-      "spec": false
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "The official Node webhook sample verifies JSON.stringify(parsedBody), but the signature is HMAC-SHA256 over the RAW body bytes, so re-serialising breaks verification.",
+          "source": "https://curlec.com/docs/webhooks/validate-test.md L134 vs L155-159"
+        },
+        {
+          "text": "Webhooks are signed with the Dashboard webhook secret, while the checkout/callback razorpay_signature is HMAC-SHA256(order_id|payment_id) keyed with the API key secret, and order_id must be your stored one, not the posted one.",
+          "source": "https://curlec.com/docs/webhooks/setup-edit-payments.md L44-45; checkout integration-steps.md L624-640"
+        },
+        {
+          "text": "An authorized payment that is not captured within 3 days is auto-refunded, and auto-capture applies only to payments created through the Orders API.",
+          "source": "https://curlec.com/docs/payments/payments/capture-settings.md L24, L37"
+        },
+        {
+          "text": "Docs say a failed attempt needs a NEW order and that receipt must be unique, yet the official WooCommerce plugin reuses the order and repeats the receipt, so test retry behaviour yourself.",
+          "source": "https://curlec.com/docs/api/orders/create.md L19-21, L359-365 vs razorpay-woocommerce woo-razorpay.php L1188-1210, L1569"
+        }
+      ]
     },
     {
       "id": "hitpay",
       "name": "HitPay",
       "site": "https://hitpayapp.com/my/",
-      "sources": [],
+      "sandbox": "https://api.sandbox.hit-pay.com (separate sandbox account at dashboard.sandbox.hit-pay.com, Singapore business only; own API key and salts; production https://api.hit-pay.com)",
+      "sources": [
+        {
+          "id": "openapi",
+          "title": "HitPay API OpenAPI 3.1 spec",
+          "url": "https://docs.hitpayapp.com/openapi.json",
+          "mustContain": ["X-BUSINESS-API-KEY", "/v1/payment-requests", "api.sandbox.hit-pay.com"]
+        },
+        {
+          "id": "webhooks-md",
+          "title": "Webhooks (event webhooks + validation, Markdown export)",
+          "url": "https://docs.hitpayapp.com/apis/guide/events.md",
+          "mustContain": ["Hitpay-Signature", "Per-webhook salt", "API-key salt"]
+        },
+        {
+          "id": "online-payments-md",
+          "title": "Online Payments guide (Markdown export)",
+          "url": "https://docs.hitpayapp.com/apis/guide/online-payments.md",
+          "mustContain": ["X-BUSINESS-API-KEY", "deprecated", "redirect_url"]
+        },
+        {
+          "id": "php-sdk-client",
+          "title": "Official PHP SDK Client.php (v1 hmac generateSignatureArray)",
+          "url": "https://raw.githubusercontent.com/hit-pay/php-sdk/HEAD/src/Client.php",
+          "mustContain": ["generateSignatureArray", "ksort", "api.sandbox.hit-pay.com"]
+        }
+      ],
       "adapter": null,
-      "spec": false
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "Two signing schemes with two different salts coexist: legacy per-request `webhook` callbacks are form-encoded with an `hmac` field = HMAC-SHA256(API-key salt, sorted key+value concat without hmac), while dashboard event webhooks are JSON with a `Hitpay-Signature` header = HMAC-SHA256(per-webhook salt, raw body).",
+          "source": "https://docs.hitpayapp.com/apis/guide/events.md lines 1490-1534; php-sdk src/Client.php lines 79-88"
+        },
+        {
+          "text": "The Online Payments guide's Express sample signs JSON.stringify(req.body) instead of the raw body, which can fail on genuine webhooks; verify over the raw request bytes.",
+          "source": "https://docs.hitpayapp.com/apis/guide/online-payments.md line 293 vs events.md (express.raw)"
+        },
+        {
+          "text": "The `webhook` create parameter is called deprecated in the guide, yet the OpenAPI does not mark it and the official WooCommerce plugin still relies on it and its v1 hmac.",
+          "source": "online-payments.md lines 311-313; https://raw.githubusercontent.com/hit-pay/woocommerce/HEAD/hitpay-payment-gateway/includes/regular-checkout.php lines 1452, 1683"
+        },
+        {
+          "text": "Sandbox accounts must be Singapore businesses and do not list FPX, DuitNow or Touch 'n Go, so Malaysian methods cannot be exercised end-to-end before production.",
+          "source": "https://docs.hitpayapp.com/apis/guide/sandbox.md lines 17-21"
+        }
+      ]
     },
     {
       "id": "gkash",
       "name": "Gkash",
       "site": "https://gkash.com",
-      "sources": [],
+      "sandbox": "https://api-staging.pay.asia (separate staging host; production https://api.gkash.my is named only in the official plugin/SDKs, not in doc.gkash.my)",
+      "sources": [
+        {
+          "id": "woo-gkash-plugin",
+          "title": "Official WooCommerce Gkash plugin (wc-gkash.php, trunk = v1.3.0)",
+          "url": "https://plugins.svn.wordpress.org/woo-gkash/trunk/wc-gkash.php",
+          "mustContain": ["api.gkash.my", "signature_amount", "gk_notify_url"]
+        },
+        {
+          "id": "android-response-sig",
+          "title": "gkashmy Android SDK PaymentResponse.java (return signature)",
+          "url": "https://raw.githubusercontent.com/gkashmy/gkash-android-sdk/HEAD/gkash-android-sdk/src/main/java/com/gkash/gkashandroidsdk/PaymentResponse.java",
+          "mustContain": ["generateSignature", "SHA-512", "POID"]
+        },
+        {
+          "id": "android-hosts",
+          "title": "gkashmy Android SDK GkashPayment.java (staging/production hosts)",
+          "url": "https://raw.githubusercontent.com/gkashmy/gkash-android-sdk/HEAD/gkash-android-sdk/src/main/java/com/gkash/gkashandroidsdk/GkashPayment.java",
+          "mustContain": ["api.gkash.my", "api-staging.pay.asia", "setProductionEnvironment"]
+        },
+        {
+          "id": "ios-request-sig",
+          "title": "gkashmy iOS SDK PaymentRequest.swift (request signature, hosts)",
+          "url": "https://raw.githubusercontent.com/gkashmy/gkash-ios-sdk/HEAD/GkashPayment/PaymentRequest.swift",
+          "mustContain": ["CC_SHA512", "api.gkash.my", "%.2f"]
+        }
+      ],
       "adapter": null,
-      "spec": false
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "The signed amount is the 2-decimal ringgit string with the dot removed and the leading zero kept (0.10 becomes \"010\", not integer sen 10).",
+          "source": "https://doc.gkash.my/v2/web-payments#web-payments-create-checkout-session; wc-gkash.php L378-382"
+        },
+        {
+          "text": "The callback signature covers the full uppercased status text (\"88 - TRANSFERRED\") and the amount Gkash sends, so verify with the raw posted values and separately compare amount/currency with the order.",
+          "source": "https://doc.gkash.my/v2/web-payments#web-payments-handle-server-callback; wc-gkash.php L398-412, L517-524"
+        },
+        {
+          "text": "Query and refund responses carry no signature, so a query cannot be authenticated beyond TLS and has no paid-time field.",
+          "source": "https://doc.gkash.my/query-transaction-status#handle-query-response; https://doc.gkash.my/refund#handle-refund-response"
+        },
+        {
+          "text": "Docs say version \"1.5.5\" while the official plugin and all SDKs send \"1.5.0\", and the production host api.gkash.my appears only in plugin/SDK code.",
+          "source": "https://doc.gkash.my/v2/web-payments#web-payments-create-checkout-session; wc-gkash.php L137-142, L280"
+        }
+      ]
     },
     {
       "id": "adyen",
@@ -290,6 +550,114 @@
       "sources": [],
       "adapter": null,
       "spec": false
+    },
+    {
+      "id": "xendit",
+      "name": "Xendit",
+      "site": "https://www.xendit.co",
+      "sandbox": "No separate host: https://api.xendit.co for both; test mode is selected by the API key (xnd_development_... = test, xnd_production_... = live), each mode has its own webhook token",
+      "sources": [
+        {
+          "id": "create-session-openapi",
+          "title": "Create a session (Payment Sessions API, embedded OpenAPI 3.0)",
+          "url": "https://docs.xendit.co/apidocs/create-session.md",
+          "mustContain": ["createSession", "payment_link_url", "success_return_url"]
+        },
+        {
+          "id": "payment-webhook-openapi",
+          "title": "Payment webhook notification (embedded OpenAPI, x-callback-token header)",
+          "url": "https://docs.xendit.co/apidocs/payment-webhook-notification.md",
+          "mustContain": ["x-callback-token", "payment.capture"]
+        },
+        {
+          "id": "xendit-ai-skill",
+          "title": "xendit/xendit-ai skill: auth, test mode, webhooks",
+          "url": "https://raw.githubusercontent.com/xendit/xendit-ai/HEAD/skills/xendit-integrate/SKILL.md",
+          "mustContain": ["xnd_development_", "x-callback-token", "Respond with a 200"]
+        },
+        {
+          "id": "xendit-ai-sessions",
+          "title": "xendit/xendit-ai skill: Sessions API reference",
+          "url": "https://raw.githubusercontent.com/xendit/xendit-ai/HEAD/skills/xendit-integrate/references/sessions.md",
+          "mustContain": ["not_ in minor units", "payment_session.completed"]
+        }
+      ],
+      "adapter": null,
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "Webhooks carry no HMAC or signature: authentication is a static per-environment token in the x-callback-token header that must be compared with the dashboard token, so also re-check amount and status against your own record or a GET.",
+          "source": "https://docs.xendit.co/docs/handling-webhooks.md L30; https://docs.xendit.co/docs/integration-security.md L31-39"
+        },
+        {
+          "text": "Amounts are in major units (RM 150 = 150, decimals allowed), not sen.",
+          "source": "https://raw.githubusercontent.com/xendit/xendit-ai/HEAD/skills/xendit-integrate/references/sessions.md L26"
+        },
+        {
+          "text": "Fulfil on payment.capture rather than on the session status: a payment can still be collected after a session is cancelled or expired, and the session status will not change.",
+          "source": "https://raw.githubusercontent.com/xendit/xendit-ai/HEAD/skills/xendit-integrate/references/sessions.md L82, L103"
+        },
+        {
+          "text": "Cancel spelling differs by object: sessions and payments use CANCELED while refunds use CANCELLED, so exact string matching misses one of them.",
+          "source": "https://docs.xendit.co/apidocs/get-session.md #/components/schemas/Payment_Session_SessionStatus; https://docs.xendit.co/apidocs/refund-payment-request.md #/components/schemas/Payments_API_RefundStatus"
+        }
+      ]
+    },
+    {
+      "id": "eghl",
+      "name": "eGHL (now ADAPTIS e-Commerce by NTT DATA Payment Services Sdn Bhd, formerly GHL Systems)",
+      "site": "https://my.nttdatapay.com",
+      "sandbox": "Separate test host https://pay.e-ghl.com/IPGSG/payment.aspx (production https://securepay.e-ghl.com/IPG/Payment.aspx); public test merchant ServiceID=SIT, password sit12345",
+      "sources": [
+        {
+          "id": "eghl-hash-lib",
+          "title": "eGHL official hashing class (field lists for SALE/QUERY/HASHVALUE/HASHVALUE2)",
+          "url": "https://bitbucket.org/eghl/eghl_hash/raw/HEAD/eGHL_HASH.php",
+          "mustContain": ["HASHVALUE2", "MerchantCallBackURL", "sha256"]
+        },
+        {
+          "id": "omnipay-test-vector",
+          "title": "eGHL Omnipay driver test with signed response (HashValue + HashValue2 test vector)",
+          "url": "https://bitbucket.org/eghl/eghl-omnipay/raw/HEAD/tests/GatewayTest.php",
+          "mustContain": [
+            "sit12345",
+            "b09dd0905ab5d25be8d0d00d5bc5f556befb9d9a5a88c0eca87b2e504fc9667d",
+            "SIT15434756362e18a914ef"
+          ]
+        },
+        {
+          "id": "merchantapi-base",
+          "title": "eGHL merchant-api base class (hosts, form POST, urlencoded response, TxnStatus 0/1/2)",
+          "url": "https://bitbucket.org/eghl/merchantapi/raw/HEAD/src/core/APIBase.php",
+          "mustContain": ["securepay.e-ghl.com", "pay.e-ghl.com", "RSALE"]
+        },
+        {
+          "id": "merchantapi-query",
+          "title": "eGHL merchant-api Query (extended TxnStatus codes, TxnExists)",
+          "url": "https://bitbucket.org/eghl/merchantapi/raw/HEAD/src/Query.php",
+          "mustContain": ["isPendingByBank", "TxnExists", "isReversalPending"]
+        }
+      ],
+      "adapter": null,
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "Official plugins disagree on the HashValue2 field list: eGHL_HASH and WHMCS hash ...OrderNumber+Param6+Param7, Magento 2.1.7 omits Param7, and OpenCart omits both Param6 and Param7, so a callback carrying Param7 fails verification in some plugins.",
+          "source": "bitbucket.org/eghl/eghl_hash eGHL_HASH.php line 2 vs bitbucket.org/eghl/adaptis-magento @faacfb1 zip Controller/Index/ResponseHandler.gte_m230.php:623-646 vs bitbucket.org/eghl/adaptis-opencart @38c0db3 zip catalog/controller/payment/ghl.php:206"
+        },
+        {
+          "text": "The signature is plain SHA-256 over MerchantPassword concatenated with the field values (no separator, not HMAC), and the official hash class silently returns sha256(password) alone when a mandatory field is missing.",
+          "source": "https://bitbucket.org/eghl/eghl_hash/raw/HEAD/eGHL_HASH.php"
+        },
+        {
+          "text": "The server callback must answer with the plain body 'OK'; the browser return URL and the server callback receive the same fields, so both must verify the hash and be idempotent.",
+          "source": "https://bitbucket.org/eghl/eghl-omnipay/raw/HEAD/README.md (lines 37-38, 96)"
+        },
+        {
+          "text": "Amount is ringgit as a string with exactly two decimals and no comma ('10.00', not sen), and the query must repeat the original Amount and CurrencyCode exactly or it will not find the transaction.",
+          "source": "https://bitbucket.org/eghl/paramvalidator/raw/HEAD/src/core/validatorBase.php (isValidAmount) + https://bitbucket.org/eghl/merchantapi/raw/HEAD/README.md"
+        }
+      ]
     }
   ]
 }
