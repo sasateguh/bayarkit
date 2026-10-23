@@ -1,0 +1,18 @@
+name: gate
+# Private-repo CI (D21 gilap): started by ~/bin/gerbang-depot.sh, never by push, so it cannot double-run with Actions.
+on:
+  workflow_dispatch:
+
+jobs:
+  gate:
+    runs-on: depot-ubuntu-24.04
+    env:
+      NO_COLOR: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: bash scripts/gate.sh

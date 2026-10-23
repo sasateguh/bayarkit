@@ -45,3 +45,9 @@ CHIP: RSA atas badan MENTAH; Stripe: `Stripe-Version` dipin + `allowed_payment_m
 3–4 sabotaj setiap satu. Pilihan bila spesifikasi UNCONFIRMED direkod dalam komen kepala setiap adapter (bukan di
 sini). Ujian asap kini satu gelung: setiap gateway menolak callback awal, mengesahkan yang dibayar, menolak yang
 dipalsu — daripada tarball yang dibungkus. Sabotaj silang (confirmPayment percaya callback) = 5/5 gateway gagal.
+
+**D10 — 23 Okt 2026 — Keselamatan = pengimbas Perisai dijalankan terus (`scripts/security.sh`), bukan sasaran Perisai.**
+Kenapa: Perisai menyasarkan laman HIDUP (kontena origin + domain); bayarkit pustaka tanpa origin, dan profil baharu dalam
+Perisai = menyentuh sistem kongsi. Dasar sama (`polisi.yaml`): semgrep p/default+owasp-top-ten+typescript, had 60 s, 0 tamat
+masa, fail diimbas > 0. Dibuktikan: `eval` ditanam → ditangkap. Penemuan pertama (regex dari data `ignore`, ReDoS) dibaiki
+dengan MEMBUANG ciri yang tidak dipakai. CI Actions dilangkau bila repo private (`if: !private`), Depot semasa private.

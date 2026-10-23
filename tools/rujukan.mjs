@@ -46,10 +46,6 @@ export function normalise(body, contentType = '') {
   return s.replace(/\s+/g, ' ').trim()
 }
 
-export function applyIgnores(text, ignore = []) {
-  return ignore.reduce((t, pattern) => t.replace(new RegExp(pattern, 'g'), ''), text)
-}
-
 const fingerprint = (text) => createHash('sha256').update(text).digest('hex')
 
 async function fetchSource(source) {
@@ -59,7 +55,8 @@ async function fetchSource(source) {
     signal: AbortSignal.timeout(30_000),
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  const text = applyIgnores(normalise(await res.text(), res.headers.get('content-type') ?? ''), source.ignore)
+  // No per-source ignore patterns: none was needed (12/12 sources stable), and regexes from data invite ReDoS.
+  const text = normalise(await res.text(), res.headers.get('content-type') ?? '')
   if (text.length < 200) throw new Error(`only ${text.length} characters of text (JavaScript-rendered page?)`)
   // A shell page (JavaScript-rendered docs, a login wall, a GitBook landing page) can be long and still say nothing.
   const missing = (source.mustContain ?? []).filter((w) => !text.includes(w))
