@@ -8,7 +8,8 @@
       "!**/coverage",
       "!skills",
       "!gateways/README.md",
-      "!gateways/**/*.md"
+      "!gateways/**/*.md",
+      "!packages/*/README.md"
     ]
   },
   "formatter": {

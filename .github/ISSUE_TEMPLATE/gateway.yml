@@ -1,0 +1,18 @@
+name: Gateway request / Permintaan gateway
+description: A Malaysian gateway bayarkit should support. / Gateway Malaysia yang patut disokong bayarkit.
+labels: [gateway]
+body:
+  - type: input
+    id: gateway
+    attributes:
+      label: Gateway and its official developer docs / Gateway dan dokumen pembangun rasminya
+      placeholder: "Name — https://… (official docs, OpenAPI or SDK; no blog posts)"
+    validations:
+      required: true
+  - type: checkboxes
+    id: access
+    attributes:
+      label: What you can offer / Apa yang anda boleh bantu
+      options:
+        - label: A sandbox account to measure against (keys stay with you) / Akaun sandbox untuk diukur (kunci kekal pada anda)
+        - label: A pull request following CONTRIBUTING.md / Pull request mengikut CONTRIBUTING.md

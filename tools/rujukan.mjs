@@ -4,7 +4,8 @@
  *
  *   node tools/rujukan.mjs check [--update] [--only <id>]   fetch every official source, compare with sources.lock.json
  *   node tools/rujukan.mjs lint                            offline: registry ↔ adapters ↔ specs ↔ generated skills agree
- *   node tools/rujukan.mjs skills [--check]                generate skills/<id>/SKILL.md from registry + spec
+ *   node tools/rujukan.mjs skills [--check]                generate skills/<id>/SKILL.md, README tables and every
+ *                                                          package's package.json metadata + README (tools/pakej.mjs)
  *
  * The public repo stores only fingerprints (sha256 of the normalised text) and dates: third-party documentation is
  * copyrighted, so full snapshots and diffs go to a private directory (RUJUKAN_SNAPSHOTS, default
@@ -19,6 +20,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, writeFi
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { packageFiles } from './pakej.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const REGISTRY = join(ROOT, 'gateways', 'registry.json')
@@ -379,7 +381,12 @@ function skills(args) {
   const registry = readJson(REGISTRY)
   const lock = readJson(LOCK, {})
   const stale = []
-  const files = [[join(ROOT, 'gateways', 'README.md'), coverage(registry, lock)], ...readmes(registry)]
+  const files = [
+    [join(ROOT, 'gateways', 'README.md'), coverage(registry, lock)],
+    ...readmes(registry),
+    // npm's view of every package (metadata + README), from the root package.json and the registry.
+    ...packageFiles(ROOT, registry),
+  ]
   for (const gw of registry.gateways) {
     // A skill without official sources would be guesswork; inventory-only gateways get none yet.
     if (!(gw.sources ?? []).length) continue

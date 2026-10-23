@@ -153,6 +153,10 @@ bayaran yang belum dibayar, atau callback yang dipalsukan) dan lihat setiap sema
 Setiap gateway ialah gateway palsu daripada `@bayarkit/testing`, jadi tiada kunci dan tiada wang terlibat. Sumber:
 [examples/demo](examples/demo/app.mjs).
 
+![Demo pada iPhone: halaman bayaran toyyibPay simulasi; callback dipalsukan ditolak pada semakan tandatangan, jadi gateway tidak ditanya pun; bayaran sebenar disahkan selepas gateway sendiri kata dibayar](docs/demo/demo.ms.png)
+
+<sub>Dijana semula daripada demo yang berjalan oleh `python3 scripts/demo-shot.py` (WebKit, iPhone 13).</sub>
+
 ## PHP dan Laravel
 
 [`php/`](php/README.ms.md) ialah kembar PHP untuk projek Laravel: antara muka yang sama dan peraturan `confirmPayment`
@@ -170,12 +174,20 @@ Tulis satu adapter dan satu gateway palsu, kemudian pastikan kedua-duanya lulus 
 bayarkit dibina dengan bantuan pengekodan AI (Claude Code) di bawah arahan pengarangnya, Muhammad Aiman.
 
 Bukti bahawa ia berfungsi boleh disemak:
-- Adapter datang daripada sistem pengarang sendiri: toyyibPay daripada checkout ERP yang diuji hujung ke hujung
-  terhadap sandbox toyyibPay (10 Oktober 2026); Bayarcash daripada checkout SaaS, ditulis daripada dokumen rasmi dan
-  belum dijalankan terhadap sandbox.
-- Set ujian, dijalankan dengan `npm run gate`, berjalan tanpa rangkaian terhadap gateway palsu, dan memasang pakej yang
-  dibungkus ke dalam projek kosong sebelum lulus.
-- `info.evidence` setiap adapter menyatakan sama ada ia diukur pada sandbox atau ditulis daripada dokumen sahaja.
+- toyyibPay datang daripada checkout ERP pengarang, diuji hujung ke hujung terhadap sandbox toyyibPay (10 Oktober
+  2026). Adapter lain ditulis daripada sumber rasmi setiap gateway, yang disenaraikan dengan sumber di sebelah setiap
+  fakta dalam `gateways/<id>/spec.md`; `info.evidence` menyatakan jenis setiap adapter.
+- Sumber rasmi dicap jari dan disemak setiap hari (`node tools/rujukan.mjs check`). Pada hari penuh pertama ia
+  menandakan enam halaman berubah: lima hanya menukar pautan mutlak dan relatif (kini diabaikan), satu ialah perubahan
+  sebenar pada API transaksi toyyibPay, yang kini diikut oleh gateway palsu dan kedua-dua adapter.
+- `npm run gate` berjalan tanpa rangkaian terhadap gateway palsu, memasang pakej yang dibungkus ke dalam projek kosong,
+  dan menjalankan kembar PHP terhadap gateway palsu yang sama. Ujian yang menjaga wang masing-masing disahkan dengan
+  merosakkan kod secara sengaja (ujian mesti gagal) sebelum dipercayai.
+- Penyemak bebas tanpa konteks kerja ini mengaudit kod baharu dan laluan setiap adapter ke "dibayar" (empat pusingan,
+  23 Oktober 2026). Tiada yang menemui cara menanda bayaran yang belum dibayar, separa, dipulangkan atau hanya
+  dibenarkan sebagai dibayar; laluan sampingan yang mereka temui disenaraikan di bawah "Fixed" dalam
+  [CHANGELOG.md](CHANGELOG.md), masing-masing dengan ujian yang gagal dahulu. Kembar TypeScript dan PHP sepakat pada
+  20,030 input rawak pada PHP 8.2, 8.3 dan 8.4.
 
 ## Lesen
 

@@ -2,8 +2,30 @@
   "name": "@bayarkit/chip",
   "version": "0.1.0",
   "description": "CHIP Collect (chip-in.asia) adapter for bayarkit.",
-  "type": "module",
+  "keywords": [
+    "payment",
+    "payment-gateway",
+    "malaysia",
+    "fpx",
+    "duitnow",
+    "webhook",
+    "checkout",
+    "typescript",
+    "chip"
+  ],
+  "homepage": "https://github.com/aimanmalib/bayarkit/tree/main/packages/chip#readme",
+  "bugs": {
+    "url": "https://github.com/aimanmalib/bayarkit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aimanmalib/bayarkit.git",
+    "directory": "packages/chip"
+  },
   "license": "MIT",
+  "author": "Muhammad Aiman (https://github.com/aimanmalib)",
+  "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -16,6 +38,10 @@
   ],
   "engines": {
     "node": ">=22.12.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json"

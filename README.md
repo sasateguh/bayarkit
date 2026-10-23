@@ -148,6 +148,10 @@ choose what happens on a simulated payment page (pay, a correctly signed callbac
 callback) and see each check `confirmPayment` makes. Every gateway is a fake from `@bayarkit/testing`, so no keys and
 no money are involved. Source: [examples/demo](examples/demo/app.mjs).
 
+![The demo on an iPhone: a simulated toyyibPay payment page; a forged callback refused at the signature check, so the gateway is never asked; a real payment confirmed after the gateway itself says paid](docs/demo/demo.png)
+
+<sub>Regenerated from the running demo by `python3 scripts/demo-shot.py` (WebKit, iPhone 13).</sub>
+
 ## PHP and Laravel
 
 [`php/`](php/README.md) is the PHP twin for Laravel projects: the same interface and the same `confirmPayment` rule
@@ -165,12 +169,19 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 bayarkit was built with AI coding assistance (Claude Code) under the direction of its author, Muhammad Aiman.
 
 The evidence that it works is meant to be checkable:
-- The adapters come from the author's own systems: toyyibPay from an ERP checkout that was tested end to end against
-  the toyyibPay sandbox (10 October 2026); Bayarcash from a SaaS checkout, written from the official docs and not yet
-  run against the sandbox.
-- The test suite, run with `npm run gate`, runs offline against the fakes, and installs the packed packages into an
-  empty project before passing.
-- Each adapter's `info.evidence` says whether it was measured on a sandbox or written from documentation only.
+- toyyibPay comes from the author's ERP checkout, tested end to end against the toyyibPay sandbox (10 October 2026).
+  The other adapters are written from each gateway's official sources, listed with a source next to every fact in
+  `gateways/<id>/spec.md`; `info.evidence` says which kind each adapter is.
+- The official sources are fingerprinted and checked every day (`node tools/rujukan.mjs check`). On the first full day
+  it flagged six changed pages: five only flipped absolute and relative links (now ignored), one was a real change to
+  toyyibPay's transaction API, which the fake and both adapters now follow.
+- `npm run gate` runs offline against the fakes, installs the packed packages into an empty project, and runs the PHP
+  twin against the same fakes. Tests that guard money were each checked by breaking the code on purpose (the test must
+  fail) before they were trusted.
+- Independent reviewers with no context of the work audited the new code and every adapter's path to "paid" (four
+  rounds, 23 October 2026). None found a way to mark an unpaid, partial, refunded or authorised-only payment as paid;
+  the side paths they did find are listed under "Fixed" in [CHANGELOG.md](CHANGELOG.md), each with a test that failed
+  first. The TypeScript and PHP twins agree on 20,030 randomised inputs on PHP 8.2, 8.3 and 8.4.
 
 ## License
 

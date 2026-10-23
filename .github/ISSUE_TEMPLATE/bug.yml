@@ -1,0 +1,38 @@
+name: Bug report / Laporan pepijat
+description: Something an adapter, the core or the PHP twin does wrong. / Sesuatu yang dibuat salah oleh adapter, teras atau kembar PHP.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste keys, secrets, signatures of real payments or customer data.** Redact them.
+        **Jangan tampal kunci, rahsia, tandatangan bayaran sebenar atau data pelanggan.** Sorokkan.
+  - type: input
+    id: package
+    attributes:
+      label: Package and version / Pakej dan versi
+      placeholder: "@bayarkit/toyyibpay 0.1.0, or bayarkit/bayarkit (PHP)"
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did it happen? / Di mana ia berlaku?
+      options:
+        - Against the gateway's sandbox / Terhadap sandbox gateway
+        - Against the live gateway / Terhadap gateway sebenar
+        - Against the fake (@bayarkit/testing) / Terhadap gateway palsu
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect? / Apa yang berlaku, dan apa yang dijangka?
+      description: For a gateway answer that differs from the docs, paste the response shape (redacted). / Untuk jawapan gateway yang berbeza daripada dokumen, tampal bentuk jawapannya (disorok).
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Smallest code that shows it / Kod terkecil yang menunjukkannya
+      render: ts

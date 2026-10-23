@@ -2,8 +2,30 @@
   "name": "@bayarkit/fiuu",
   "version": "0.1.0",
   "description": "Fiuu (formerly Razer Merchant Services / MOLPay) hosted payment page adapter for bayarkit: vcode, skey, requery with VrfKey.",
-  "type": "module",
+  "keywords": [
+    "payment",
+    "payment-gateway",
+    "malaysia",
+    "fpx",
+    "duitnow",
+    "webhook",
+    "checkout",
+    "typescript",
+    "fiuu"
+  ],
+  "homepage": "https://github.com/aimanmalib/bayarkit/tree/main/packages/fiuu#readme",
+  "bugs": {
+    "url": "https://github.com/aimanmalib/bayarkit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aimanmalib/bayarkit.git",
+    "directory": "packages/fiuu"
+  },
   "license": "MIT",
+  "author": "Muhammad Aiman (https://github.com/aimanmalib)",
+  "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -16,6 +38,10 @@
   ],
   "engines": {
     "node": ">=22.12.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json"

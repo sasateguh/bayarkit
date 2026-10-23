@@ -8,6 +8,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- Every package has a generated README (EN + BM: install, the same quick start, the gateway's sourced traps, a link
+  to its spec) and full npm metadata (repository with directory, homepage, bugs, keywords, provenance), from the root
+  `package.json` and the registry; `rujukan skills --check` keeps all 16 from drifting.
+- `docs/demo/demo.png` + `demo.ms.png` in the READMEs, regenerated from the running demo by `scripts/demo-shot.py`.
+- Issue forms (bug, gateway request; secrets warned against) and a pull-request checklist from CONTRIBUTING.
 - `examples/demo` (`npm run demo`): every adapter against its fake, BM + EN, no browser JavaScript; pay / unpaid
   signed callback / forged callback, with each `confirmPayment` check shown. Tested for all gateways in vitest and on
   WebKit iPhone 13 (`scripts/demo-webkit.py`).
