@@ -22,17 +22,19 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 
 ## Gateway
 
+<!-- gateways:table (generated from gateways/registry.json by `node tools/rujukan.mjs skills`) -->
 | Gateway                             | Pakej                 | Bukti                                                                                                                          |
 | ----------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | toyyibPay                           | `@bayarkit/toyyibpay` | Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian                                          |
 | Bayarcash (juga di belakang BCL.my) | `@bayarkit/bayarcash` | Dokumen rasmi API v3 dan SDK PHP; belum diukur pada sandbox                                                                    |
 | Billplz                             | `@bayarkit/billplz`   | Dokumen rasmi API (V3 Bills, vektor ujian X Signature) dan plugin WooCommerce rasmi; belum diukur pada sandbox                 |
-| Stripe (Malaysia): kad + FPX        | `@bayarkit/stripe`    | Dokumen rasmi (Checkout Sessions, API `2026-09-30.endive`) dan semakan webhook stripe-node; belum diukur dalam mod ujian       |
 | CHIP (CHIP Collect)                 | `@bayarkit/chip`      | OpenAPI rasmi CHIP Collect; belum diukur dalam mod ujian                                                                       |
-| HitPay                              | `@bayarkit/hitpay`    | Dokumen rasmi (OpenAPI, Payment Requests, kedua-dua tandatangan webhook) dan SDK PHP rasmi; belum diukur pada sandbox          |
-| 2C2P (PGW Payment API v4.x)         | `@bayarkit/2c2p`      | Dokumen pembangun rasmi (Payment Token + JWT HS256, tiga vektor ujian JWT rasmi); belum diukur pada sandbox                    |
+| Stripe (Malaysia): kad + FPX        | `@bayarkit/stripe`    | Dokumen rasmi (Checkout Sessions, API `2026-09-30.endive`) dan semakan webhook stripe-node; belum diukur dalam mod ujian       |
 | senangPay (di platform DOKU)        | `@bayarkit/senangpay` | Rujukan API rasmi DOKU Malaysia (Checkout, Signature `HMACSHA256=`) dan Soalan Lazim DOKU senangPay; belum diukur pada sandbox |
+| 2C2P (PGW Payment API v4.x)         | `@bayarkit/2c2p`      | Dokumen pembangun rasmi (Payment Token + JWT HS256, tiga vektor ujian JWT rasmi); belum diukur pada sandbox                    |
 | Razorpay Curlec                     | `@bayarkit/curlec`    | Dokumen rasmi (Payment Links + Orders, tiga tandatangan, kelima-lima vektor ujian rasmi); belum diukur dalam mod ujian         |
+| HitPay                              | `@bayarkit/hitpay`    | Dokumen rasmi (OpenAPI, Payment Requests, kedua-dua tandatangan webhook) dan SDK PHP rasmi; belum diukur pada sandbox          |
+<!-- /gateways:table -->
 
 Seterusnya dirancang: gateway dalam [gateways/README.md](gateways/README.md). Satu adapter disenaraikan sebagai _diukur_ hanya
 selepas set ujian piawai dijalankan terhadap sandbox gateway itu.

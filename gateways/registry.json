@@ -19,7 +19,15 @@
         "factory": "toyyibpay",
         "evidence": "measured",
         "configExample": "{ secretKey, categoryCode, environment: 'sandbox' }",
-        "fake": "startFakeToyyibPay"
+        "fake": "startFakeToyyibPay",
+        "label": {
+          "en": "toyyibPay",
+          "ms": "toyyibPay"
+        },
+        "summary": {
+          "en": "Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment",
+          "ms": "Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian"
+        }
       },
       "spec": true,
       "gotchas": [
@@ -67,7 +75,15 @@
         "factory": "bayarcash",
         "evidence": "docs",
         "configExample": "{ token, secretKey, portalKey, environment: 'sandbox' }",
-        "fake": "startFakeBayarcash"
+        "fake": "startFakeBayarcash",
+        "label": {
+          "en": "Bayarcash (also behind BCL.my)",
+          "ms": "Bayarcash (juga di belakang BCL.my)"
+        },
+        "summary": {
+          "en": "Official API v3 docs and PHP SDK; not yet measured on the sandbox",
+          "ms": "Dokumen rasmi API v3 dan SDK PHP; belum diukur pada sandbox"
+        }
       },
       "spec": true,
       "gotchas": [
@@ -105,7 +121,15 @@
         "factory": "billplz",
         "evidence": "docs",
         "configExample": "{ secretKey, xSignatureKey, collectionId, environment: 'sandbox' }",
-        "fake": "startFakeBillplz"
+        "fake": "startFakeBillplz",
+        "label": {
+          "en": "Billplz",
+          "ms": "Billplz"
+        },
+        "summary": {
+          "en": "Official API docs (V3 Bills, X Signature test vectors) and the official WooCommerce plugin; not yet measured on the sandbox",
+          "ms": "Dokumen rasmi API (V3 Bills, vektor ujian X Signature) dan plugin WooCommerce rasmi; belum diukur pada sandbox"
+        }
       },
       "spec": true,
       "gotchas": [
@@ -147,7 +171,15 @@
         "factory": "chip",
         "evidence": "docs",
         "configExample": "{ secretKey, brandId, publicKey }",
-        "fake": "startFakeChip"
+        "fake": "startFakeChip",
+        "label": {
+          "en": "CHIP (CHIP Collect)",
+          "ms": "CHIP (CHIP Collect)"
+        },
+        "summary": {
+          "en": "Official CHIP Collect OpenAPI; not yet measured in test mode",
+          "ms": "OpenAPI rasmi CHIP Collect; belum diukur dalam mod ujian"
+        }
       },
       "spec": true,
       "gotchas": [
@@ -201,7 +233,15 @@
         "factory": "stripe",
         "evidence": "docs",
         "configExample": "{ secretKey, webhookSecret }",
-        "fake": "startFakeStripe"
+        "fake": "startFakeStripe",
+        "label": {
+          "en": "Stripe (Malaysia): card + FPX",
+          "ms": "Stripe (Malaysia): kad + FPX"
+        },
+        "summary": {
+          "en": "Official docs (Checkout Sessions, API `2026-09-30.endive`) and stripe-node's webhook check; not yet measured in test mode",
+          "ms": "Dokumen rasmi (Checkout Sessions, API `2026-09-30.endive`) dan semakan webhook stripe-node; belum diukur dalam mod ujian"
+        }
       },
       "spec": true,
       "gotchas": [
@@ -259,7 +299,15 @@
         "factory": "senangpay",
         "evidence": "docs",
         "configExample": "{ clientId, secretKey, apiKey, environment, notificationPath }",
-        "fake": "startFakeSenangPay"
+        "fake": "startFakeSenangPay",
+        "label": {
+          "en": "senangPay (on the DOKU platform)",
+          "ms": "senangPay (di platform DOKU)"
+        },
+        "summary": {
+          "en": "Official DOKU Malaysia API Reference (Checkout, `HMACSHA256=` Signature) and the senangPay DOKU FAQ; not yet measured on the sandbox",
+          "ms": "Rujukan API rasmi DOKU Malaysia (Checkout, Signature `HMACSHA256=`) dan Soalan Lazim DOKU senangPay; belum diukur pada sandbox"
+        }
       },
       "spec": true,
       "gotchas": [
@@ -417,7 +465,15 @@
         "factory": "twoc2p",
         "evidence": "docs",
         "configExample": "{ merchantId, secretKey, environment: 'sandbox' }",
-        "fake": "startFake2C2P"
+        "fake": "startFake2C2P",
+        "label": {
+          "en": "2C2P (PGW Payment API v4.x)",
+          "ms": "2C2P (PGW Payment API v4.x)"
+        },
+        "summary": {
+          "en": "Official developer docs (Payment Token + HS256 JWT, three official JWT test vectors); not yet measured on the sandbox",
+          "ms": "Dokumen pembangun rasmi (Payment Token + JWT HS256, tiga vektor ujian JWT rasmi); belum diukur pada sandbox"
+        }
       },
       "spec": true,
       "gotchas": [
@@ -475,7 +531,15 @@
         "factory": "curlec",
         "evidence": "docs",
         "configExample": "{ keyId, keySecret, webhookSecret }",
-        "fake": "startFakeCurlec"
+        "fake": "startFakeCurlec",
+        "label": {
+          "en": "Razorpay Curlec",
+          "ms": "Razorpay Curlec"
+        },
+        "summary": {
+          "en": "Official docs (Payment Links + Orders, three signatures, all five official test vectors); not yet measured in test mode",
+          "ms": "Dokumen rasmi (Payment Links + Orders, tiga tandatangan, kelima-lima vektor ujian rasmi); belum diukur dalam mod ujian"
+        }
       },
       "spec": true,
       "gotchas": [
@@ -533,7 +597,15 @@
         "factory": "hitpay",
         "evidence": "docs",
         "configExample": "{ apiKey, apiSalt, webhookSalt, environment: 'sandbox' }",
-        "fake": "startFakeHitPay"
+        "fake": "startFakeHitPay",
+        "label": {
+          "en": "HitPay",
+          "ms": "HitPay"
+        },
+        "summary": {
+          "en": "Official docs (OpenAPI, Payment Requests, both webhook signatures) and official PHP SDK; not yet measured on the sandbox",
+          "ms": "Dokumen rasmi (OpenAPI, Payment Requests, kedua-dua tandatangan webhook) dan SDK PHP rasmi; belum diukur pada sandbox"
+        }
       },
       "spec": true,
       "gotchas": [

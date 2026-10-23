@@ -276,11 +276,100 @@ ${rows.join('\n')}
 `
 }
 
+/** A Markdown table aligned the way Biome formats it, so the formatter leaves generated tables alone. */
+function table(header, rows) {
+  const widths = header.map((h, i) => Math.max(h.length, ...rows.map((r) => r[i].length)))
+  const line = (cells) => `| ${cells.map((c, i) => c.padEnd(widths[i])).join(' | ')} |`
+  return [line(header), line(widths.map((w) => '-'.repeat(w))), ...rows.map(line)].join('\n')
+}
+
+const README_LANG = {
+  'README.md': {
+    lang: 'en',
+    header: ['Gateway', 'Package', 'Evidence'],
+    count: [
+      /(not on npm yet\. )[A-Za-z]+( gateways)/,
+      [
+        'Zero',
+        'One',
+        'Two',
+        'Three',
+        'Four',
+        'Five',
+        'Six',
+        'Seven',
+        'Eight',
+        'Nine',
+        'Ten',
+        'Eleven',
+        'Twelve',
+        'Thirteen',
+        'Fourteen',
+        'Fifteen',
+        'Sixteen',
+      ],
+    ],
+  },
+  'README.ms.md': {
+    lang: 'ms',
+    header: ['Gateway', 'Pakej', 'Bukti'],
+    count: [
+      /(belum ada di npm\. )[A-Za-z ]+?( gateway;)/,
+      [
+        'Sifar',
+        'Satu',
+        'Dua',
+        'Tiga',
+        'Empat',
+        'Lima',
+        'Enam',
+        'Tujuh',
+        'Lapan',
+        'Sembilan',
+        'Sepuluh',
+        'Sebelas',
+        'Dua belas',
+        'Tiga belas',
+        'Empat belas',
+        'Lima belas',
+        'Enam belas',
+      ],
+    ],
+  },
+}
+
+/** README gateway tables + the gateway count in the status line, both from the registry. */
+function readmes(registry) {
+  const adapters = registry.gateways.filter((g) => g.adapter)
+  return Object.entries(README_LANG).map(([file, cfg]) => {
+    const path = join(ROOT, file)
+    const text = readFileSync(path, 'utf8')
+    const rows = adapters.map((g) => {
+      const label = g.adapter.label?.[cfg.lang]
+      const summary = g.adapter.summary?.[cfg.lang]
+      if (!label || !summary)
+        throw new Error(`${g.id}: adapter.label.${cfg.lang} and adapter.summary.${cfg.lang} are required`)
+      return [label, `\`${g.adapter.package}\``, summary]
+    })
+    const start = '<!-- gateways:table'
+    const end = '<!-- /gateways:table -->'
+    const a = text.indexOf(start)
+    const b = text.indexOf(end)
+    if (a < 0 || b < a) throw new Error(`${file}: gateways:table markers missing`)
+    const open = text.slice(a, text.indexOf('\n', a) + 1)
+    let out = `${text.slice(0, a)}${open}${table(cfg.header, rows)}\n${text.slice(b)}`
+    const [pattern, words] = cfg.count
+    if (!pattern.test(out)) throw new Error(`${file}: status line with the gateway count not found`)
+    out = out.replace(pattern, `$1${words[adapters.length] ?? adapters.length}$2`)
+    return [path, out]
+  })
+}
+
 function skills(args) {
   const registry = readJson(REGISTRY)
   const lock = readJson(LOCK, {})
   const stale = []
-  const files = [[join(ROOT, 'gateways', 'README.md'), coverage(registry, lock)]]
+  const files = [[join(ROOT, 'gateways', 'README.md'), coverage(registry, lock)], ...readmes(registry)]
   for (const gw of registry.gateways) {
     // A skill without official sources would be guesswork; inventory-only gateways get none yet.
     if (!(gw.sources ?? []).length) continue
