@@ -73,6 +73,22 @@ describe('toyyibpay: measured sandbox behaviour', () => {
     await fake.close()
   })
 
+  it("asks with the owner's key, so the fee is kept and another account's bill never reads as paid", async () => {
+    const fake = await startFakeToyyibPay(keys)
+    const gw = toyyibpay({ ...keys, environment: 'sandbox', baseUrl: fake.url })
+    const created = await gw.createPayment(sampleInput())
+    fake.markPaid(created.id)
+    await gw.getPayment(created.id)
+    expect(fake.requests.at(-1)).toMatchObject({
+      path: 'getBillTransactions',
+      fields: { billCode: created.id, userSecretKey: keys.secretKey },
+    })
+    // The same paid bill, asked about with ANOTHER merchant's key: no transactions, so not paid.
+    const other = toyyibpay({ ...keys, secretKey: 'someone-else', environment: 'sandbox', baseUrl: fake.url })
+    expect((await other.getPayment(created.id)).status).toBe('pending')
+    await fake.close()
+  })
+
   it('deactivates a bill, and says so the second time', async () => {
     const fake = await startFakeToyyibPay(keys)
     const gw = toyyibpay({ ...keys, environment: 'sandbox', baseUrl: fake.url })

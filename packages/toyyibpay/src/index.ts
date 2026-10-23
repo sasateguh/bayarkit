@@ -16,6 +16,11 @@
  * | `billPayorInfo=1`              | email required               | confirmed: empty email rejected                         |
  * | Callback body                  | form post                    | `multipart/form-data`; the documented hash formula holds |
  * | `billPaymentDate`              | `dd-mm-yyyy HH:MM:SS`        | confirmed, Malaysia time                                |
+ *
+ * Docs changed 23 Oct 2026 (seen by `rujukan check`, NOT yet measured): `getBillTransactions` empties the payer, split,
+ * settlement and fee fields (`transactionCharge`, `chargeOn`) unless the request carries the bill owner's
+ * `userSecretKey`, and returns no transactions for another account's key. On 10 Oct the sandbox returned the fee
+ * without the key; the adapter now sends it either way (fee kept, foreign bills never read as paid).
  */
 import { createHash } from 'node:crypto'
 import {
@@ -161,7 +166,9 @@ export function toyyibpay(config: ToyyibPayConfig): Gateway & {
     },
 
     async getPayment(billCode: string): Promise<PaymentRecord> {
-      const r = await call('getBillTransactions', { billCode })
+      // The owner's key (API reference, 23 Oct 2026): without it the fee and payer fields come back empty, and another
+      // account's bill returns no transactions — so a bill code from someone else's account can never read as paid.
+      const r = await call('getBillTransactions', { billCode, userSecretKey: config.secretKey })
       if (r.status !== 200) fail(r)
       // Measured: a bill with no transactions answers this exact text, not `[]`.
       if (r.text === 'No data found!') {

@@ -8,6 +8,20 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import type { AddressInfo } from 'node:net'
 import { type FakeGateway, flip } from './types.js'
 
+/** Fields getBillTransactions empties unless the request carries the bill owner's userSecretKey (API reference). */
+const OWNER_ONLY = [
+  'billTo',
+  'billEmail',
+  'billPhone',
+  'billSplitPayment',
+  'billSplitPaymentArgs',
+  'billpaymentSettlement',
+  'billpaymentSettlementDate',
+  'SettlementReferenceNo',
+  'transactionCharge',
+  'chargeOn',
+]
+
 export interface FakeToyyibPay extends FakeGateway {
   /** Every request received, for assertions (fields as posted). */
   requests: { path: string; fields: Record<string, string>; contentType: string | undefined }[]
@@ -53,8 +67,15 @@ export async function startFakeToyyibPay(opts: {
         return json([{ BillCode: code }])
       }
       if (path === 'getBillTransactions') {
+        // API reference (read 23 Oct 2026; NOT yet measured): a bill code is public, so without the owner's
+        // userSecretKey the payer, split, settlement and charge fields come back EMPTY, and with another account's key
+        // no transactions are returned (shape unconfirmed; the measured empty answer is used).
         const bill = bills.get(fields.billCode ?? '')
-        return bill?.txs.length ? json(bill.txs) : text('No data found!')
+        if (fields.userSecretKey !== undefined && fields.userSecretKey !== opts.secretKey)
+          return text('No data found!')
+        if (!bill?.txs.length) return text('No data found!')
+        if (fields.userSecretKey === opts.secretKey) return json(bill.txs)
+        return json(bill.txs.map((t) => ({ ...t, ...Object.fromEntries(OWNER_ONLY.map((k) => [k, ''])) })))
       }
       if (path === 'inactiveBill') {
         const bill = bills.get(fields.billCode ?? '')

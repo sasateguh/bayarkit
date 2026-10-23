@@ -17,7 +17,7 @@
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -29,8 +29,12 @@ const readJson = (p, fallback) => (existsSync(p) ? JSON.parse(readFileSync(p, 'u
 const writeJson = (p, v) => writeFileSync(p, `${JSON.stringify(v, null, 2)}\n`)
 const today = () => new Date().toISOString().slice(0, 10)
 
-/** HTML → visible text; plain text (SDK source, Markdown) is only whitespace-collapsed. */
-export function normalise(body, contentType = '') {
+/**
+ * HTML → visible text; plain text (SDK source, Markdown) is only whitespace-collapsed. With `url`, links to the page's
+ * own site are made relative (`](https://curlec.com/docs/…` → `](/docs/…`): docs sites flip between the two, and that
+ * alone once raised five "changed" alerts in one night with identical text (Curlec, HitPay, 23 Oct 2026).
+ */
+export function normalise(body, contentType = '', url = '') {
   let s = body
   if (/html/i.test(contentType) || /^\s*<(!doctype|html)/i.test(s)) {
     s = s
@@ -42,6 +46,11 @@ export function normalise(body, contentType = '') {
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
+  }
+  if (url) {
+    const origin = new URL(url).origin
+    // Plain split/join, no regex built from data.
+    for (const prefix of ['](', 'href="', "href='"]) s = s.split(`${prefix}${origin}/`).join(`${prefix}/`)
   }
   return s.replace(/\s+/g, ' ').trim()
 }
@@ -56,7 +65,7 @@ async function fetchSource(source) {
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   // No per-source ignore patterns: none was needed (12/12 sources stable), and regexes from data invite ReDoS.
-  const text = normalise(await res.text(), res.headers.get('content-type') ?? '')
+  const text = normalise(await res.text(), res.headers.get('content-type') ?? '', source.url)
   if (text.length < 200) throw new Error(`only ${text.length} characters of text (JavaScript-rendered page?)`)
   // A shell page (JavaScript-rendered docs, a login wall, a GitBook landing page) can be long and still say nothing.
   const missing = (source.mustContain ?? []).filter((w) => !text.includes(w))
@@ -392,10 +401,13 @@ function skills(args) {
   return 0
 }
 
-const [command, ...args] = process.argv.slice(2)
-const commands = { check, lint, skills }
-if (!commands[command]) {
-  console.log('usage: node tools/rujukan.mjs check [--update] [--only id] | lint | skills [--check]')
-  process.exit(64)
+// Run only as a CLI, so tests (and the re-baseline check) can import `normalise`.
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+  const [command, ...args] = process.argv.slice(2)
+  const commands = { check, lint, skills }
+  if (!commands[command]) {
+    console.log('usage: node tools/rujukan.mjs check [--update] [--only id] | lint | skills [--check]')
+    process.exit(64)
+  }
+  process.exitCode = await commands[command](args)
 }
-process.exitCode = await commands[command](args)

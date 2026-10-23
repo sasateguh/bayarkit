@@ -103,3 +103,14 @@ tiada JS pelayar (CSP tanpa `script-src`), noindex. Penemuan semasa membina: fak
 dipalsukan yang `rawBody`-nya masih sah (mustahil di dunia sebenar) — dibaiki + invarian keakuran untuk semua fake.
 MENGHOS demo (nama hos, laman awam atas nama pemilik) = FLAG, ditunda bersama D7 (repo masih private). Undur: buang
 `examples/demo` + skrip `demo`.
+
+**D16 — 23 Okt 2026 — Sistem dokumen bekerja: 6 "berubah" disemak satu-satu; 5 palsu (pautan), 1 sebenar (toyyibPay).**
+Curlec ×3 + HitPay ×2 = pautan mutlak ↔ relatif, teks SAMA → `normalise` kini menjadikan pautan ke tapak sendiri relatif
+(split/join, tiada regex dari data). Penormalan baharu mengubah 14 cap jari; setiap satu DIBUKTIKAN kosmetik (garis dasar
+lama + penormalan baharu = hash teks segar, tepat) sebelum diterima — bukan `--update` buta. toyyibPay: API
+`getBillTransactions` kini mengosongkan yuran/pembayar/penyelesaian tanpa `userSecretKey` pemilik dan memulangkan TIADA
+transaksi untuk kunci akaun lain → adapter TS + PHP menghantar kunci pemilik (palsu diubah dahulu, ujian merah, kemudian
+adapter; sabotaj 2/2). Belum diukur (sandbox 10 Okt memulangkan yuran tanpa kunci) — ukur bila akaun sandbox ada.
+Merentas projek: ERP `tunwan-business` mengisi `orders.yuran_gateway` dari `transactionCharge` dan memanggil tanpa
+kunci — dilapor kepada pemilik, TIDAK diubah dari sini (repo sesi lain). Undur: buang `userSecretKey` dari satu baris
+setiap adapter.

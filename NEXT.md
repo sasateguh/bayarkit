@@ -10,6 +10,9 @@ Keadaan: tanya sistem (`npm run gate`, `git log`). Fail ini = apa seterusnya.
 
 ## Seterusnya (satu demi satu)
 
+0. Ukur di sandbox toyyibPay (bila akaun ada): `getBillTransactions` dengan/tanpa `userSecretKey` — yuran kosong tanpa
+   kunci? bentuk jawapan untuk kunci akaun lain (`[]` atau "No data found!")? (D16)
+
 1. ~~Adapter Billplz, CHIP, Stripe~~ SIAP 23 Okt (D9, label `docs`). Untuk `measured`: akaun sandbox pemilik + larian set
    ujian piawai terhadap sandbox sebenar (Bayarcash, Billplz, CHIP, Stripe).
 2. ~~Kaji gateway inventori + adapter~~ SIAP 23 Okt (D11–D13): 14 adapter dalam `main`, semua `docs`. Adyen + Airwallex

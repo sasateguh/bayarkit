@@ -42,7 +42,7 @@ The full contract with a source for every fact: `gateways/curlec/spec.md` in the
 
 ## Official sources
 
-- [Standard Checkout Integration Steps (order -> checkout -> payment signature)](https://curlec.com/docs/payments/payment-gateway/web-integration/standard/integration-steps.md) (fingerprint `38fde1bbde02`, unchanged since 2026-10-23)
+- [Standard Checkout Integration Steps (order -> checkout -> payment signature)](https://curlec.com/docs/payments/payment-gateway/web-integration/standard/integration-steps.md) (fingerprint `835c87dc7365`, unchanged since 2026-10-23)
 - [Validate and Test Webhooks (X-Razorpay-Signature, idempotency)](https://curlec.com/docs/webhooks/validate-test.md) (fingerprint `713af2155d1d`, unchanged since 2026-10-23)
 - [Create an Order API](https://curlec.com/docs/api/orders/create.md) (fingerprint `45f0384a61ad`, unchanged since 2026-10-23)
 - [razorpay-node signature utilities (official SDK linked from Curlec docs)](https://raw.githubusercontent.com/razorpay/razorpay-node/HEAD/lib/utils/razorpay-utils.js) (fingerprint `dbd6123646fb`, unchanged since 2026-10-23)

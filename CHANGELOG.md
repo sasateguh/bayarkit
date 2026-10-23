@@ -14,6 +14,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- toyyibPay (TS + PHP): `getPayment` sends the owner's `userSecretKey`. toyyibPay's API reference (changed 23 Oct 2026)
+  now empties the fee (`transactionCharge`) and payer fields without it, and returns nothing for another account's key,
+  so a bill code from someone else's account can never read as paid. Not yet measured on the sandbox.
+- `rujukan`: links to a page's own site are made relative before fingerprinting; Curlec and HitPay flipping absolute ↔
+  relative links raised five false "changed" alerts with identical text.
 - `@bayarkit/testing`: the Billplz and Gkash fakes' `tamper()` changed `fields` but left `rawBody` with the original,
   valid signature — a callback that cannot exist. The conformance suite now requires every fake's form/JSON body to say
   what its fields say, tampered or not.
