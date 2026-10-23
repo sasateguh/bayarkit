@@ -124,6 +124,13 @@ fake.markPaid(payment.id)
 await yourCallbackHandler(fake.callbackFor(payment.id)) // ditandatangani tepat seperti gateway sebenar
 ```
 
+### Ujian dalam bahasa lain (PHP/Laravel, Python, Go)
+
+`npx bayarkit-fake <toyyibpay|bayarcash|billplz|stripe|chip>` menjalankan satu gateway palsu sebagai pelayan dan mencetak
+satu baris JSON dengan `url`nya dan URL `control`. Halakan aplikasi anda ke `url`, kemudian kawal melalui HTTP:
+`POST <control>/paid/<id>` menanda bayaran dibayar, `GET <control>/callback/<id>` memulangkan callback bertandatangan
+yang tepat (`/tampered` untuk callback palsu) untuk dihantar ke laluan callback anda. Ia tidak memerlukan vitest.
+
 ## Menambah gateway
 
 Tulis satu adapter dan satu gateway palsu, kemudian pastikan kedua-duanya lulus `gatewayConformance` daripada

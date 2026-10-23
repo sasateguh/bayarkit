@@ -1,4 +1,5 @@
 export { type ConformanceSetup, gatewayConformance, sampleInput } from './conformance.js'
+export { startControlServer } from './control.js'
 export { type FakeBayarcash, startFakeBayarcash } from './fakes/bayarcash.js'
 export { type FakeBillplz, startFakeBillplz } from './fakes/billplz.js'
 export { type FakeChip, startFakeChip } from './fakes/chip.js'

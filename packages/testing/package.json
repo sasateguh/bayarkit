@@ -25,5 +25,13 @@
   },
   "peerDependencies": {
     "vitest": ">=4"
+  },
+  "bin": {
+    "bayarkit-fake": "./dist/cli.js"
+  },
+  "peerDependenciesMeta": {
+    "vitest": {
+      "optional": true
+    }
   }
 }

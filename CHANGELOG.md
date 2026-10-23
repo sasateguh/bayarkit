@@ -8,6 +8,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `bayarkit-fake` CLI in `@bayarkit/testing`: any fake as a standalone server with an HTTP control API, for tests in
+  other languages (no vitest needed; vitest is now an optional peer).
 - `@bayarkit/core`: the `Gateway` interface, `confirmPayment` (signature → fresh gateway query → exact reference,
   amount and currency match), `readCallback` (fields + raw body + headers, so both body-signed and header-signed
   gateways verify; JSON, url-encoded, multipart), integer-sen money helpers.

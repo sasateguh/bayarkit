@@ -64,3 +64,18 @@ for (const name of names) {
 console.log(`smoke ok: ${names.join(' + ')} confirmed from packed tarballs`)
 JS
 node smoke.mjs "${GATEWAYS[@]}"
+
+# bayarkit-fake for non-JavaScript tests, in a project WITHOUT vitest (it is an optional peer).
+cli="$(mktemp -d)"
+trap 'rm -rf "$tmp" "$cli"; kill "${pid:-0}" 2>/dev/null || true' EXIT
+cp "$tmp"/bayarkit-core-*.tgz "$tmp"/bayarkit-testing-*.tgz "$cli"/
+cd "$cli"
+npm init -y >/dev/null
+npm install --silent --no-audit --no-fund ./bayarkit-core-*.tgz ./bayarkit-testing-*.tgz >/dev/null
+[ ! -d node_modules/vitest ] || { echo "vitest was installed although it is an optional peer"; exit 1; }
+./node_modules/.bin/bayarkit-fake stripe > fake.out &
+pid=$!
+for _ in $(seq 1 50); do [ -s fake.out ] && break; sleep 0.1; done
+control="$(node -e 'console.log(JSON.parse(require("fs").readFileSync("fake.out","utf8")).control)')"
+curl -fsS "$control/health" | grep -q '"gateway":"stripe"'
+echo "smoke ok: bayarkit-fake runs without vitest ($control)"
