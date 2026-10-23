@@ -5,7 +5,7 @@ Write your checkout once; switch gateways by changing one line.
 
 [Bahasa Melayu](README.ms.md)
 
-> **Status:** pre-release (0.1.0), not on npm yet. Five gateways, with more planned below.
+> **Status:** pre-release (0.1.0), not on npm yet. Six gateways, with more planned below.
 
 ## Why
 
@@ -28,6 +28,7 @@ Write your checkout once; switch gateways by changing one line.
 | Billplz                        | `@bayarkit/billplz`   | Official API docs (V3 Bills, X Signature test vectors) and the official WooCommerce plugin; not yet measured on the sandbox |
 | Stripe (Malaysia): card + FPX  | `@bayarkit/stripe`    | Official docs (Checkout Sessions, API `2026-09-30.endive`) and stripe-node's webhook check; not yet measured in test mode   |
 | CHIP (CHIP Collect)            | `@bayarkit/chip`      | Official CHIP Collect OpenAPI; not yet measured in test mode                                                                |
+| Razorpay Curlec                | `@bayarkit/curlec`    | Official docs (Payment Links + Orders, three signatures, all five official test vectors); not yet measured in test mode     |
 
 Planned next: senangPay, then the gateways listed in [gateways/README.md](gateways/README.md). An adapter is listed as _measured_ only after the
 conformance suite has run against that gateway's sandbox.

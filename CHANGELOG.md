@@ -27,3 +27,7 @@ All notable changes to this project are documented here. The format follows
   raw callback body, `fetchPublicKey()` (decodes CHIP's JSON-encoded PEM), callback URLs with a port refused before
   calling CHIP, optional `environment` guard against test purchases confirming live orders.
 - `@bayarkit/testing`: fake toyyibPay, Bayarcash and CHIP servers, and the conformance suite every adapter runs.
+- `@bayarkit/curlec`: Razorpay Curlec, from the official docs (not yet measured): Payment Links (hosted page) whose
+  `getPayment` reports the order's state, `createOrder` for Standard Checkout; webhooks verified over the RAW body with
+  the webhook secret (the official Node sample's `JSON.stringify(parsed)` fails), Payment Link and Checkout callbacks
+  with the key secret; all five official test vectors reproduced. `startFakeCurlec` in `@bayarkit/testing`.
