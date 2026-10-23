@@ -1,37 +1,60 @@
 #!/usr/bin/env bash
 # Install the PACKED tarballs into an empty project and use them the way a user would (ESM import, fake gateway,
 # confirmPayment). Catches broken `exports`, missing `files`, and dependencies that only resolve inside the monorepo.
+# Every gateway goes through the same steps: an early callback is refused, a paid one confirms, a tampered one is refused.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+GATEWAYS=(toyyibpay bayarcash billplz stripe)
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
-for p in core testing toyyibpay bayarcash billplz; do (cd "packages/$p" && npm pack --silent --pack-destination "$tmp" >/dev/null); done
+for p in core testing "${GATEWAYS[@]}"; do (cd "packages/$p" && npm pack --silent --pack-destination "$tmp" >/dev/null); done
 cd "$tmp"
 npm init -y >/dev/null
-npm install --silent --no-audit --no-fund ./bayarkit-core-*.tgz ./bayarkit-testing-*.tgz ./bayarkit-toyyibpay-*.tgz ./bayarkit-bayarcash-*.tgz ./bayarkit-billplz-*.tgz vitest@5.0.5 >/dev/null
+npm install --silent --no-audit --no-fund ./bayarkit-*.tgz vitest@5.0.5 >/dev/null
 cat > smoke.mjs <<'JS'
 import { confirmPayment } from '@bayarkit/core'
-import { startFakeToyyibPay, startFakeBayarcash, startFakeBillplz } from '@bayarkit/testing'
-import { toyyibpay } from '@bayarkit/toyyibpay'
-import { bayarcash } from '@bayarkit/bayarcash'
-import { billplz } from '@bayarkit/billplz'
+import * as testing from '@bayarkit/testing'
 
-const order = { reference: 'SMOKE1', amount: 1500, description: 'Smoke test', customer: { name: 'A', email: 'a@example.com' },
+const order = { reference: 'SMOKE1', amount: 1500, description: 'Smoke test', customer: { name: 'Ali', email: 'a@example.com' },
   returnUrl: 'https://x/return', callbackUrl: 'https://x/cb' }
-const tp = await startFakeToyyibPay({ secretKey: 's', categoryCode: 'c' })
-const g1 = toyyibpay({ secretKey: 's', categoryCode: 'c', environment: 'sandbox', baseUrl: tp.url })
-const b1 = await g1.createPayment(order); tp.markPaid(b1.id)
-const r1 = await confirmPayment(g1, tp.callbackFor(b1.id), order)
-const bc = await startFakeBayarcash({ token: 't', secretKey: 's', portalKey: 'p' })
-const g2 = bayarcash({ token: 't', secretKey: 's', portalKey: 'p', environment: 'sandbox', baseUrl: bc.url })
-const b2 = await g2.createPayment(order); bc.markPaid(b2.id)
-const r2 = await confirmPayment(g2, bc.callbackFor(b2.id), order)
-const bp = await startFakeBillplz({ secretKey: 's', xSignatureKey: 'x', collectionId: 'c' })
-const g3 = billplz({ secretKey: 's', xSignatureKey: 'x', collectionId: 'c', environment: 'sandbox', baseUrl: bp.url })
-const b3 = await g3.createPayment(order); bp.markPaid(b3.id)
-const r3 = await confirmPayment(g3, bp.callbackFor(b3.id), order)
-await tp.close(); await bc.close(); await bp.close()
-if (!r1.ok || !r2.ok || !r3.ok) { console.error(r1, r2, r3); process.exit(1) }
-console.log('smoke ok: toyyibpay + bayarcash + billplz confirmed from packed tarballs')
+
+const setups = {
+  toyyibpay: async () => {
+    const fake = await testing.startFakeToyyibPay({ secretKey: 's', categoryCode: 'c' })
+    const { toyyibpay } = await import('@bayarkit/toyyibpay')
+    return { fake, gateway: toyyibpay({ secretKey: 's', categoryCode: 'c', environment: 'sandbox', baseUrl: fake.url }) }
+  },
+  bayarcash: async () => {
+    const fake = await testing.startFakeBayarcash({ token: 't', secretKey: 's', portalKey: 'p' })
+    const { bayarcash } = await import('@bayarkit/bayarcash')
+    return { fake, gateway: bayarcash({ token: 't', secretKey: 's', portalKey: 'p', environment: 'sandbox', baseUrl: fake.url }) }
+  },
+  billplz: async () => {
+    const fake = await testing.startFakeBillplz({ secretKey: 's', xSignatureKey: 'x', collectionId: 'c' })
+    const { billplz } = await import('@bayarkit/billplz')
+    return { fake, gateway: billplz({ secretKey: 's', xSignatureKey: 'x', collectionId: 'c', environment: 'sandbox', baseUrl: fake.url }) }
+  },
+  stripe: async () => {
+    const fake = await testing.startFakeStripe({ secretKey: 'sk_test_smoke', webhookSecret: 'whsec_smoke' })
+    const { stripe } = await import('@bayarkit/stripe')
+    return { fake, gateway: stripe({ secretKey: 'sk_test_smoke', webhookSecret: 'whsec_smoke', baseUrl: fake.url }) }
+  },
+}
+
+const names = process.argv.slice(2)
+for (const name of names) {
+  const { fake, gateway } = await setups[name]()
+  const created = await gateway.createPayment(order)
+  const early = await confirmPayment(gateway, fake.callbackFor(created.id), order)
+  fake.markPaid(created.id)
+  const paid = await confirmPayment(gateway, fake.callbackFor(created.id), order)
+  const forged = await confirmPayment(gateway, fake.tamper(fake.callbackFor(created.id)), order)
+  await fake.close()
+  if (early.ok || !paid.ok || forged.ok) {
+    console.error(name, { early, paid, forged })
+    process.exit(1)
+  }
+}
+console.log(`smoke ok: ${names.join(' + ')} confirmed from packed tarballs`)
 JS
-node smoke.mjs
+node smoke.mjs "${GATEWAYS[@]}"

@@ -17,3 +17,7 @@ All notable changes to this project are documented here. The format follows
 - `@bayarkit/billplz`: Billplz API V3 Bills with X Signature verification of both the callback and the redirect
   query, from the official docs and WooCommerce plugin (not yet measured); reproduces all three official X Signature
   test vectors. `startFakeBillplz` in `@bayarkit/testing`.
+- `@bayarkit/stripe`: Stripe (Malaysia) Checkout Sessions over raw REST, card + FPX in MYR, from the official docs
+  (not yet measured): pins `Stripe-Version: 2026-09-30.endive` and sends `allowed_payment_method_types[]` (endive
+  rejects `payment_method_types` with 400); webhooks verified like stripe-node (`${t}.${rawBody}`, every `v1`, 300 s
+  tolerance). `@bayarkit/testing` gains `startFakeStripe`.

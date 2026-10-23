@@ -190,7 +190,13 @@
           "mustContain": ["myr", "Checkout"]
         }
       ],
-      "adapter": null,
+      "adapter": {
+        "package": "@bayarkit/stripe",
+        "factory": "stripe",
+        "evidence": "docs",
+        "configExample": "{ secretKey, webhookSecret }",
+        "fake": "startFakeStripe"
+      },
       "spec": true,
       "gotchas": [
         {

@@ -7,7 +7,8 @@
     "packages/testing",
     "packages/toyyibpay",
     "packages/bayarcash",
-    "packages/billplz"
+    "packages/billplz",
+    "packages/stripe"
   ],
   "engines": {
     "node": ">=22.12.0"
