@@ -27,3 +27,7 @@ All notable changes to this project are documented here. The format follows
   raw callback body, `fetchPublicKey()` (decodes CHIP's JSON-encoded PEM), callback URLs with a port refused before
   calling CHIP, optional `environment` guard against test purchases confirming live orders.
 - `@bayarkit/testing`: fake toyyibPay, Bayarcash and CHIP servers, and the conformance suite every adapter runs.
+- `@bayarkit/hitpay`: HitPay Payment Requests, from the official docs, OpenAPI and PHP SDK (not yet measured): sen ↔
+  ringgit at the edge; BOTH callback schemes verified as separate paths with separate salts (event webhook
+  `Hitpay-Signature` over the RAW body with the webhook salt; legacy per-request `hmac` over sorted key+value fields
+  with the API salt); re-serialised JSON is refused. `startFakeHitPay` in `@bayarkit/testing`.

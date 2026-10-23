@@ -510,7 +510,13 @@
           "mustContain": ["generateSignatureArray", "ksort", "api.sandbox.hit-pay.com"]
         }
       ],
-      "adapter": null,
+      "adapter": {
+        "package": "@bayarkit/hitpay",
+        "factory": "hitpay",
+        "evidence": "docs",
+        "configExample": "{ apiKey, apiSalt, webhookSalt, environment: 'sandbox' }",
+        "fake": "startFakeHitPay"
+      },
       "spec": true,
       "gotchas": [
         {
