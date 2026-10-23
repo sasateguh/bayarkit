@@ -51,3 +51,13 @@ Kenapa: Perisai menyasarkan laman HIDUP (kontena origin + domain); bayarkit pust
 Perisai = menyentuh sistem kongsi. Dasar sama (`polisi.yaml`): semgrep p/default+owasp-top-ten+typescript, had 60 s, 0 tamat
 masa, fail diimbas > 0. Dibuktikan: `eval` ditanam → ditangkap. Penemuan pertama (regex dari data `ignore`, ReDoS) dibaiki
 dengan MEMBUANG ciri yang tidak dipakai. CI Actions dilangkau bila repo private (`if: !private`), Depot semasa private.
+
+**D11 — 23 Okt 2026 — 9 gateway lagi dikaji (senangPay, iPay88, Fiuu, 2C2P, Curlec, HitPay, Gkash, Xendit, eGHL): 48 sumber
+rasmi dipantau, stabil dalam dua larian penuh.** Satu ejen setiap gateway, templat sama; integrasi oleh skrip yang MENOLAK
+gateway jika sumbernya tidak stabil (dua `check`, larian kedua mesti 0 berubah). Penemuan yang mengubah reka bentuk:
+senangPay kini DOKU (API lama mati); iPay88 + eGHL tiada dokumen pembangun awam (NTT DATA Payment Services) — sumber =
+kod/alat rasmi awam sahaja, fakta yang hanya dari salinan pihak ketiga = UNCONFIRMED; Fiuu = PDF, dipantau melalui senarai
+fail repo rasminya (API GitHub, `sha` setiap fail); Xendit tiada tandatangan badan (token statik) → `confirmPayment`
+(tanya semula) menjadi satu-satunya perlindungan. Contoh rasmi yang dikesan gitleaks ditanda `gitleaks:allow` SEBARIS
+dengan sebab (berkesan untuk imbasan pre-commit DAN sejarah). Spesifikasi Markdown dikecualikan daripada Biome.
+Adyen + Airwallex ditangguh (global, dokumen sangat besar).
