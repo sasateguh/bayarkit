@@ -40,3 +40,7 @@ All notable changes to this project are documented here. The format follows
   the RAW body, per the written rules and the Java/Ruby samples (the Python/Node `Digest:` form is refused);
   notifications verified over the merchant's notification path; sen ↔ ringgit only at the edge. `startFakeSenangPay` in
   `@bayarkit/testing`.
+- `@bayarkit/curlec`: Razorpay Curlec, from the official docs (not yet measured): Payment Links (hosted page) whose
+  `getPayment` reports the order's state, `createOrder` for Standard Checkout; webhooks verified over the RAW body with
+  the webhook secret (the official Node sample's `JSON.stringify(parsed)` fails), Payment Link and Checkout callbacks
+  with the key secret; all five official test vectors reproduced. `startFakeCurlec` in `@bayarkit/testing`.

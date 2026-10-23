@@ -3,6 +3,8 @@
  * bayarkit-fake — run one fake gateway as a standalone server, for tests in any language.
  *
  *   npx bayarkit-fake <toyyibpay|bayarcash|billplz|stripe|chip|hitpay> [--control-port N] [--<option> <value> ...]
+  },
+ *   npx bayarkit-fake <toyyibpay|bayarcash|billplz|stripe|chip|curlec> [--control-port N] [--<option> <value> ...]
  *
  * Prints ONE JSON line ({ gateway, url, control, options }) and serves until SIGINT/SIGTERM. Options are the fake's
  * own (e.g. --secretKey, --webhookSecret); test defaults are used for the rest and echoed in `options`.
@@ -13,6 +15,7 @@ import { startFake2C2P } from './fakes/2c2p.js'
 import { startFakeBayarcash } from './fakes/bayarcash.js'
 import { startFakeBillplz } from './fakes/billplz.js'
 import { startFakeChip } from './fakes/chip.js'
+import { startFakeCurlec } from './fakes/curlec.js'
 import { startFakeHitPay } from './fakes/hitpay.js'
 import { startFakeSenangPay } from './fakes/senangpay.js'
 import { startFakeStripe } from './fakes/stripe.js'
@@ -75,6 +78,15 @@ const FAKES: Record<
         secretKey: o.secretKey ?? '',
         apiKey: o.apiKey ?? '',
         notificationPath: o.notificationPath ?? '',
+      }),
+  },
+  curlec: {
+    defaults: { keyId: 'rzp_test_fake', keySecret: 'fake-key-secret', webhookSecret: 'fake-webhook-secret' },
+    start: (o) =>
+      startFakeCurlec({
+        keyId: o.keyId ?? '',
+        keySecret: o.keySecret ?? '',
+        webhookSecret: o.webhookSecret ?? '',
       }),
   },
 }

@@ -5,7 +5,7 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 
 [English](README.md)
 
-> **Status:** pra-keluaran (0.1.0), belum ada di npm. Lapan gateway; yang lain dirancang di bawah.
+> **Status:** pra-keluaran (0.1.0), belum ada di npm. Sembilan gateway; yang lain dirancang di bawah.
 
 ## Kenapa
 
@@ -32,6 +32,7 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 | HitPay                              | `@bayarkit/hitpay`    | Dokumen rasmi (OpenAPI, Payment Requests, kedua-dua tandatangan webhook) dan SDK PHP rasmi; belum diukur pada sandbox          |
 | 2C2P (PGW Payment API v4.x)         | `@bayarkit/2c2p`      | Dokumen pembangun rasmi (Payment Token + JWT HS256, tiga vektor ujian JWT rasmi); belum diukur pada sandbox                    |
 | senangPay (di platform DOKU)        | `@bayarkit/senangpay` | Rujukan API rasmi DOKU Malaysia (Checkout, Signature `HMACSHA256=`) dan Soalan Lazim DOKU senangPay; belum diukur pada sandbox |
+| Razorpay Curlec                     | `@bayarkit/curlec`    | Dokumen rasmi (Payment Links + Orders, tiga tandatangan, kelima-lima vektor ujian rasmi); belum diukur dalam mod ujian         |
 
 Seterusnya dirancang: gateway dalam [gateways/README.md](gateways/README.md). Satu adapter disenaraikan sebagai _diukur_ hanya
 selepas set ujian piawai dijalankan terhadap sandbox gateway itu.

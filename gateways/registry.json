@@ -470,7 +470,13 @@
           "mustContain": ["validateWebhookSignature", "paymentLinkRefId", "createHmac"]
         }
       ],
-      "adapter": null,
+      "adapter": {
+        "package": "@bayarkit/curlec",
+        "factory": "curlec",
+        "evidence": "docs",
+        "configExample": "{ keyId, keySecret, webhookSecret }",
+        "fake": "startFakeCurlec"
+      },
       "spec": true,
       "gotchas": [
         {
