@@ -5,7 +5,7 @@ Write your checkout once; switch gateways by changing one line.
 
 [Bahasa Melayu](README.ms.md)
 
-> **Status:** pre-release (0.1.0), not on npm yet. Thirteen gateways, with more planned below.
+> **Status:** pre-release (0.1.0), not on npm yet. Fourteen gateways, with more planned below.
 
 ## Why
 
@@ -37,6 +37,7 @@ Write your checkout once; switch gateways by changing one line.
 | HitPay                                           | `@bayarkit/hitpay`    | Official docs (OpenAPI, Payment Requests, both webhook signatures) and official PHP SDK; not yet measured on the sandbox                                                    |
 | Gkash                                            | `@bayarkit/gkash`     | Official docs (SHA-512 signature test vectors), WooCommerce plugin and gkashmy SDKs; not yet measured on staging                                                            |
 | Xendit (Malaysia): Payment Sessions              | `@bayarkit/xendit`    | Official docs (Payment Sessions, v3 payment requests, `x-callback-token` webhooks: a static token, not a signature) and Xendit's agent skill; not yet measured in test mode |
+| eGHL (ADAPTIS e-Commerce)                        | `@bayarkit/eghl`      | Official eGHL public code (hash class, merchant-api QUERY, Omnipay HashValue2 test vector; no public API guide exists); not yet measured on the test host                   |
 <!-- /gateways:table -->
 
 Planned next: the gateways listed in [gateways/README.md](gateways/README.md). An adapter is listed as _measured_ only after the

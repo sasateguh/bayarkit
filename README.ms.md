@@ -5,7 +5,7 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 
 [English](README.md)
 
-> **Status:** pra-keluaran (0.1.0), belum ada di npm. Tiga belas gateway; yang lain dirancang di bawah.
+> **Status:** pra-keluaran (0.1.0), belum ada di npm. Empat belas gateway; yang lain dirancang di bawah.
 
 ## Kenapa
 
@@ -38,6 +38,7 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 | HitPay                                         | `@bayarkit/hitpay`    | Dokumen rasmi (OpenAPI, Payment Requests, kedua-dua tandatangan webhook) dan SDK PHP rasmi; belum diukur pada sandbox                                                |
 | Gkash                                          | `@bayarkit/gkash`     | Dokumen rasmi (vektor ujian tandatangan SHA-512), plugin WooCommerce dan SDK gkashmy; belum diukur pada staging                                                      |
 | Xendit (Malaysia): Payment Sessions            | `@bayarkit/xendit`    | Dokumen rasmi (Payment Sessions, payment request v3, webhook `x-callback-token`: token statik, bukan tandatangan) dan skil agen Xendit; belum diukur dalam mod ujian |
+| eGHL (ADAPTIS e-Commerce)                      | `@bayarkit/eghl`      | Kod awam rasmi eGHL (kelas hash, QUERY merchant-api, vektor ujian HashValue2 Omnipay; tiada panduan API awam); belum diukur pada hos ujian                           |
 <!-- /gateways:table -->
 
 Seterusnya dirancang: gateway dalam [gateways/README.md](gateways/README.md). Satu adapter disenaraikan sebagai _diukur_ hanya

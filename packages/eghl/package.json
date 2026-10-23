@@ -1,0 +1,26 @@
+{
+  "name": "@bayarkit/eghl",
+  "version": "0.1.0",
+  "description": "eGHL (ADAPTIS e-Commerce, NTT DATA Payment Services) adapter for bayarkit: HashValue2 callbacks, QUERY status.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@bayarkit/core": "0.1.0"
+  }
+}

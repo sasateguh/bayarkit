@@ -66,3 +66,8 @@ All notable changes to this project are documented here. The format follows
   q_by_tid / q_by_oid with the answer's `VrfKey` checked, one request per `getPayment` (never polled). Ids carry the
   order, amount and `tranID` because Fiuu has no create API and every requery hashes the amount. `startFakeFiuu` in
   `@bayarkit/testing`.
+- `@bayarkit/eghl`: eGHL (ADAPTIS e-Commerce), from the official public code only (no public API guide; not yet
+  measured): GET/POST redirect to `payment.aspx` with the SALE HashValue, callbacks verified with the 10-field
+  HashValue2 of the eGHL_HASH class (the official Omnipay vector reproduced; the shorter Magento/OpenCart variants are
+  refused), status from a signed QUERY that repeats the original amount, sen ↔ ringgit at the edge.
+  `startFakeEghl` in `@bayarkit/testing`.

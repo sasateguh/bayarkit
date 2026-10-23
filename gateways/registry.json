@@ -839,7 +839,18 @@
           "mustContain": ["isPendingByBank", "TxnExists", "isReversalPending"]
         }
       ],
-      "adapter": null,
+      "adapter": {
+        "package": "@bayarkit/eghl",
+        "factory": "eghl",
+        "evidence": "docs",
+        "configExample": "{ serviceId, merchantPassword, environment: 'sandbox', fallbackCustomerIp }",
+        "fake": "startFakeEghl",
+        "label": { "en": "eGHL (ADAPTIS e-Commerce)", "ms": "eGHL (ADAPTIS e-Commerce)" },
+        "summary": {
+          "en": "Official eGHL public code (hash class, merchant-api QUERY, Omnipay HashValue2 test vector; no public API guide exists); not yet measured on the test host",
+          "ms": "Kod awam rasmi eGHL (kelas hash, QUERY merchant-api, vektor ujian HashValue2 Omnipay; tiada panduan API awam); belum diukur pada hos ujian"
+        }
+      },
       "spec": true,
       "gotchas": [
         {
