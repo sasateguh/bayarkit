@@ -27,3 +27,7 @@ All notable changes to this project are documented here. The format follows
   raw callback body, `fetchPublicKey()` (decodes CHIP's JSON-encoded PEM), callback URLs with a port refused before
   calling CHIP, optional `environment` guard against test purchases confirming live orders.
 - `@bayarkit/testing`: fake toyyibPay, Bayarcash and CHIP servers, and the conformance suite every adapter runs.
+- `@bayarkit/2c2p`: 2C2P PGW Payment API v4.x (Payment Token + Payment Inquiry), from the official docs (not yet
+  measured): HS256 JWT with node:crypto (secret key used as ASCII text, any `alg` but HS256 refused), all three
+  official JWT test vectors reproduced, backend notification verified, the unsigned frontend return never trusted,
+  decimal ringgit converted to sen without rounding. `startFake2C2P` in `@bayarkit/testing`.

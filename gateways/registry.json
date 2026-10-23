@@ -406,7 +406,13 @@
           "mustContain": ["sandbox-pgw.2c2p.com", "pgw.2c2p.com", "Go Live Checklist"]
         }
       ],
-      "adapter": null,
+      "adapter": {
+        "package": "@bayarkit/2c2p",
+        "factory": "twoc2p",
+        "evidence": "docs",
+        "configExample": "{ merchantId, secretKey, environment: 'sandbox' }",
+        "fake": "startFake2C2P"
+      },
       "spec": true,
       "gotchas": [
         {

@@ -5,7 +5,7 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 
 [English](README.md)
 
-> **Status:** pra-keluaran (0.1.0), belum ada di npm. Lima gateway; yang lain dirancang di bawah.
+> **Status:** pra-keluaran (0.1.0), belum ada di npm. Enam gateway; yang lain dirancang di bawah.
 
 ## Kenapa
 
@@ -29,6 +29,7 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 | Billplz                             | `@bayarkit/billplz`   | Dokumen rasmi API (V3 Bills, vektor ujian X Signature) dan plugin WooCommerce rasmi; belum diukur pada sandbox           |
 | Stripe (Malaysia): kad + FPX        | `@bayarkit/stripe`    | Dokumen rasmi (Checkout Sessions, API `2026-09-30.endive`) dan semakan webhook stripe-node; belum diukur dalam mod ujian |
 | CHIP (CHIP Collect)                 | `@bayarkit/chip`      | OpenAPI rasmi CHIP Collect; belum diukur dalam mod ujian                                                                 |
+| 2C2P (PGW Payment API v4.x)         | `@bayarkit/2c2p`      | Dokumen pembangun rasmi (Payment Token + JWT HS256, tiga vektor ujian JWT rasmi); belum diukur pada sandbox              |
 
 Seterusnya dirancang: senangPay, kemudian gateway dalam [gateways/README.md](gateways/README.md). Satu adapter disenaraikan sebagai _diukur_ hanya
 selepas set ujian piawai dijalankan terhadap sandbox gateway itu.
