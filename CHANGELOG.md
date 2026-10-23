@@ -60,3 +60,9 @@ All notable changes to this project are documented here. The format follows
   Webhooks carry NO signature, only a static `x-callback-token`, compared in constant time before the RAW body is
   parsed; `confirmPayment`'s fresh GET is the real protection. Reads `payment_session.*` and `payment.*` events.
   `startFakeXendit` in `@bayarkit/testing`.
+- `@bayarkit/fiuu`: Fiuu (formerly Razer Merchant Services / MOLPay) hosted payment page, from the official API spec
+  PDF v13.97, WooCommerce plugin and PHP SDK (not yet measured): `vcode` standard or extended (config flag; the official
+  vector reproduced), callback `skey` double MD5 over the strings exactly as posted (`RM` → `MYR` afterwards), requery
+  q_by_tid / q_by_oid with the answer's `VrfKey` checked, one request per `getPayment` (never polled). Ids carry the
+  order, amount and `tranID` because Fiuu has no create API and every requery hashes the amount. `startFakeFiuu` in
+  `@bayarkit/testing`.
