@@ -1,0 +1,20 @@
+# Bayarcash API v3 contract (from official sources; not yet measured on the sandbox)
+
+Sources: **[API]** = https://api.webimpian.support/bayarcash; **[SDK]** = official PHP SDK
+https://github.com/webimpian/bayarcash-php-sdk (`src/Actions/ChecksumGenerator.php`, `src/Actions/CallbackVerifications.php`,
+`tests/Unit/*`). Read 23 October 2026 for the Cutt checkout (D30) and carried into `@bayarkit/bayarcash`.
+BCL.my processes payments through Bayarcash.
+
+| Fact                                                                                                                                                                                                                                        | Source                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| Hosts: production `https://api.console.bayar.cash/v3`, sandbox `https://api.console.bayarcash-sandbox.com/v3`                                                                                                                               | [API]                       |
+| Auth: `Authorization: Bearer <personal access token>`; JSON bodies                                                                                                                                                                          | [API]                       |
+| `POST /payment-intents` with `payment_channel` (list), `portal_key`, `order_number`, `amount` (ringgit, two decimals, e.g. `"25.00"`), `payer_name`, `payer_email`, `return_url`, `callback_url`, `checksum` → `{id, url}`                  | [API]; [SDK]                |
+| Request checksum = HMAC-SHA256(API secret key, values of `payment_channel` (joined with `,`), `order_number`, `amount`, `payer_name`, `payer_email`, sorted by field NAME, joined with `                                                    | `)                          | [SDK] ChecksumGenerator + tests (`[1,2]` → `"1,2"`) |
+| `GET /transactions/{id}` → `id`, `order_number`, `amount` (number), `currency`, `status`                                                                                                                                                    | [API]                       |
+| Status: 0 New · 1 Pending · 2 Failed · 3 Success · 4 Cancelled                                                                                                                                                                              | [API]                       |
+| Transaction callback signed over 13 fields: record_type, transaction_id, exchange_reference_number, exchange_transaction_id, order_number, currency, amount, payer_name, payer_email, payer_bank_name, status, status_description, datetime | [SDK] CallbackVerifications |
+| Pre-transaction callback (`record_type: pre_transaction`) signed over record_type, exchange_reference_number, order_number                                                                                                                  | [SDK] CallbackVerifications |
+| Return-URL parameters signed over 9 fields: transaction_id, exchange_reference_number, exchange_transaction_id, order_number, currency, amount, payer_bank_name, status, status_description                                                 | [SDK] CallbackVerifications |
+| `GET /portals` lists portals with their enabled payment channels                                                                                                                                                                            | [API]                       |
+| Minimum amount: not documented (UNCONFIRMED; bayarkit uses 100 sen until measured)                                                                                                                                                          | [API]                       |

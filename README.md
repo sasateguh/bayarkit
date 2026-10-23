@@ -85,6 +85,21 @@ Measured on `dev.toyyibpay.com`, 10 October 2026:
 | Minimum amount            | "more than RM1.00" | RM1.00 itself is accepted                                                                                 |
 | Callback body             | form post          | `multipart/form-data`                                                                                     |
 
+## Gateway knowledge that stays current
+
+Adapters are half of it. The other half is knowing what each gateway's official documentation says today:
+- [`gateways/registry.json`](gateways/registry.json) lists every Malaysian gateway bayarkit knows about, with its
+  official documentation and official SDK code as sources.
+- Each researched gateway has a spec (`gateways/<id>/spec.md`) with an official source next to every fact, and a list
+  of traps: places where the docs, the official SDK or the official AI skill are wrong or out of date.
+- `node tools/rujukan.mjs check` fingerprints every source daily and reports when one changes, so the spec, the fake and
+  the adapter are re-read against the new docs. A source must contain words it declares (`mustContain`), so a docs page
+  that turns into a JavaScript shell or a login wall fails loudly instead of being "watched".
+- `skills/<id>/SKILL.md` are generated from the same data for AI coding agents, and point at runnable, tested code.
+
+Coverage, generated: [gateways/README.md](gateways/README.md). Only fingerprints are stored here; the documentation
+itself belongs to each gateway.
+
 ## Testing your own code
 
 ```ts

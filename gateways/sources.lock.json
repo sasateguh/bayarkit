@@ -1,0 +1,74 @@
+{
+  "bayarcash/api-docs": {
+    "url": "https://api.webimpian.support/bayarcash/llms-full.txt",
+    "sha256": "866d411e0bcc47ce1622c5436db9ecf4f4b82c82bc91cd834d6f0ec974ab7f7b",
+    "chars": 79849,
+    "since": "2026-10-23"
+  },
+  "bayarcash/sdk-callback": {
+    "url": "https://raw.githubusercontent.com/webimpian/bayarcash-php-sdk/HEAD/src/Actions/CallbackVerifications.php",
+    "sha256": "ae51bda95e0b6f82a22f1b0a19d1b68c2dbf5d6672491f28f3486eb568129e42",
+    "chars": 5631,
+    "since": "2026-10-23"
+  },
+  "bayarcash/sdk-checksum": {
+    "url": "https://raw.githubusercontent.com/webimpian/bayarcash-php-sdk/HEAD/src/Actions/ChecksumGenerator.php",
+    "sha256": "f323bfae7d70e1e4381e45380d12a6ed8b8ee0f75d826fa5be2e3370e5bd3fb3",
+    "chars": 2031,
+    "since": "2026-10-23"
+  },
+  "billplz/api-docs": {
+    "url": "https://support.billplz.com/api",
+    "sha256": "9af18b17fff414441d6350520acf3df0e065f7ffc5f58346132c56ee4959a8b6",
+    "chars": 100480,
+    "since": "2026-10-23"
+  },
+  "billplz/woocommerce-signing": {
+    "url": "https://raw.githubusercontent.com/Billplz/Billplz-for-WooCommerce/HEAD/includes/helpers/billplz_wpconnect.php",
+    "sha256": "20d1a166894e316be8e878cc154f232cc32b6e2d1a74805c2e3b9af2ffa78ebb",
+    "chars": 16155,
+    "since": "2026-10-23"
+  },
+  "chip/llms": {
+    "url": "https://docs.chip-in.asia/llms.txt",
+    "sha256": "b66fc3114f641428f620db33ad572ad4f59c814732c0ff1b055c56d5dce7e4df",
+    "chars": 2111,
+    "since": "2026-10-23"
+  },
+  "chip/openapi": {
+    "url": "https://docs.chip-in.asia/openapi/chip-collect.yaml",
+    "sha256": "ce9a3258d97bef251f2431441b316117db74d1e85971dbf964aa69925ab75eca",
+    "chars": 146377,
+    "since": "2026-10-23"
+  },
+  "stripe/checkout-create": {
+    "url": "https://docs.stripe.com/api/checkout/sessions/create.md",
+    "sha256": "3a9250dbab14917fa17471987ce88c33d190c7fcacd6f524a75812597694039b",
+    "chars": 21246,
+    "since": "2026-10-23"
+  },
+  "stripe/checkout-object": {
+    "url": "https://docs.stripe.com/api/checkout/sessions/object.md",
+    "sha256": "27658aa6fdb2cb79bf8dd0a2a9a79bec8c6d0796d96ca384f557593046c9a864",
+    "chars": 20116,
+    "since": "2026-10-23"
+  },
+  "stripe/fpx": {
+    "url": "https://docs.stripe.com/payments/fpx/accept-a-payment.md?payment-ui=checkout",
+    "sha256": "5f3d6a421c4219021cba35c7c5de6cb47d175b19e3ea3b2f07bd4c45dc44f7aa",
+    "chars": 4711,
+    "since": "2026-10-23"
+  },
+  "stripe/webhook-signature": {
+    "url": "https://docs.stripe.com/webhooks/signature.md",
+    "sha256": "8f00ce270500d7b993a132421022adc5e3283fd885ad2e884e894bb62d2051b7",
+    "chars": 26974,
+    "since": "2026-10-23"
+  },
+  "toyyibpay/api-reference": {
+    "url": "https://toyyibpay.com/apireference/",
+    "sha256": "486909c4e86c0e67d29424663ff4dcf53fa7916d0941c9ea7fa1a96a19f94d71",
+    "chars": 24289,
+    "since": "2026-10-23"
+  }
+}

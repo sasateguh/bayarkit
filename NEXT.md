@@ -10,6 +10,11 @@ Keadaan: tanya sistem (`npm run gate`, `git log`). Fail ini = apa seterusnya.
 
 ## Seterusnya (satu demi satu)
 
+0. **Adapter Billplz, CHIP, Stripe** daripada `gateways/<id>/spec.md` (label `docs`). Spesifikasi + vektor ujian rasmi
+   Billplz sudah ada; Stripe: pin `Stripe-Version`, `allowed_payment_method_types`; CHIP: RSA `X-Signature` atas badan mentah.
+   0b. Kaji gateway inventori satu demi satu (sumber rasmi + spec + gotchas); sahkan e-GHL dan Xendit (laman tidak menjawab /
+   403 pada 23 Okt).
+
 1. Ukur Bayarcash pada sandbox bila kunci ada → betulkan palsu dahulu, kemudian adapter → `evidence: measured`.
 2. Adapter CHIP (dokumen rasmi dahulu, label `docs`), kemudian Stripe (Checkout Session, mod ujian percuma).
 3. CI (Depot semasa private, D21 gilap) + Perisai sebelum awam (D7).

@@ -86,6 +86,23 @@ Diukur pada `dev.toyyibpay.com`, 10 Oktober 2026:
 | Amaun minimum        | "lebih daripada RM1.00" | RM1.00 sendiri diterima                                                                                     |
 | Badan callback       | borang                  | `multipart/form-data`                                                                                       |
 
+## Pengetahuan gateway yang sentiasa terkini
+
+Adapter hanyalah separuh. Separuh lagi ialah mengetahui apa yang dokumen rasmi setiap gateway katakan hari ini:
+- [`gateways/registry.json`](gateways/registry.json) menyenaraikan setiap gateway Malaysia yang bayarkit kenal, dengan
+  dokumen rasmi dan kod SDK rasminya sebagai sumber.
+- Setiap gateway yang sudah dikaji mempunyai spesifikasi (`gateways/<id>/spec.md`) dengan sumber rasmi di sebelah
+  setiap fakta, dan senarai perangkap: tempat dokumen, SDK rasmi atau skil AI rasmi salah atau sudah lapuk.
+- `node tools/rujukan.mjs check` mengambil cap jari setiap sumber setiap hari dan melaporkan bila ia berubah, supaya
+  spesifikasi, gateway palsu dan adapter dibaca semula berdasarkan dokumen baharu. Setiap sumber mesti mengandungi
+  perkataan yang diisytiharkannya (`mustContain`), jadi halaman dokumen yang bertukar menjadi kerangka JavaScript atau
+  halaman log masuk gagal dengan jelas, bukan senyap-senyap "dipantau".
+- `skills/<id>/SKILL.md` dijana daripada data yang sama untuk ejen pengekodan AI, dan menunjuk ke kod yang boleh
+  dijalankan dan sudah diuji.
+
+Liputan, dijana: [gateways/README.md](gateways/README.md). Repo ini hanya menyimpan cap jari; dokumen itu sendiri milik
+setiap gateway.
+
 ## Menguji kod anda sendiri
 
 ```ts

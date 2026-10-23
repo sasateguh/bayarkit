@@ -9,6 +9,15 @@ npm install          # Node.js 22.12 or newer
 npm run gate         # typecheck, lint, tests, build, and an install of the packed packages
 ```
 
+## Adding what bayarkit knows about a gateway
+
+No adapter needed for this. In `gateways/registry.json`, give the gateway its official sources (documentation pages,
+or official SDK files on `raw.githubusercontent.com`) with `mustContain` words that only the real page contains; prefer
+machine-readable versions (OpenAPI files, `llms.txt`, `.md` exports) over JavaScript-rendered pages. Write
+`gateways/<id>/spec.md` with a source next to every fact and `UNCONFIRMED` where the docs are silent, add `gotchas`
+(each with a source), then run `node tools/rujukan.mjs check --only <id>` twice (the second run must report no change)
+and `node tools/rujukan.mjs skills`.
+
 ## Adding a gateway
 
 1. **Read the gateway's official documentation in full**, not a blog summary. Note the date you read it.

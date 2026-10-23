@@ -28,3 +28,13 @@ lain); bayarkit menyalin + menterjemah ke API Inggeris.
 **D7 — Repo private dahulu; awam selepas: sandbox Bayarcash diukur ATAU dilabel `docs` dengan jelas, Perisai lulus,
 pakej diterbitkan melalui Trusted Publishing.** Kenapa: kod pembayaran atas nama Aiman = kredibiliti; terbit separuh siap
 merosakkannya.
+
+**D8 — 23 Okt 2026 — `rujukan`: daftar + cap jari dokumen rasmi + spesifikasi bersumber + skil dijana (permintaan
+Aiman: "sistem yang aware dengan docs semua, versi padu dari afu-it").** Kenapa: skil Markdown statik tidak tahu bila
+ia basi; di sini setiap sumber diambil setiap hari (cron `BAYARKIT-RUJUKAN`), perubahan BAHARU = Telegram sekali, dan
+ia kekal "menunggu semakan" sehingga `check --update`. Hanya CAP JARI dalam repo — dokumen pihak ketiga berhak cipta,
+salinan + beza di `~/.local/state/bayarkit/rujukan` (private). `mustContain` wajib: diukur hari yang sama, laman
+Bayarcash (GitBook) dan FPX Stripe hanya kerangka JavaScript — tanpa pengawal itu kedua-duanya "dipantau" tanpa isi;
+sumber kini `llms-full.txt` dan `.md` Stripe. Dua ambilan berturut = cap jari sama pada 12/12 sumber (bukan bunyi).
+Skil dijana hanya untuk gateway yang ada sumber rasmi; fail dijana tidak membawa tarikh harian (gerbang tidak basi
+setiap hari). Inventori (9 gateway) = laman rasmi disahkan menjawab; e-GHL (tiada jawapan) dan Xendit (403) belum.

@@ -1,0 +1,277 @@
+{
+  "$comment": "Every Malaysian gateway bayarkit knows about. sources = official documentation and official SDK code only. Fingerprints: sources.lock.json (node tools/rujukan.mjs check).",
+  "gateways": [
+    {
+      "id": "toyyibpay",
+      "name": "toyyibPay",
+      "site": "https://toyyibpay.com",
+      "sandbox": "https://dev.toyyibpay.com",
+      "sources": [
+        {
+          "id": "api-reference",
+          "title": "toyyibPay API reference",
+          "url": "https://toyyibpay.com/apireference/",
+          "mustContain": ["createBill", "getBillTransactions", "billExternalReferenceNo"]
+        }
+      ],
+      "adapter": {
+        "package": "@bayarkit/toyyibpay",
+        "factory": "toyyibpay",
+        "evidence": "measured",
+        "configExample": "{ secretKey, categoryCode, environment: 'sandbox' }",
+        "fake": "startFakeToyyibPay"
+      },
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "A bill with no transactions answers the text `No data found!`, not `[]`: a strict JSON parser reports every unpaid bill as an error.",
+          "source": "gateways/toyyibpay/spec.md (measured)"
+        },
+        {
+          "text": "Callbacks arrive as `multipart/form-data`; code that only parses URL-encoded bodies sees no fields.",
+          "source": "gateways/toyyibpay/spec.md (measured)"
+        },
+        {
+          "text": "`billExpiryDate` is read in Malaysia time, and RM1.00 (100 sen) itself is accepted although the docs say \"more than RM1.00\".",
+          "source": "gateways/toyyibpay/spec.md (measured)"
+        }
+      ]
+    },
+    {
+      "id": "bayarcash",
+      "name": "Bayarcash",
+      "site": "https://bayarcash.com",
+      "sandbox": "https://api.console.bayarcash-sandbox.com/v3",
+      "sources": [
+        {
+          "id": "api-docs",
+          "title": "Bayarcash API documentation (full Markdown export)",
+          "url": "https://api.webimpian.support/bayarcash/llms-full.txt",
+          "mustContain": ["payment-intents", "checksum", "order_number"]
+        },
+        {
+          "id": "sdk-checksum",
+          "title": "Official PHP SDK: ChecksumGenerator",
+          "url": "https://raw.githubusercontent.com/webimpian/bayarcash-php-sdk/HEAD/src/Actions/ChecksumGenerator.php",
+          "mustContain": ["hash_hmac", "sha256"]
+        },
+        {
+          "id": "sdk-callback",
+          "title": "Official PHP SDK: CallbackVerifications",
+          "url": "https://raw.githubusercontent.com/webimpian/bayarcash-php-sdk/HEAD/src/Actions/CallbackVerifications.php",
+          "mustContain": ["record_type", "checksum"]
+        }
+      ],
+      "adapter": {
+        "package": "@bayarkit/bayarcash",
+        "factory": "bayarcash",
+        "evidence": "docs",
+        "configExample": "{ token, secretKey, portalKey, environment: 'sandbox' }",
+        "fake": "startFakeBayarcash"
+      },
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "The checksum sorts values by field NAME and joins them with `|`; a `payment_channel` list is joined with `,` inside it.",
+          "source": "official PHP SDK ChecksumGenerator + tests"
+        },
+        {
+          "text": "`amount` is ringgit with two decimals (\"25.00\") in both the JSON body and the checksum; a callback may carry it as a number.",
+          "source": "official PHP SDK tests"
+        }
+      ]
+    },
+    {
+      "id": "billplz",
+      "name": "Billplz",
+      "site": "https://www.billplz.com",
+      "sandbox": "https://www.billplz-sandbox.com/api",
+      "sources": [
+        {
+          "id": "api-docs",
+          "title": "Billplz API documentation",
+          "url": "https://support.billplz.com/api",
+          "mustContain": ["x_signature", "collection_id", "callback_url"]
+        },
+        {
+          "id": "woocommerce-signing",
+          "title": "Official WooCommerce plugin: X Signature code",
+          "url": "https://raw.githubusercontent.com/Billplz/Billplz-for-WooCommerce/HEAD/includes/helpers/billplz_wpconnect.php",
+          "mustContain": ["hash_hmac", "x_signature"]
+        }
+      ],
+      "adapter": null,
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "X Signature sorts the concatenated `key+value` strings, not the keys: the docs' \"sort keys\" wording gives a different HMAC than the official plugin and test vectors.",
+          "source": "support.billplz.com/api X Signature steps; official WooCommerce plugin L336–341"
+        },
+        {
+          "text": "Answer the callback with HTTP 200 within 20 s or Billplz retries (up to 5 attempts over ~24 h), and callback and redirect arrive in no fixed order.",
+          "source": "support.billplz.com/api callback retry schedule"
+        },
+        {
+          "text": "A deleted bill comes back if the customer completes a payment already in flight, so `paid=true` can arrive after DELETE.",
+          "source": "support.billplz.com/api delete bill"
+        }
+      ]
+    },
+    {
+      "id": "chip",
+      "name": "CHIP",
+      "site": "https://www.chip-in.asia",
+      "sandbox": "https://gate.chip-in.asia/api/v1 (test keys)",
+      "sources": [
+        {
+          "id": "openapi",
+          "title": "CHIP Collect OpenAPI (official source of truth)",
+          "url": "https://docs.chip-in.asia/openapi/chip-collect.yaml",
+          "mustContain": ["/purchases/", "checkout_url", "X-Signature"]
+        },
+        {
+          "id": "llms",
+          "title": "CHIP docs index for LLMs",
+          "url": "https://docs.chip-in.asia/llms.txt",
+          "mustContain": ["CHIP"]
+        }
+      ],
+      "adapter": null,
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "Callbacks are signed in the `X-Signature` header: base64 RSA PKCS#1 v1.5 SHA-256 over the RAW body. `GET /public_key/` returns a JSON-quoted PEM string that must be JSON-decoded first.",
+          "source": "CHIP Collect OpenAPI L895–917; docs /overview/callbacks"
+        },
+        {
+          "text": "CHIP's own AI skill lists fields and a status that do not exist (`failure_callback`, `cancel_callback`, status `failed`) and a wrapped payload; the OpenAPI spec has none of these. There is no `failed` status: paid means `paid`, `cleared` or `settled`.",
+          "source": "CHIP Collect OpenAPI status enum vs github.com/CHIPAsia/skill SKILL.md"
+        },
+        {
+          "text": "`success_callback` must not contain a port, not even `:443`; redirect and callback fields go at the top level of the create body (nested inside `purchase` they are ignored).",
+          "source": "CHIP Collect OpenAPI L2953–2975; docs /overview/callbacks"
+        }
+      ]
+    },
+    {
+      "id": "stripe",
+      "name": "Stripe (Malaysia)",
+      "site": "https://stripe.com/my",
+      "sandbox": "https://api.stripe.com (sk_test_ keys)",
+      "sources": [
+        {
+          "id": "checkout-create",
+          "title": "Create a Checkout Session",
+          "url": "https://docs.stripe.com/api/checkout/sessions/create.md",
+          "mustContain": ["client_reference_id", "success_url"]
+        },
+        {
+          "id": "checkout-object",
+          "title": "The Checkout Session object",
+          "url": "https://docs.stripe.com/api/checkout/sessions/object.md",
+          "mustContain": ["payment_status", "amount_total"]
+        },
+        {
+          "id": "webhook-signature",
+          "title": "Verify webhook signatures",
+          "url": "https://docs.stripe.com/webhooks/signature.md",
+          "mustContain": ["Stripe-Signature", "v1"]
+        },
+        {
+          "id": "fpx",
+          "title": "Accept an FPX payment",
+          "url": "https://docs.stripe.com/payments/fpx/accept-a-payment.md?payment-ui=checkout",
+          "mustContain": ["myr", "Checkout"]
+        }
+      ],
+      "adapter": null,
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "API version `2026-09-30.endive` rejects `payment_method_types` on Checkout Sessions with HTTP 400. Use `allowed_payment_method_types[]` (or Dashboard payment methods), and always send a `Stripe-Version` header.",
+          "source": "docs.stripe.com/changelog/endive/2026-09-30/remove-payment-method-types-checkout-sessions"
+        },
+        {
+          "text": "Minimum charge in MYR is RM2.00 (200 sen); FPX needs a Malaysian Stripe account with a business registration number, MYR, one-time payments only.",
+          "source": "docs.stripe.com minimum charge amounts; FPX docs"
+        },
+        {
+          "text": "Webhook signatures cover `${t}.${rawBody}` with the full `whsec_…` secret; several `v1` values can appear during secret rotation. Without the raw body, verification is impossible.",
+          "source": "docs.stripe.com/webhooks/signature; stripe-node webhooks.js"
+        }
+      ]
+    },
+    {
+      "id": "senangpay",
+      "name": "senangPay",
+      "site": "https://senangpay.com",
+      "sources": [],
+      "adapter": null,
+      "spec": false
+    },
+    {
+      "id": "ipay88",
+      "name": "iPay88 (now NTT DATA Pay)",
+      "site": "https://my.nttdatapay.com",
+      "sources": [],
+      "adapter": null,
+      "spec": false
+    },
+    {
+      "id": "fiuu",
+      "name": "Fiuu",
+      "site": "https://fiuu.com",
+      "sources": [],
+      "adapter": null,
+      "spec": false
+    },
+    {
+      "id": "2c2p",
+      "name": "2C2P",
+      "site": "https://2c2p.com",
+      "sources": [],
+      "adapter": null,
+      "spec": false
+    },
+    {
+      "id": "curlec",
+      "name": "Curlec",
+      "site": "https://curlec.com",
+      "sources": [],
+      "adapter": null,
+      "spec": false
+    },
+    {
+      "id": "hitpay",
+      "name": "HitPay",
+      "site": "https://hitpayapp.com/my/",
+      "sources": [],
+      "adapter": null,
+      "spec": false
+    },
+    {
+      "id": "gkash",
+      "name": "Gkash",
+      "site": "https://gkash.com",
+      "sources": [],
+      "adapter": null,
+      "spec": false
+    },
+    {
+      "id": "adyen",
+      "name": "Adyen",
+      "site": "https://www.adyen.com",
+      "sources": [],
+      "adapter": null,
+      "spec": false
+    },
+    {
+      "id": "airwallex",
+      "name": "Airwallex",
+      "site": "https://www.airwallex.com/en-my",
+      "sources": [],
+      "adapter": null,
+      "spec": false
+    }
+  ]
+}

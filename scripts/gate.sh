@@ -5,6 +5,8 @@ cd "$(dirname "$0")/.."
 npx tsc -p tsconfig.json
 npx biome check .
 npx vitest run
+node tools/rujukan.mjs lint
+node tools/rujukan.mjs skills --check
 rm -rf packages/*/dist
 npm run build >/dev/null
 bash scripts/smoke-pack.sh
