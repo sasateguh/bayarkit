@@ -12,6 +12,7 @@ export default defineConfig({
       '@bayarkit/bayarcash': src('bayarcash'),
       '@bayarkit/billplz': src('billplz'),
       '@bayarkit/stripe': src('stripe'),
+      '@bayarkit/chip': src('chip'),
     },
   },
   test: { include: ['packages/*/test/**/*.test.ts'], testTimeout: 15_000 },

@@ -142,7 +142,13 @@
           "mustContain": ["CHIP"]
         }
       ],
-      "adapter": null,
+      "adapter": {
+        "package": "@bayarkit/chip",
+        "factory": "chip",
+        "evidence": "docs",
+        "configExample": "{ secretKey, brandId, publicKey }",
+        "fake": "startFakeChip"
+      },
       "spec": true,
       "gotchas": [
         {

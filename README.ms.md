@@ -5,7 +5,7 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 
 [English](README.md)
 
-> **Status:** pra-keluaran (0.1.0), belum ada di npm. Tiga gateway; yang lain dirancang di bawah.
+> **Status:** pra-keluaran (0.1.0), belum ada di npm. Lima gateway; yang lain dirancang di bawah.
 
 ## Kenapa
 
@@ -28,8 +28,9 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 | Bayarcash (juga di belakang BCL.my) | `@bayarkit/bayarcash` | Dokumen rasmi API v3 dan SDK PHP; belum diukur pada sandbox                                                              |
 | Billplz                             | `@bayarkit/billplz`   | Dokumen rasmi API (V3 Bills, vektor ujian X Signature) dan plugin WooCommerce rasmi; belum diukur pada sandbox           |
 | Stripe (Malaysia): kad + FPX        | `@bayarkit/stripe`    | Dokumen rasmi (Checkout Sessions, API `2026-09-30.endive`) dan semakan webhook stripe-node; belum diukur dalam mod ujian |
+| CHIP (CHIP Collect)                 | `@bayarkit/chip`      | OpenAPI rasmi CHIP Collect; belum diukur dalam mod ujian                                                                 |
 
-Seterusnya dirancang: CHIP, senangPay. Satu adapter disenaraikan sebagai _diukur_ hanya
+Seterusnya dirancang: senangPay, kemudian gateway dalam [gateways/README.md](gateways/README.md). Satu adapter disenaraikan sebagai _diukur_ hanya
 selepas set ujian piawai dijalankan terhadap sandbox gateway itu.
 
 Amaun sentiasa dalam **sen** integer (`1050` = RM10.50), jadi tiada ringgit titik terapung dibandingkan.
@@ -64,6 +65,12 @@ if (result.ok) {
 Contoh lengkap checkout dan callback dengan pengendali piawai web (Next.js, Hono, Bun, Deno) ada dalam
 [examples/web-standard/checkout.ts](examples/web-standard/checkout.ts). Untuk guna Bayarcash, gantikan panggilan
 `toyyibpay(...)` dengan `bayarcash({ token, secretKey, portalKey, environment: 'sandbox' })`.
+
+Untuk CHIP, guna `chip({ secretKey, brandId, publicKey })`. CHIP ada satu hos sahaja: kunci rahsia mod ujian membuat
+pembelian ujian. Callback ditandatangani dengan kunci RSA CHIP atas badan mentah, jadi bacalah dengan `readCallback`
+(bukan badan yang sudah dihurai). Dapatkan kunci awam sekali dengan
+`await chip({ secretKey, brandId }).fetchPublicKey()` (kunci rahsia yang sama), simpan, dan hantar sebagai `publicKey`;
+tanpanya setiap callback ditolak. CHIP menolak `callbackUrl` yang ada port, walaupun `:443`.
 
 ## Apa yang `confirmPayment` semak
 

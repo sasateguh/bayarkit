@@ -4,7 +4,7 @@
 # Every gateway goes through the same steps: an early callback is refused, a paid one confirms, a tampered one is refused.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-GATEWAYS=(toyyibpay bayarcash billplz stripe)
+GATEWAYS=(toyyibpay bayarcash billplz stripe chip)
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 for p in core testing "${GATEWAYS[@]}"; do (cd "packages/$p" && npm pack --silent --pack-destination "$tmp" >/dev/null); done
@@ -38,6 +38,12 @@ const setups = {
     const fake = await testing.startFakeStripe({ secretKey: 'sk_test_smoke', webhookSecret: 'whsec_smoke' })
     const { stripe } = await import('@bayarkit/stripe')
     return { fake, gateway: stripe({ secretKey: 'sk_test_smoke', webhookSecret: 'whsec_smoke', baseUrl: fake.url }) }
+  },
+  chip: async () => {
+    const fake = await testing.startFakeChip({ secretKey: 's', brandId: 'b' })
+    const { chip } = await import('@bayarkit/chip')
+    const publicKey = await chip({ secretKey: 's', brandId: 'b', baseUrl: fake.url }).fetchPublicKey()
+    return { fake, gateway: chip({ secretKey: 's', brandId: 'b', publicKey, baseUrl: fake.url }) }
   },
 }
 
