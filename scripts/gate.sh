@@ -5,6 +5,7 @@ cd "$(dirname "$0")/.."
 npx tsc -p tsconfig.json
 npx biome check .
 npx vitest run
+rm -rf packages/*/dist
 npm run build >/dev/null
 bash scripts/smoke-pack.sh
 echo "✓ gate bayarkit lulus"

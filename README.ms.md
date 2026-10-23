@@ -35,7 +35,7 @@ Amaun sentiasa dalam **sen** integer (`1050` = RM10.50), jadi tiada ringgit titi
 ## Mula pantas
 
 ```ts
-import { confirmPayment, readCallbackBody } from '@bayarkit/core'
+import { confirmPayment, readCallback } from '@bayarkit/core'
 import { toyyibpay } from '@bayarkit/toyyibpay'
 
 const gateway = toyyibpay({ secretKey, categoryCode, environment: 'sandbox' })
@@ -52,8 +52,8 @@ const payment = await gateway.createPayment({
 // redirect ke payment.url
 
 // 2. Callback: jangan sesekali tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata.
-const body = await readCallbackBody(request) // JSON, url-encoded atau multipart (toyyibPay menghantar multipart)
-const result = await confirmPayment(gateway, body, { reference: 'ORD1001', amount: 1050 })
+const callback = await readCallback(request) // JSON, url-encoded atau multipart (toyyibPay menghantar multipart)
+const result = await confirmPayment(gateway, callback, { reference: 'ORD1001', amount: 1050 })
 if (result.ok) {
   // tanda pesanan dibayar (secara idempoten: gateway menghantar semula callback)
 }

@@ -2,7 +2,13 @@
  * The conformance suite. Every adapter runs it against its fake (always) and against the real sandbox (when keys are
  * present, which is what turns `evidence.kind` into "measured"). Adding a gateway = an adapter + a fake that pass this.
  */
-import { type CreatePaymentInput, confirmPayment, type Gateway, GatewayError } from '@bayarkit/core'
+import {
+  type CallbackInput,
+  type CreatePaymentInput,
+  confirmPayment,
+  type Gateway,
+  GatewayError,
+} from '@bayarkit/core'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import type { FakeGateway } from './fakes/types.js'
 
@@ -85,9 +91,7 @@ export function gatewayConformance(name: string, setup: () => Promise<Conformanc
       const input = sampleInput()
       const created = await gateway.createPayment(input)
       fake.markPaid(created.id)
-      const body = fake.callbackFor(created.id)
-      const sig = 'hash' in body ? 'hash' : 'checksum'
-      const forged = { ...body, [sig]: (body[sig] ?? '').replace(/^./, (c) => (c === 'a' ? 'b' : 'a')) }
+      const forged = fake.tamper(fake.callbackFor(created.id))
       expect(await confirmPayment(gateway, forged, input)).toMatchObject({
         ok: false,
         reason: 'invalid_signature',
@@ -126,14 +130,19 @@ export function gatewayConformance(name: string, setup: () => Promise<Conformanc
     })
 
     it('never throws on a malformed callback body', () => {
-      for (const body of [
-        {},
-        { hash: 'x' },
-        { checksum: 'zz', transaction_id: '1' },
-        { billcode: '../../etc' },
-      ]) {
-        expect(() => gateway.verifyCallback(body as Record<string, string>)).not.toThrow()
-        expect(gateway.verifyCallback(body as Record<string, string>)).toBeNull()
+      const junk: CallbackInput[] = [
+        { fields: {}, rawBody: '', headers: {} },
+        { fields: { hash: 'x' }, rawBody: '{', headers: { 'content-type': 'application/json' } },
+        { fields: { checksum: 'zz', transaction_id: '1' }, rawBody: '', headers: {} },
+        {
+          fields: { billcode: '../../etc' },
+          rawBody: 'not json',
+          headers: { 'x-signature': '!!', 'stripe-signature': 't=1,v1=zz' },
+        },
+      ]
+      for (const cb of junk) {
+        expect(() => gateway.verifyCallback(cb)).not.toThrow()
+        expect(gateway.verifyCallback(cb)).toBeNull()
       }
     })
 

@@ -1,4 +1,4 @@
-import type { Currency, Gateway, PaymentRecord } from './types.js'
+import type { CallbackInput, Currency, Gateway, PaymentRecord } from './types.js'
 
 export interface Expected {
   reference: string
@@ -27,10 +27,10 @@ export type ConfirmResult =
  */
 export async function confirmPayment(
   gateway: Gateway,
-  callbackBody: Record<string, string>,
+  callback: CallbackInput,
   expected: Expected,
 ): Promise<ConfirmResult> {
-  const cb = gateway.verifyCallback(callbackBody)
+  const cb = gateway.verifyCallback(callback)
   if (!cb)
     return {
       ok: false,

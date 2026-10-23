@@ -34,7 +34,7 @@ describe('bayarcash: checksum rules from the official SDK', () => {
     const gw = bayarcash({ ...keys, environment: 'sandbox', baseUrl: fake.url })
     const created = await gw.createPayment(sampleInput({ amount: 2500 }))
     fake.markPaid(created.id)
-    const body = fake.callbackFor(created.id)
+    const body = fake.callbackFor(created.id).fields
     expect(body.amount).toBe('25.00')
     expect(verifyChecksum(keys.secretKey, { ...body, amount: '25' }, 'transaction')).toBe(true)
     expect(verifyChecksum(keys.secretKey, { ...body, amount: '26' }, 'transaction')).toBe(false)
@@ -45,9 +45,9 @@ describe('bayarcash: checksum rules from the official SDK', () => {
     const gw = bayarcash({ ...keys, environment: 'sandbox' })
     expect(
       gw.verifyCallback({
-        record_type: 'pre_transaction',
-        order_number: 'A1',
-        exchange_reference_number: 'x',
+        fields: { record_type: 'pre_transaction', order_number: 'A1', exchange_reference_number: 'x' },
+        rawBody: '',
+        headers: {},
       }),
     ).toBeNull()
   })

@@ -13,6 +13,7 @@
  */
 import { createHmac } from 'node:crypto'
 import {
+  type CallbackInput,
   type CreatedPayment,
   type CreatePaymentInput,
   type Gateway,
@@ -220,7 +221,7 @@ export function bayarcash(config: BayarcashConfig): Gateway & {
       }
     },
 
-    verifyCallback(body: Record<string, string>): VerifiedCallback | null {
+    verifyCallback({ fields: body }: CallbackInput): VerifiedCallback | null {
       // Pre-transaction callbacks (record_type "pre_transaction") carry no transaction id: nothing to confirm yet.
       if (body.record_type === 'pre_transaction' || !body.transaction_id) return null
       const kind = body.record_type === 'transaction' ? 'transaction' : 'return'

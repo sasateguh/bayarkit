@@ -34,7 +34,7 @@ Amounts are always integer **sen** (`1050` = RM10.50), so nothing compares float
 ## Quick start
 
 ```ts
-import { confirmPayment, readCallbackBody } from '@bayarkit/core'
+import { confirmPayment, readCallback } from '@bayarkit/core'
 import { toyyibpay } from '@bayarkit/toyyibpay'
 
 const gateway = toyyibpay({ secretKey, categoryCode, environment: 'sandbox' })
@@ -51,8 +51,8 @@ const payment = await gateway.createPayment({
 // redirect to payment.url
 
 // 2. Callback: never mark an order paid from the callback body or the return URL alone.
-const body = await readCallbackBody(request) // JSON, url-encoded or multipart (toyyibPay posts multipart)
-const result = await confirmPayment(gateway, body, { reference: 'ORD1001', amount: 1050 })
+const callback = await readCallback(request) // JSON, url-encoded or multipart (toyyibPay posts multipart)
+const result = await confirmPayment(gateway, callback, { reference: 'ORD1001', amount: 1050 })
 if (result.ok) {
   // mark the order paid (idempotently: gateways retry callbacks)
 }

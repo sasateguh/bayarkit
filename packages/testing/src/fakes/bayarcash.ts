@@ -5,7 +5,7 @@
 import { createHmac } from 'node:crypto'
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
 import type { AddressInfo } from 'node:net'
-import type { FakeGateway } from './types.js'
+import { type FakeGateway, flip } from './types.js'
 
 const sign = (secret: string, fields: Record<string, string>) =>
   createHmac('sha256', secret)
@@ -144,8 +144,13 @@ export async function startFakeBayarcash(opts: {
         ...override,
       }
       const { checksum, ...signed } = fields
-      return { ...signed, checksum: checksum ?? sign(opts.secretKey, signed) }
+      return {
+        fields: { ...signed, checksum: checksum ?? sign(opts.secretKey, signed) },
+        rawBody: '',
+        headers: {},
+      }
     },
+    tamper: (cb) => ({ ...cb, fields: { ...cb.fields, checksum: flip(cb.fields.checksum ?? '') } }),
     close: () => new Promise<void>((r) => server.close(() => r())),
   }
 }

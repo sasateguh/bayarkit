@@ -19,6 +19,7 @@
  */
 import { createHash } from 'node:crypto'
 import {
+  type CallbackInput,
   type CreatedPayment,
   type CreatePaymentInput,
   type Gateway,
@@ -191,7 +192,7 @@ export function toyyibpay(config: ToyyibPayConfig): Gateway & {
       }
     },
 
-    verifyCallback(body: Record<string, string>): VerifiedCallback | null {
+    verifyCallback({ fields: body }: CallbackInput): VerifiedCallback | null {
       const given = String(body.hash ?? '').toLowerCase()
       if (!/^[0-9a-f]{32}$/.test(given) || !body.billcode) return null
       const expected = createHash('md5')

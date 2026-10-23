@@ -6,7 +6,7 @@
 import { createHash } from 'node:crypto'
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
 import type { AddressInfo } from 'node:net'
-import type { FakeGateway } from './types.js'
+import { type FakeGateway, flip } from './types.js'
 
 export interface FakeToyyibPay extends FakeGateway {
   /** Every request received, for assertions (fields as posted). */
@@ -119,8 +119,10 @@ export async function startFakeToyyibPay(opts: {
       const hash = createHash('md5')
         .update(`${opts.secretKey}${fields.status}${fields.order_id}${fields.refno}ok`)
         .digest('hex')
-      return { ...fields, hash: override.hash ?? hash }
+      // Measured: toyyibPay posts this as multipart/form-data; the signature is the `hash` field.
+      return { fields: { ...fields, hash: override.hash ?? hash }, rawBody: '', headers: {} }
     },
+    tamper: (cb) => ({ ...cb, fields: { ...cb.fields, hash: flip(cb.fields.hash ?? '') } }),
     close: () => new Promise<void>((r) => server.close(() => r())),
   }
 }

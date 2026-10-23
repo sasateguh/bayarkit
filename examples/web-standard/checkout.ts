@@ -2,7 +2,7 @@
  * Checkout + callback with Web-standard handlers (drop into Next.js `app/api/.../route.ts`, Hono, Bun or Deno).
  * Swap `toyyibpay(...)` for `bayarcash(...)` and nothing else changes — that is the point of bayarkit.
  */
-import { confirmPayment, type Gateway, readCallbackBody } from '@bayarkit/core'
+import { confirmPayment, type Gateway, readCallback } from '@bayarkit/core'
 import { toyyibpay } from '@bayarkit/toyyibpay'
 
 const gateway: Gateway = toyyibpay({
@@ -38,11 +38,13 @@ export async function checkout(request: Request): Promise<Response> {
 
 /** POST /api/payment/callback — the gateway's server-to-server notification. */
 export async function callback(request: Request): Promise<Response> {
-  const body = await readCallbackBody(request)
-  const order = [...orders.values()].find((o) => o.reference === (body.order_id ?? body.order_number))
+  const cb = await readCallback(request)
+  const order = [...orders.values()].find(
+    (o) => o.reference === (cb.fields.order_id ?? cb.fields.order_number),
+  )
   if (!order) return new Response('unknown order', { status: 404 })
   if (order.status === 'paid') return new Response('OK') // gateways retry; answer the same way
-  const result = await confirmPayment(gateway, body, { reference: order.reference, amount: order.amount })
+  const result = await confirmPayment(gateway, cb, { reference: order.reference, amount: order.amount })
   if (result.ok) order.status = 'paid'
   // Log result.reason / result.detail when !ok; never mark paid from the return URL.
   return new Response('OK')

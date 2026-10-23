@@ -72,11 +72,24 @@ export interface GatewayInfo {
   evidence: { kind: 'measured' | 'docs'; date: string; source: string }
 }
 
+/**
+ * A callback as it arrived. Some gateways sign fields in the body (toyyibPay, Bayarcash, Billplz); others sign the raw
+ * body in a header (Stripe, CHIP), so all three parts are kept. Build it with `readCallback(request)`.
+ */
+export interface CallbackInput {
+  /** Text fields from the body (JSON, url-encoded or multipart), or from the query string for return URLs. */
+  fields: Record<string, string>
+  /** The body exactly as received. Header-signed gateways cannot verify without it. */
+  rawBody: string
+  /** Header names in lower case. */
+  headers: Record<string, string>
+}
+
 export interface Gateway {
   readonly info: GatewayInfo
   createPayment(input: CreatePaymentInput): Promise<CreatedPayment>
   /** Ask the gateway for the current state. This, not the callback body, is the source of truth. */
   getPayment(id: string): Promise<PaymentRecord>
   /** Check a callback's signature. Returns `null` when it is not authentic; never throws on bad input. */
-  verifyCallback(body: Record<string, string>): VerifiedCallback | null
+  verifyCallback(callback: CallbackInput): VerifiedCallback | null
 }
