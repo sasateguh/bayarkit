@@ -68,3 +68,34 @@ describe('bayarcash: checksum rules from the official SDK', () => {
     await fake.close()
   })
 })
+
+describe('bayarcash: only this portal', () => {
+  const tx = (extra: Record<string, unknown>) => async () =>
+    new Response(
+      JSON.stringify({ id: 'trx_1', order_number: 'R1', amount: 10.5, currency: 'MYR', status: 3, ...extra }),
+      {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      },
+    )
+  const make = (fetch: typeof globalThis.fetch) =>
+    bayarcash({
+      token: 't',
+      secretKey: 's',
+      portalKey: 'portal-a',
+      environment: 'sandbox',
+      baseUrl: 'https://bc.test',
+      fetch,
+    })
+
+  it('refuses a transaction the API says belongs to another portal (the secret is account-wide)', async () => {
+    await expect(make(tx({ portal_key: 'portal-b' })).getPayment('trx_1')).rejects.toMatchObject({
+      code: 'FOREIGN_PORTAL',
+    })
+  })
+
+  it('accepts this portal, and a record with no portal field (the documented shape)', async () => {
+    expect((await make(tx({ portal_key: 'portal-a' })).getPayment('trx_1')).status).toBe('paid')
+    expect((await make(tx({})).getPayment('trx_1')).status).toBe('paid')
+  })
+})

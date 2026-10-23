@@ -58,17 +58,23 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
   const registry = JSON.parse(readFileSync(new URL('gateways/registry.json', root), 'utf8'))
   async function startGeneration() {
     const set = new Map()
-    for (const entry of registry.gateways) {
-      if (!entry.adapter) continue
-      const { default: setup } = await import(new URL(`scripts/smoke/${entry.id}.mjs`, root).href)
-      const { fake, gateway } = await setup(testing)
-      set.set(entry.id, {
-        id: entry.id,
-        label: entry.adapter.label,
-        evidence: entry.adapter.evidence,
-        fake,
-        gateway,
-      })
+    try {
+      for (const entry of registry.gateways) {
+        if (!entry.adapter) continue
+        const { default: setup } = await import(new URL(`scripts/smoke/${entry.id}.mjs`, root).href)
+        const { fake, gateway } = await setup(testing)
+        set.set(entry.id, {
+          id: entry.id,
+          label: entry.adapter.label,
+          evidence: entry.adapter.evidence,
+          fake,
+          gateway,
+        })
+      }
+    } catch (e) {
+      // Half-started: close what did start, so a failed rotation leaks no servers.
+      for (const g of set.values()) await g.fake.close().catch(() => {})
+      throw e
     }
     return set
   }
@@ -142,7 +148,10 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
     const t = translator(lang)
     const form = await request.formData().catch(() => null)
     const values = { gateway: String(form?.get('gateway') ?? ''), amount: String(form?.get('amount') ?? '') }
-    const g = gateways.get(values.gateway)
+    // Take the set ONCE: a rotation can finish while createPayment is awaited, and the order must stay with the set its
+    // gateway came from (otherwise it outlives that set's closed fakes).
+    const generation = gateways
+    const g = generation.get(values.gateway)
     if (!g) return home(lang, t('errors.gateway'), values)
     const amount = /^\s*\d{1,7}(\.\d{1,2})?\s*$/.test(values.amount) ? toSen(values.amount) : Number.NaN
     if (!Number.isInteger(amount)) return home(lang, t('errors.amount'), values)
@@ -168,13 +177,20 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
       reference,
       amount,
       gateway: g,
-      generation: gateways,
+      generation,
       payment,
       choice: null,
       result: null,
     })
     created += 1
-    if (created % perGeneration === 0 && !rotating) rotating = rotate().finally(() => (rotating = null))
+    if (created % perGeneration === 0 && !rotating) {
+      // A failed rotation keeps the current set and is logged; it must never take the server down.
+      rotating = rotate()
+        .catch((e) => console.error('demo: rotation failed:', e instanceof Error ? e.message : e))
+        .finally(() => {
+          rotating = null
+        })
+    }
     return seeOther(`${lang === 'en' ? '/en' : ''}/pay/${reference}`)
   }
 

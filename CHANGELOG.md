@@ -14,6 +14,16 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Billplz: a bill from ANOTHER collection of the same account is refused (`FOREIGN_COLLECTION`; the X Signature
+  key is account-wide), and a paid bill is compared on `paid_amount`, the money received.
+- Bayarcash: a transaction reported for another portal is refused (`FOREIGN_PORTAL`).
+- toyyibPay, Bayarcash: `verifyCallback` no longer throws on a missing body; the conformance suite now feeds every
+  adapter `{}`, nulls and array values.
+- `confirmPayment` (both twins): a `verifyCallback` that throws is a `gateway_error` (a bug or a broken key, not a
+  forgery); unknown errors are named by class, never quoted.
+- TS/PHP parity proven, not claimed: numbers are read as the decimal text JavaScript writes for them (`1.005` → 101 in
+  both, on PHP 8.2/8.3/8.4 alike), ASCII whitespace only, `Text::of` = ECMAScript `Number::toString`. A randomised
+  differential of 20,030 inputs finds 0 differences.
 - From an independent review (no false "paid" path found; every fix has a test from the reviewer's scenario):
   PHP reads gateway JSON like the TS twin (`true` is not status "1"), never throws from `verifyCallback` or
   `Confirm::payment`, caps `toSen` at a safe integer (both twins), works on Laravel 11 with any timeout and wraps

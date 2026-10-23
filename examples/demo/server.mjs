@@ -12,8 +12,11 @@ const demo = await startDemo()
 const port = Number(process.env.PORT ?? 4317)
 const host = process.env.HOST ?? '127.0.0.1'
 
-const plain = (res, status, text) => {
-  res.writeHead(status, { 'content-type': 'text/plain; charset=utf-8' })
+const plain = (res, status, text, close = false) => {
+  res.writeHead(status, {
+    'content-type': 'text/plain; charset=utf-8',
+    ...(close ? { connection: 'close' } : {}),
+  })
   res.end(text)
 }
 
@@ -25,7 +28,8 @@ createServer(async (req, res) => {
     let size = 0
     for await (const c of req) {
       size += c.length
-      if (size > MAX_BODY) return plain(res, 413, 'Too large')
+      // The rest of the body is not read, so this connection cannot carry another request: say so.
+      if (size > MAX_BODY) return plain(res, 413, 'Too large', true)
       chunks.push(c)
     }
     const headers = new Headers()

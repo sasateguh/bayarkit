@@ -199,18 +199,26 @@ export function toyyibpay(config: ToyyibPayConfig): Gateway & {
       }
     },
 
-    verifyCallback({ fields: body }: CallbackInput): VerifiedCallback | null {
-      const given = String(body.hash ?? '').toLowerCase()
-      if (!/^[0-9a-f]{32}$/.test(given) || !body.billcode) return null
-      const expected = createHash('md5')
-        .update(`${config.secretKey}${body.status ?? ''}${body.order_id ?? ''}${body.refno ?? ''}ok`)
-        .digest('hex')
-      if (!timingSafeEqualText(given, expected)) return null
-      return {
-        id: String(body.billcode),
-        reference: String(body.order_id ?? ''),
-        claimedStatus: STATUS[String(body.status)] ?? 'unknown',
-        raw: { ...body },
+    verifyCallback(callback: CallbackInput): VerifiedCallback | null {
+      // Never throws (contract): a missing or odd body is simply not authentic.
+      try {
+        const body = (
+          callback?.fields && typeof callback.fields === 'object' ? callback.fields : {}
+        ) as Record<string, string>
+        const given = String(body.hash ?? '').toLowerCase()
+        if (!/^[0-9a-f]{32}$/.test(given) || !body.billcode) return null
+        const expected = createHash('md5')
+          .update(`${config.secretKey}${body.status ?? ''}${body.order_id ?? ''}${body.refno ?? ''}ok`)
+          .digest('hex')
+        if (!timingSafeEqualText(given, expected)) return null
+        return {
+          id: String(body.billcode),
+          reference: String(body.order_id ?? ''),
+          claimedStatus: STATUS[String(body.status)] ?? 'unknown',
+          raw: { ...body },
+        }
+      } catch {
+        return null
       }
     },
 

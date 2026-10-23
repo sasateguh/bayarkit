@@ -1,5 +1,5 @@
 import { createHmac } from 'node:crypto'
-import { GatewayError, readCallback } from '@bayarkit/core'
+import { confirmPayment, GatewayError, readCallback } from '@bayarkit/core'
 import { gatewayConformance, sampleInput, startFakeBillplz } from '@bayarkit/testing'
 import { describe, expect, it } from 'vitest'
 import { billplz, parsePaidAt, signingSource, xSignature } from '../src/index.js'
@@ -259,5 +259,36 @@ describe('billplz: bills', () => {
     expect(parsePaidAt('2018-09-27 15:15:09 +0800')?.toISOString()).toBe('2018-09-27T07:15:09.000Z')
     expect(parsePaidAt('2018-9-27')).toBeUndefined()
     expect(parsePaidAt(null)).toBeUndefined()
+  })
+})
+
+describe('billplz: only this collection, only money received', () => {
+  it('refuses a paid bill from another collection of the same account (its signature key is account-wide)', async () => {
+    const fake = await startFakeBillplz(keys)
+    const shopB = billplz({ ...keys, environment: 'sandbox', baseUrl: fake.url })
+    const input = sampleInput()
+    const created = await shopB.createPayment(input)
+    fake.markPaid(created.id)
+    // Shop A shares the account (same keys) but has its own collection.
+    const shopA = billplz({ ...keys, collectionId: 'othercoll', environment: 'sandbox', baseUrl: fake.url })
+    const result = await confirmPayment(shopA, fake.callbackFor(created.id), input)
+    expect(result).toMatchObject({ ok: false, reason: 'gateway_error' })
+    expect(result.ok ? '' : result.detail).toContain('another collection')
+  })
+
+  it('compares what was PAID (paid_amount), not what the bill asked for', async () => {
+    const bill = {
+      id: 'bill1',
+      collection_id: keys.collectionId,
+      paid: true,
+      state: 'paid',
+      amount: 500,
+      paid_amount: 300,
+      reference_1: 'R1',
+    }
+    const fetch = async () =>
+      new Response(JSON.stringify(bill), { status: 200, headers: { 'content-type': 'application/json' } })
+    const gw = billplz({ ...keys, environment: 'sandbox', baseUrl: 'https://billplz.test', fetch })
+    expect((await gw.getPayment('bill1')).amount).toBe(300)
   })
 })

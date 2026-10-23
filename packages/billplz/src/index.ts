@@ -234,7 +234,13 @@ export function billplz(config: BillplzConfig): Gateway & {
       if (!ID.test(id)) throw new GatewayError('invalid bill id', NAME, 0, 'INVALID_ID')
       const { res, json } = await request('GET', `/v3/bills/${id}`)
       if (!res.ok || !json || typeof json !== 'object') fail('get bill', res, json)
-      const amount = Number(json.amount)
+      // The X Signature key is account-wide, so a signed callback/redirect can name a bill from ANOTHER collection of
+      // the same account (another shop, same order numbers). Only this collection's bills are ours.
+      if (json.collection_id !== config.collectionId) {
+        throw new GatewayError('bill belongs to another collection', NAME, res.status, 'FOREIGN_COLLECTION')
+      }
+      // Once paid, what counts is the money received (`paid_amount`), not what the bill asked for (`amount`).
+      const amount = Number(statusOf(json.paid, json.state) === 'paid' ? json.paid_amount : json.amount)
       const paidAt = parsePaidAt(json.paid_at)
       return {
         id: String(json.id ?? id),

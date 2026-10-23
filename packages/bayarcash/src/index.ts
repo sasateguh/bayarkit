@@ -211,6 +211,17 @@ export function bayarcash(config: BayarcashConfig): Gateway & {
       }
       const { res, json } = await request(`/transactions/${transactionId}`, { headers: headers() })
       if (!res.ok || !json) throw new GatewayError(`transaction HTTP ${res.status}`, 'bayarcash', res.status)
+      // The secret is account-wide, so a signed callback/return can name another portal's transaction. The documented
+      // transaction shows no portal field (UNCONFIRMED): when one is present it must be ours; when absent, references
+      // must be unique across the portals that share the account (README).
+      if (json.portal_key !== undefined && json.portal_key !== config.portalKey) {
+        throw new GatewayError(
+          'transaction belongs to another portal',
+          'bayarcash',
+          res.status,
+          'FOREIGN_PORTAL',
+        )
+      }
       return {
         id: String(json.id ?? transactionId),
         reference: String(json.order_number ?? ''),
@@ -221,16 +232,24 @@ export function bayarcash(config: BayarcashConfig): Gateway & {
       }
     },
 
-    verifyCallback({ fields: body }: CallbackInput): VerifiedCallback | null {
-      // Pre-transaction callbacks (record_type "pre_transaction") carry no transaction id: nothing to confirm yet.
-      if (body.record_type === 'pre_transaction' || !body.transaction_id) return null
-      const kind = body.record_type === 'transaction' ? 'transaction' : 'return'
-      if (!verifyChecksum(config.secretKey, body, kind)) return null
-      return {
-        id: String(body.transaction_id),
-        reference: String(body.order_number ?? ''),
-        claimedStatus: STATUS[String(body.status)] ?? 'unknown',
-        raw: { ...body },
+    verifyCallback(callback: CallbackInput): VerifiedCallback | null {
+      // Never throws (contract): a missing or odd body is simply not authentic.
+      try {
+        const body = (
+          callback?.fields && typeof callback.fields === 'object' ? callback.fields : {}
+        ) as Record<string, string>
+        // Pre-transaction callbacks (record_type "pre_transaction") carry no transaction id: nothing to confirm yet.
+        if (body.record_type === 'pre_transaction' || !body.transaction_id) return null
+        const kind = body.record_type === 'transaction' ? 'transaction' : 'return'
+        if (!verifyChecksum(config.secretKey, body, kind)) return null
+        return {
+          id: String(body.transaction_id),
+          reference: String(body.order_number ?? ''),
+          claimedStatus: STATUS[String(body.status)] ?? 'unknown',
+          raw: { ...body },
+        }
+      } catch {
+        return null
       }
     },
 

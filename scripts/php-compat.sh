@@ -14,7 +14,7 @@ for combo in "8.2.35 lowest" "8.4.27 highest"; do
   # Only what the PHP tests read: the package itself, the TS page they pin against, and the shared money vectors.
   tar -C php --exclude=vendor --exclude=composer.lock --exclude=.phpunit.cache -cf - . | (mkdir -p "$copy/php" && tar -C "$copy/php" -xf -)
   cp packages/core/src/checkout.ts "$copy/packages/core/src/"
-  mkdir -p "$copy/packages/core/test" && cp packages/core/test/money-vectors.json "$copy/packages/core/test/"
+  mkdir -p "$copy/packages/core/test" && cp packages/core/test/money-vectors.json packages/core/test/number-text-vectors.json "$copy/packages/core/test/"
   echo "── PHP $version, $deps dependencies"
   PHP_VERSION="$version" PHP_DEPS="$deps" PHP_ROOT="$copy" bash scripts/php-gate.sh
 done

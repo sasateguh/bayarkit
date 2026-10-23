@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { confirmPayment, type Gateway, toRinggit, toSen } from '../src/index.js'
+import { confirmPayment, type Gateway, GatewayError, toRinggit, toSen } from '../src/index.js'
 import vectors from './money-vectors.json' with { type: 'json' }
+import numberText from './number-text-vectors.json' with { type: 'json' }
 
 describe('money vectors shared with the PHP twin', () => {
   it.each(vectors.toSen as [string | number, number | null][])('toSen(%j) → %j', (input, sen) => {
@@ -8,6 +9,10 @@ describe('money vectors shared with the PHP twin', () => {
   })
   it.each(vectors.toRinggit as [number, string][])('toRinggit(%j) → %j', (sen, text) => {
     expect(toRinggit(sen)).toBe(text)
+  })
+  // The PHP twin's Text::of must write numbers exactly like this; the file is checked against JavaScript itself here.
+  it.each(numberText as [number, string][])('String(%j) → %j', (n, text) => {
+    expect(String(n)).toBe(text)
   })
 })
 
@@ -66,10 +71,31 @@ describe('confirmPayment', () => {
     gw.getPayment = async () => {
       throw new Error('timeout')
     }
+    // An unknown error is named, not quoted: its message may carry request details.
     expect(await confirmPayment(gw, cb, expected)).toMatchObject({
       ok: false,
       reason: 'gateway_error',
-      detail: 'timeout',
+      detail: 'stub: getPayment threw Error',
+    })
+    gw.getPayment = async () => {
+      throw new GatewayError('unreachable (TimeoutError)', 'stub', 0)
+    }
+    expect(await confirmPayment(gw, cb, expected)).toMatchObject({
+      reason: 'gateway_error',
+      detail: 'stub: unreachable (TimeoutError)',
+    })
+  })
+
+  it('a verifyCallback that throws is a gateway error (a bug or a broken key), not a forgery, and never escapes', async () => {
+    const gw = gateway({})
+    gw.verifyCallback = () => {
+      throw new TypeError('secret=abc in a message')
+    }
+    const result = await confirmPayment(gw, cb, expected)
+    expect(result).toMatchObject({
+      ok: false,
+      reason: 'gateway_error',
+      detail: 'stub: verifyCallback threw TypeError',
     })
   })
 })

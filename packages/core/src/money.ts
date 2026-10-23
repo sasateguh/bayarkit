@@ -12,12 +12,12 @@ export function toRinggit(sen: number): string {
  * (`Bayarkit\Money::toSen`) agrees on every row of test/money-vectors.json.
  */
 export function toSen(ringgit: unknown): number {
-  if (typeof ringgit === 'number') {
-    const sen = Math.round(ringgit * 100)
-    return Number.isSafeInteger(sen) ? sen : Number.NaN
-  }
+  // A number is read as the decimal text JavaScript writes for it (1.005 → "1.005" → 101), never through `* 100`:
+  // float rounding differed between the twins and between PHP versions (1.005 gave 100, 101 or 100).
+  if (typeof ringgit === 'number') return Number.isFinite(ringgit) ? toSen(String(ringgit)) : Number.NaN
   if (typeof ringgit !== 'string') return Number.NaN
-  const m = /^\s*(-?)(\d+)(?:\.(\d*))?\s*$/.exec(ringgit)
+  // ASCII whitespace only: `\s` would also accept no-break and other Unicode spaces, which the PHP twin refuses.
+  const m = /^[ \t\n\r\f\v]*(-?)(\d+)(?:\.(\d*))?[ \t\n\r\f\v]*$/.exec(ringgit)
   // ≥ 10^14 ringgit cannot be a safe-integer number of sen; checked on the text, before any arithmetic.
   if (!m || (m[2] as string).replace(/^0+/, '').length > 14) return Number.NaN
   const decimals = (m[3] ?? '').padEnd(3, '0')

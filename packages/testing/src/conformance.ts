@@ -164,7 +164,14 @@ export function gatewayConformance(name: string, setup: () => Promise<Conformanc
           headers: { 'x-signature': '!!', 'stripe-signature': 't=1,v1=zz' },
         },
       ]
-      for (const cb of junk) {
+      // Shapes a framework can hand over when a body is missing or was parsed by something else.
+      const broken = [
+        {},
+        { fields: null, rawBody: null, headers: null },
+        { fields: { hash: ['x'] as unknown as string }, rawBody: '', headers: {} },
+        { fields: {}, rawBody: '{}', headers: { 'content-type': 'application/json', 'x-signature': '' } },
+      ] as unknown as CallbackInput[]
+      for (const cb of [...junk, ...broken]) {
         expect(() => gateway.verifyCallback(cb)).not.toThrow()
         expect(gateway.verifyCallback(cb)).toBeNull()
       }
