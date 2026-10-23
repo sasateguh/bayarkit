@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Security checks before a release (D7), using the same scanners and policy as Perisai (~/perisai/config/polisi.yaml):
 # - semgrep p/default + p/owasp-top-ten + p/typescript + p/php over EVERY packages/*/src (a glob: a hand list once left
-#   nine adapters unscanned), php/src, php/config and tools/. --no-git-ignore is required
+#   nine adapters unscanned), php/src, php/config, examples/ and tools/. --no-git-ignore is required
 #   (without it semgrep can scan 0 files and still exit 0), coverage fails on any per-rule timeout;
 # - osv-scanner over package-lock.json (runtime AND dev dependencies);
 # - gitleaks over the whole git history.
@@ -15,7 +15,7 @@ fail=0
 semgrep scan --metrics=off --quiet --no-git-ignore --json -o "$out/semgrep.json" \
   --timeout 60 --timeout-threshold 0 \
   --config p/default --config p/owasp-top-ten --config p/typescript --config p/php \
-  packages/*/src php/src php/config tools || true
+  packages/*/src php/src php/config examples tools || true
 python3 - "$out/semgrep.json" <<'PY' || fail=1
 import json, sys
 d = json.load(open(sys.argv[1]))
@@ -27,7 +27,7 @@ for r in results:
     print(f"  {r['extra'].get('severity')} {r['check_id'].split('.')[-1]} {r['path']}:{r['start']['line']}")
 # Every source directory must be in the scan, so a new package can never be silently skipped.
 import glob, os
-dirs = sorted(glob.glob("packages/*/src")) + ["php/src"]
+dirs = sorted(glob.glob("packages/*/src")) + ["php/src", "examples/demo", "examples/web-standard"]
 paths = d.get("paths", {}).get("scanned", [])
 missing = [x for x in dirs if not any(p.startswith(x + "/") for p in paths)]
 for x in missing:
