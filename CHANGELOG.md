@@ -44,3 +44,8 @@ All notable changes to this project are documented here. The format follows
   `getPayment` reports the order's state, `createOrder` for Standard Checkout; webhooks verified over the RAW body with
   the webhook secret (the official Node sample's `JSON.stringify(parsed)` fails), Payment Link and Checkout callbacks
   with the key secret; all five official test vectors reproduced. `startFakeCurlec` in `@bayarkit/testing`.
+- `@bayarkit/xendit`: Xendit (Malaysia) Payment Sessions plus the v3 payment request lookup, from the official docs (not
+  yet measured): Basic auth, the key prefix picks test or live; amounts in ringgit at the API, sen at the interface.
+  Webhooks carry NO signature, only a static `x-callback-token`, compared in constant time before the RAW body is
+  parsed; `confirmPayment`'s fresh GET is the real protection. Reads `payment_session.*` and `payment.*` events.
+  `startFakeXendit` in `@bayarkit/testing`.

@@ -726,7 +726,21 @@
           "mustContain": ["not_ in minor units", "payment_session.completed"]
         }
       ],
-      "adapter": null,
+      "adapter": {
+        "package": "@bayarkit/xendit",
+        "factory": "xendit",
+        "evidence": "docs",
+        "configExample": "{ secretKey, callbackToken }",
+        "fake": "startFakeXendit",
+        "label": {
+          "en": "Xendit (Malaysia): Payment Sessions",
+          "ms": "Xendit (Malaysia): Payment Sessions"
+        },
+        "summary": {
+          "en": "Official docs (Payment Sessions, v3 payment requests, `x-callback-token` webhooks: a static token, not a signature) and Xendit's agent skill; not yet measured in test mode",
+          "ms": "Dokumen rasmi (Payment Sessions, payment request v3, webhook `x-callback-token`: token statik, bukan tandatangan) dan skil agen Xendit; belum diukur dalam mod ujian"
+        }
+      },
       "spec": true,
       "gotchas": [
         {

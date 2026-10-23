@@ -10,3 +10,4 @@ export { dokuSignature, type FakeSenangPay, startFakeSenangPay } from './fakes/s
 export { type FakeStripe, startFakeStripe, stripeSignature } from './fakes/stripe.js'
 export { type FakeToyyibPay, startFakeToyyibPay } from './fakes/toyyibpay.js'
 export { type FakeGateway, flip } from './fakes/types.js'
+export { type FakeXendit, startFakeXendit, XENDIT_API_VERSION } from './fakes/xendit.js'
