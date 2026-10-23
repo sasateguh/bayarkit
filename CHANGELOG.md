@@ -27,3 +27,8 @@ All notable changes to this project are documented here. The format follows
   raw callback body, `fetchPublicKey()` (decodes CHIP's JSON-encoded PEM), callback URLs with a port refused before
   calling CHIP, optional `environment` guard against test purchases confirming live orders.
 - `@bayarkit/testing`: fake toyyibPay, Bayarcash and CHIP servers, and the conformance suite every adapter runs.
+- `@bayarkit/senangpay`: senangPay on the DOKU platform (Checkout API), from the official DOKU Malaysia API Reference
+  (not yet measured): `Signature: HMACSHA256=` over Client-Id, Request-Timestamp, path and the base64 SHA-256 digest of
+  the RAW body, per the written rules and the Java/Ruby samples (the Python/Node `Digest:` form is refused);
+  notifications verified over the merchant's notification path; sen ↔ ringgit only at the edge. `startFakeSenangPay` in
+  `@bayarkit/testing`.
