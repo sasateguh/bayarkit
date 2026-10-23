@@ -202,12 +202,13 @@ function skillFor(gw, lock) {
 Install \`@bayarkit/core\` and \`${gw.adapter.package}\`. Evidence: **${gw.adapter.evidence === 'measured' ? `measured on the ${name} sandbox` : 'written from the official docs, not yet measured on the sandbox'}**.
 
 \`\`\`ts
-import { confirmPayment, readCallback } from '@bayarkit/core'
+import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { ${gw.adapter.factory} } from '${gw.adapter.package}'
 
 const gateway = ${gw.adapter.factory}(${gw.adapter.configExample})
 const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
-// redirect to payment.url; then, in the callback route:
+return checkoutResponse(payment) // a 303 redirect, or a self-submitting page when the gateway wants a POST form
+// then, in the callback route:
 const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
 \`\`\`
 

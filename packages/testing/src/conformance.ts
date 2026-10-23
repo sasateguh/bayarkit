@@ -54,6 +54,13 @@ export function gatewayConformance(name: string, setup: () => Promise<Conformanc
       const created = await gateway.createPayment(sampleInput())
       expect(created.id).not.toBe('')
       expect(created.url).toMatch(/^https?:\/\//)
+      // A gateway that wants a POST says so with `form`; checkoutResponse then serves a page that submits it.
+      if (created.form) {
+        expect(created.form.method).toBe('POST')
+        expect(created.form.action).toMatch(/^https?:\/\//)
+        expect(Object.keys(created.form.fields).length).toBeGreaterThan(0)
+        for (const v of Object.values(created.form.fields)) expect(typeof v).toBe('string')
+      }
     })
 
     it('rejects an amount below its minimum before calling the gateway', async () => {

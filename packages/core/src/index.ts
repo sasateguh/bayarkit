@@ -1,4 +1,5 @@
 export { callbackFromFields, readCallback } from './body.js'
+export { autoPostHtml, checkoutResponse } from './checkout.js'
 export { type ConfirmResult, confirmPayment, type Expected } from './confirm.js'
 export { timingSafeEqualText } from './crypto.js'
 export { GatewayError } from './errors.js'
@@ -11,6 +12,7 @@ export type {
   Customer,
   Gateway,
   GatewayInfo,
+  PaymentForm,
   PaymentRecord,
   PaymentStatus,
   VerifiedCallback,

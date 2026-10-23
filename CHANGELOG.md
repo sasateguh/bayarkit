@@ -8,6 +8,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `@bayarkit/core`: `checkoutResponse(payment, label?)` sends the customer to pay — a 303 redirect, or, for
+  gateways that take a POSTed form (`CreatedPayment.form`: iPay88, eGHL, Fiuu), an HTML-escaped self-submitting page
+  with a visible button, `no-store`, `noindex` and a hash-pinned CSP. `autoPostHtml` and the `PaymentForm` type are
+  exported; iPay88's own `autoPostHtml`/`IPay88Form` now point at them.
 - `bayarkit-fake` CLI in `@bayarkit/testing`: any fake as a standalone server with an HTTP control API, for tests in
   other languages (no vitest needed; vitest is now an optional peer).
 - `@bayarkit/core`: the `Gateway` interface, `confirmPayment` (signature → fresh gateway query → exact reference,

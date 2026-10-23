@@ -23,7 +23,8 @@
  * - Amounts are ringgit with two decimals at iPay88 (`10.50`); this adapter converts sen ↔ ringgit at the edge only.
  * - `createPayment` makes NO request: iPay88 starts a payment with a browser form POST to `entry.asp` (SPEC; a GET is
  *   undocumented). It returns `url` (the form action) plus `form` (method, action, fields) and `html` (a page that
- *   posts the form). Serve `html`, or render `form`; redirecting to `url` alone shows an iPay88 error page.
+ *   posts the form). Return `checkoutResponse(payment)` from `@bayarkit/core` (or serve `html`); redirecting to `url` alone
+ *   shows an iPay88 error page.
  * - Payment ids: iPay88 has no id before the customer pays and its re-query needs RefNo AND Amount, so the id is
  *   `<RefNo>:<amount in sen>`, built the same way from a verified callback.
  * - `getPayment` = `POST enquiry.asp` (`MerchantCode`, `RefNo`, `Amount`). It answers a bare `text/html` body with
@@ -71,12 +72,14 @@
  */
 import { createHmac } from 'node:crypto'
 import {
+  autoPostHtml,
   type CallbackInput,
   type CreatedPayment,
   type CreatePaymentInput,
   type Gateway,
   GatewayError,
   type GatewayInfo,
+  type PaymentForm,
   type PaymentRecord,
   type PaymentStatus,
   timingSafeEqualText,
@@ -105,11 +108,8 @@ export interface IPay88Config {
   timeoutMs?: number
 }
 
-export interface IPay88Form {
-  method: 'POST'
-  action: string
-  fields: Record<string, string>
-}
+/** Kept for compatibility: the shared `PaymentForm` from `@bayarkit/core`. */
+export type IPay88Form = PaymentForm
 
 export interface IPay88Payment extends CreatedPayment {
   /** The browser form that starts the payment. iPay88 takes a POST, not a redirect. */
@@ -204,19 +204,8 @@ export function parsePaymentId(id: unknown): { refNo: string; amount: number } |
   return { refNo, amount: Number(sen) }
 }
 
-const escapeHtml = (s: string) =>
-  s.replace(
-    /[&<>"']/g,
-    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] ?? c,
-  )
-
-/** A page that posts `form` to iPay88; `label` is the visible button for browsers that block the script. */
-export function autoPostHtml(form: IPay88Form, label = 'Continue to payment'): string {
-  const inputs = Object.entries(form.fields)
-    .map(([k, v]) => `<input type="hidden" name="${escapeHtml(k)}" value="${escapeHtml(v)}">`)
-    .join('')
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex"><title>iPay88</title></head><body><form id="ipay88" method="post" action="${escapeHtml(form.action)}" accept-charset="UTF-8">${inputs}<button type="submit">${escapeHtml(label)}</button></form><script>document.getElementById('ipay88').submit()</script></body></html>`
-}
+/** Kept for compatibility: the page now comes from `@bayarkit/core`. */
+export { autoPostHtml }
 
 /** The response the BackendURL page must give. */
 export function backendAck(): Response {

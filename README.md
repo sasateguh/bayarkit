@@ -48,12 +48,12 @@ Amounts are always integer **sen** (`1050` = RM10.50), so nothing compares float
 ## Quick start
 
 ```ts
-import { confirmPayment, readCallback } from '@bayarkit/core'
+import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { toyyibpay } from '@bayarkit/toyyibpay'
 
 const gateway = toyyibpay({ secretKey, categoryCode, environment: 'sandbox' })
 
-// 1. Checkout: one reference per attempt, then redirect the customer.
+// 1. Checkout: one reference per attempt, then send the customer to the gateway.
 const payment = await gateway.createPayment({
   reference: 'ORD1001',
   amount: 1050,
@@ -62,7 +62,8 @@ const payment = await gateway.createPayment({
   returnUrl: 'https://shop.example/thank-you',
   callbackUrl: 'https://shop.example/api/payment/callback',
 })
-// redirect to payment.url
+// A 303 redirect, or a self-submitting POST page for gateways that want a form (iPay88, eGHL, Fiuu).
+return checkoutResponse(payment, 'Continue to payment')
 
 // 2. Callback: never mark an order paid from the callback body or the return URL alone.
 const callback = await readCallback(request) // JSON, url-encoded or multipart (toyyibPay posts multipart)

@@ -68,3 +68,12 @@ gagal dua kali — bentuk penutup berbeza). Kini setiap gateway = `packages/test
 mesti wujud dalam folder itu) + `scripts/smoke/<id>.mjs` (senarai = nama fail); `rujukan lint` menuntut kedua-duanya.
 `pre-merge-commit` menjalankan gerbang untuk gabungan tanpa konflik (git melangkau pre-commit). Pelajaran: buang
 worktree SELEPAS komit gabungan disahkan, bukan dalam arahan yang sama.
+
+**D13 — 23 Okt 2026 — Fiuu + eGHL digabung (14 adapter); gateway "borang POST" disatukan dalam teras: `CreatedPayment.form?`
+- `checkoutResponse(payment)`.** iPay88 MESTI POST (redirect = halaman ralat), Fiuu dan eGHL terima kedua-duanya. Tanpa
+  teras, setiap laluan checkout perlu bercabang ikut gateway — melanggar janji "tukar gateway, kod lain tidak berubah".
+  Kini: tiada `form` → 303; ada `form` → halaman auto-POST (setiap nama/nilai di-escape, `no-store`, `noindex`, CSP
+  `default-src 'none'` + hash skrip tunggal). Butang KELIHATAN (bukan `<noscript>`) kerana CSP tapak pengguna boleh menyekat
+  skrip walaupun JS hidup. TIADA `Referrer-Policy`: iPay88 menyemak Referer terhadap tapak berdaftar. Fiuu/eGHL kini
+  POST secara lalai melalui `checkoutResponse` (emel pelanggan + tandatangan tidak masuk sejarah pelayar/log); `url` GET
+  dikekalkan. Undur: buang `form` daripada adapter = kembali ke redirect, tiada perubahan API.

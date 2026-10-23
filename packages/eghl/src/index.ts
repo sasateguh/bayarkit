@@ -13,7 +13,7 @@
  *   a missing optional field contributes "".
  * - `createPayment` makes no HTTP call (eGHL has no create API). It returns `url` = `payment.aspx?<fields>`, the GET
  *   redirect the official WooCommerce plugin uses (`$this->payment_url . http_build_query($data)`), and the same
- *   fields in `raw` (`{ action, method: 'POST', fields }`) for an auto-submitting form, which is what Omnipay does.
+ *   fields in `form` (and `raw`) for an auto-submitting POST, which is what Omnipay does; `checkoutResponse` uses `form`.
  *   Request HashValue = sha256(password + ServiceID + PaymentID + MerchantReturnURL + MerchantApprovalURL +
  *   MerchantUnApprovalURL + MerchantCallBackURL + Amount + CurrencyCode + CustIP + PageTimeout + CardNo + Token); the
  *   approval/unapproval URLs, card number and token are never sent, so they hash as "" (the C6 plugin variant that
@@ -75,6 +75,7 @@ import {
   type Gateway,
   GatewayError,
   type GatewayInfo,
+  type PaymentForm,
   type PaymentRecord,
   type PaymentStatus,
   timingSafeEqualText,
@@ -164,6 +165,7 @@ export interface EghlPaymentInput extends CreatePaymentInput {
 }
 
 export interface EghlCreatedPayment extends CreatedPayment {
+  form: PaymentForm
   raw: { action: string; method: 'POST'; fields: Record<string, string> }
 }
 
@@ -378,6 +380,7 @@ export function eghl(config: EghlConfig): EghlGateway {
       return {
         id: `${reference}.${input.amount}`,
         url: `${endpoint}?${new URLSearchParams(fields).toString()}`,
+        form: { method: 'POST', action: endpoint, fields },
         raw: { action: endpoint, method: 'POST', fields },
       }
     },

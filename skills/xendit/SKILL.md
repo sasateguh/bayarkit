@@ -10,12 +10,13 @@ description: Integrate Xendit payments (Malaysia) safely. Use when adding Xendit
 Install `@bayarkit/core` and `@bayarkit/xendit`. Evidence: **written from the official docs, not yet measured on the sandbox**.
 
 ```ts
-import { confirmPayment, readCallback } from '@bayarkit/core'
+import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { xendit } from '@bayarkit/xendit'
 
 const gateway = xendit({ secretKey, callbackToken })
 const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
-// redirect to payment.url; then, in the callback route:
+return checkoutResponse(payment) // a 303 redirect, or a self-submitting page when the gateway wants a POST form
+// then, in the callback route:
 const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
 ```
 

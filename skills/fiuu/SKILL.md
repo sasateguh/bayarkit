@@ -10,12 +10,13 @@ description: Integrate Fiuu (formerly Razer Merchant Services / MOLPay) payments
 Install `@bayarkit/core` and `@bayarkit/fiuu`. Evidence: **written from the official docs, not yet measured on the sandbox**.
 
 ```ts
-import { confirmPayment, readCallback } from '@bayarkit/core'
+import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { fiuu } from '@bayarkit/fiuu'
 
 const gateway = fiuu({ merchantId, verifyKey, secretKey, environment: 'sandbox' })
 const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
-// redirect to payment.url; then, in the callback route:
+return checkoutResponse(payment) // a 303 redirect, or a self-submitting page when the gateway wants a POST form
+// then, in the callback route:
 const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
 ```
 

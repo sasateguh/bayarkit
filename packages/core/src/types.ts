@@ -32,11 +32,23 @@ export interface CreatePaymentInput {
   idempotencyKey?: string
 }
 
+/** A browser form that starts a payment, for gateways that take a POST instead of a redirect. */
+export interface PaymentForm {
+  method: 'POST'
+  action: string
+  fields: Record<string, string>
+}
+
 export interface CreatedPayment {
   /** The id to pass to `getPayment`, and the id a callback will carry. */
   id: string
-  /** Redirect the customer here. */
+  /**
+   * Where the payment page is. When `form` is present, send the customer with `form` instead (the gateway expects a
+   * POST); `checkoutResponse(payment)` picks the right one.
+   */
   url: string
+  /** Present when the gateway starts a payment with a POSTed form. */
+  form?: PaymentForm
   raw: unknown
 }
 

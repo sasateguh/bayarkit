@@ -10,12 +10,13 @@ description: Integrate Bayarcash payments (Malaysia) safely. Use when adding Bay
 Install `@bayarkit/core` and `@bayarkit/bayarcash`. Evidence: **written from the official docs, not yet measured on the sandbox**.
 
 ```ts
-import { confirmPayment, readCallback } from '@bayarkit/core'
+import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { bayarcash } from '@bayarkit/bayarcash'
 
 const gateway = bayarcash({ token, secretKey, portalKey, environment: 'sandbox' })
 const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
-// redirect to payment.url; then, in the callback route:
+return checkoutResponse(payment) // a 303 redirect, or a self-submitting page when the gateway wants a POST form
+// then, in the callback route:
 const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
 ```
 

@@ -10,12 +10,13 @@ description: Integrate Gkash payments (Malaysia) safely. Use when adding Gkash c
 Install `@bayarkit/core` and `@bayarkit/gkash`. Evidence: **written from the official docs, not yet measured on the sandbox**.
 
 ```ts
-import { confirmPayment, readCallback } from '@bayarkit/core'
+import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { gkash } from '@bayarkit/gkash'
 
 const gateway = gkash({ cid, signatureKey, environment: 'sandbox' })
 const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
-// redirect to payment.url; then, in the callback route:
+return checkoutResponse(payment) // a 303 redirect, or a self-submitting page when the gateway wants a POST form
+// then, in the callback route:
 const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
 ```
 

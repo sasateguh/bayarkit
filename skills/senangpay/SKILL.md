@@ -10,12 +10,13 @@ description: Integrate senangPay payments (Malaysia) safely. Use when adding sen
 Install `@bayarkit/core` and `@bayarkit/senangpay`. Evidence: **written from the official docs, not yet measured on the sandbox**.
 
 ```ts
-import { confirmPayment, readCallback } from '@bayarkit/core'
+import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { senangpay } from '@bayarkit/senangpay'
 
 const gateway = senangpay({ clientId, secretKey, apiKey, environment, notificationPath })
 const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
-// redirect to payment.url; then, in the callback route:
+return checkoutResponse(payment) // a 303 redirect, or a self-submitting page when the gateway wants a POST form
+// then, in the callback route:
 const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
 ```
 

@@ -9,7 +9,8 @@
  * - Credentials: Merchant ID (`domain`), Verify Key (signs requests: `vcode`, requery `skey`), Secret Key (verifies
  *   what Fiuu sends: payment `skey`, requery `VrfKey`). No token, no OAuth: MD5 hashes only (SPEC p18).
  * - `createPayment` makes NO server call: Fiuu has no create API (SPEC p12, p45). It builds the hosted-page URL
- *   `{pay host}/RMS/pay/{merchantID}/?…` (GET, which SPEC p40 allows) with
+ *   `{pay host}/RMS/pay/{merchantID}/?…` (GET, which SPEC p40 allows) and the same fields as a POST `form` (SPEC p25),
+ *   which `checkoutResponse` uses, with
  *   `vcode = md5(amount.merchantID.orderid.verify_key)`, or `…verify_key.currency` with `extendedVcode: true` (the
  *   portal option "Use extended format for Verify Payment"; the official PHP SDK always omits the currency, C13). The
  *   amount string in the hash is the one sent (`toRinggit`: always two decimals, never a comma).
@@ -317,8 +318,16 @@ export function fiuu(config: FiuuConfig): Gateway {
         callbackurl: input.callbackUrl,
         ...(expiry ? { PaymentExpirationTime: expiry } : {}),
       }
-      const url = `${payBase}/RMS/pay/${config.merchantId}/?${new URLSearchParams(params).toString()}`
-      return { id: paymentId(reference, input.amount), url, raw: params }
+      // SPEC p25: POST or GET. `form` (POST, trailing `/` required) keeps the customer's email and the vcode out of
+      // browser history and server logs; `url` is the GET equivalent for callers that can only redirect.
+      const action = `${payBase}/RMS/pay/${config.merchantId}/`
+      const url = `${action}?${new URLSearchParams(params).toString()}`
+      return {
+        id: paymentId(reference, input.amount),
+        url,
+        form: { method: 'POST', action, fields: params },
+        raw: params,
+      }
     },
 
     async getPayment(id: string): Promise<PaymentRecord> {

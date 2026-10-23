@@ -15,7 +15,7 @@ cd "$tmp"
 npm init -y >/dev/null
 npm install --silent --no-audit --no-fund ./bayarkit-*.tgz vitest@5.0.5 >/dev/null
 cat > smoke.mjs <<'JS'
-import { confirmPayment } from '@bayarkit/core'
+import { checkoutResponse, confirmPayment } from '@bayarkit/core'
 import * as testing from '@bayarkit/testing'
 
 const order = { reference: 'SMOKE1', amount: 1500, description: 'Smoke test', customer: { name: 'Ali', email: 'a@example.com' },
@@ -26,6 +26,11 @@ for (const name of names) {
   const { default: setup } = await import(`./setups/${name}.mjs`)
   const { fake, gateway } = await setup(testing)
   const created = await gateway.createPayment(order)
+  // The checkout response: a 303 to the payment page, or a page that POSTs the gateway's form.
+  const sent = checkoutResponse(created)
+  const how = created.form ? sent.status === 200 && (await sent.text()).includes(`action="${created.form.action}"`)
+    : sent.status === 303 && sent.headers.get('location') === new URL(created.url).href
+  if (!how) { console.error(name, 'checkoutResponse', sent.status); process.exit(1) }
   const early = await confirmPayment(gateway, fake.callbackFor(created.id), order)
   fake.markPaid(created.id)
   const paid = await confirmPayment(gateway, fake.callbackFor(created.id), order)
@@ -36,7 +41,7 @@ for (const name of names) {
     process.exit(1)
   }
 }
-console.log(`smoke ok: ${names.join(' + ')} confirmed from packed tarballs`)
+console.log(`smoke ok: ${names.join(' + ')} checked out + confirmed from packed tarballs`)
 JS
 node smoke.mjs "${GATEWAYS[@]}"
 

@@ -49,7 +49,7 @@ Amaun sentiasa dalam **sen** integer (`1050` = RM10.50), jadi tiada ringgit titi
 ## Mula pantas
 
 ```ts
-import { confirmPayment, readCallback } from '@bayarkit/core'
+import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { toyyibpay } from '@bayarkit/toyyibpay'
 
 const gateway = toyyibpay({ secretKey, categoryCode, environment: 'sandbox' })
@@ -63,7 +63,8 @@ const payment = await gateway.createPayment({
   returnUrl: 'https://shop.example/thank-you',
   callbackUrl: 'https://shop.example/api/payment/callback',
 })
-// redirect ke payment.url
+// Redirect 303, atau halaman yang menghantar borang POST sendiri untuk gateway yang mahukan borang (iPay88, eGHL, Fiuu).
+return checkoutResponse(payment, 'Teruskan ke pembayaran')
 
 // 2. Callback: jangan sesekali tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata.
 const callback = await readCallback(request) // JSON, url-encoded atau multipart (toyyibPay menghantar multipart)

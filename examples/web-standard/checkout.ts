@@ -1,8 +1,8 @@
 /**
  * Checkout + callback with Web-standard handlers (drop into Next.js `app/api/.../route.ts`, Hono, Bun or Deno).
- * Swap `toyyibpay(...)` for `bayarcash(...)` and nothing else changes — that is the point of bayarkit.
+ * Swap `toyyibpay(...)` for `bayarcash(...)` or `ipay88(...)` and nothing else changes — that is the point of bayarkit.
  */
-import { confirmPayment, type Gateway, readCallback } from '@bayarkit/core'
+import { checkoutResponse, confirmPayment, type Gateway, readCallback } from '@bayarkit/core'
 import { toyyibpay } from '@bayarkit/toyyibpay'
 
 const gateway: Gateway = toyyibpay({
@@ -33,7 +33,8 @@ export async function checkout(request: Request): Promise<Response> {
   })
   const order = orders.get(reference)
   if (order) order.paymentId = payment.id
-  return Response.redirect(payment.url, 303)
+  // A 303 redirect for most gateways; a self-submitting POST page for iPay88, eGHL and Fiuu.
+  return checkoutResponse(payment, 'Continue to payment')
 }
 
 /** POST /api/payment/callback — the gateway's server-to-server notification. */
