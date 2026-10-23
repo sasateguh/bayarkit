@@ -658,7 +658,18 @@
           "mustContain": ["CC_SHA512", "api.gkash.my", "%.2f"]
         }
       ],
-      "adapter": null,
+      "adapter": {
+        "package": "@bayarkit/gkash",
+        "factory": "gkash",
+        "evidence": "docs",
+        "configExample": "{ cid, signatureKey, environment: 'sandbox' }",
+        "fake": "startFakeGkash",
+        "label": { "en": "Gkash", "ms": "Gkash" },
+        "summary": {
+          "en": "Official docs (SHA-512 signature test vectors), WooCommerce plugin and gkashmy SDKs; not yet measured on staging",
+          "ms": "Dokumen rasmi (vektor ujian tandatangan SHA-512), plugin WooCommerce dan SDK gkashmy; belum diukur pada staging"
+        }
+      },
       "spec": true,
       "gotchas": [
         {

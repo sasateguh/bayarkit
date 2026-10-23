@@ -44,3 +44,8 @@ All notable changes to this project are documented here. The format follows
   `getPayment` reports the order's state, `createOrder` for Standard Checkout; webhooks verified over the RAW body with
   the webhook secret (the official Node sample's `JSON.stringify(parsed)` fails), Payment Link and Checkout callbacks
   with the key secret; all five official test vectors reproduced. `startFakeCurlec` in `@bayarkit/testing`.
+- `@bayarkit/gkash`: Gkash host-to-host checkout + transaction query, from the official docs, WooCommerce plugin and
+  gkashmy SDKs (not yet measured): SHA-512 over the whole upper-cased string (AMT keeps the leading zero, `0.10` →
+  `010`), every official test vector reproduced, the signed checkout response verified, the unsigned query checked
+  against the cart id asked for, only status `88` is paid; DOC's own callback example (wrong CID) is refused.
+  `startFakeGkash` in `@bayarkit/testing`.

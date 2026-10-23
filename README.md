@@ -5,7 +5,7 @@ Write your checkout once; switch gateways by changing one line.
 
 [Bahasa Melayu](README.ms.md)
 
-> **Status:** pre-release (0.1.0), not on npm yet. Nine gateways, with more planned below.
+> **Status:** pre-release (0.1.0), not on npm yet. Ten gateways, with more planned below.
 
 ## Why
 
@@ -33,6 +33,7 @@ Write your checkout once; switch gateways by changing one line.
 | 2C2P (PGW Payment API v4.x)      | `@bayarkit/2c2p`      | Official developer docs (Payment Token + HS256 JWT, three official JWT test vectors); not yet measured on the sandbox                |
 | Razorpay Curlec                  | `@bayarkit/curlec`    | Official docs (Payment Links + Orders, three signatures, all five official test vectors); not yet measured in test mode              |
 | HitPay                           | `@bayarkit/hitpay`    | Official docs (OpenAPI, Payment Requests, both webhook signatures) and official PHP SDK; not yet measured on the sandbox             |
+| Gkash                            | `@bayarkit/gkash`     | Official docs (SHA-512 signature test vectors), WooCommerce plugin and gkashmy SDKs; not yet measured on staging                     |
 <!-- /gateways:table -->
 
 Planned next: the gateways listed in [gateways/README.md](gateways/README.md). An adapter is listed as _measured_ only after the
