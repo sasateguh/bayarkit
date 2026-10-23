@@ -126,7 +126,7 @@ await yourCallbackHandler(fake.callbackFor(payment.id)) // signed exactly like t
 
 ### Tests in other languages (PHP/Laravel, Python, Go)
 
-`npx bayarkit-fake <toyyibpay|bayarcash|billplz|stripe|chip>` runs one fake gateway as a server and prints one JSON line
+`npx bayarkit-fake <gateway>` runs one fake gateway as a server and prints one JSON line
 with its `url` and a `control` URL. Point your app at `url`, then drive it over HTTP: `POST <control>/paid/<id>` marks a
 payment paid, `GET <control>/callback/<id>` returns the exact signed callback (`/tampered` for a forged one) to post to
 your callback route. It does not need vitest.

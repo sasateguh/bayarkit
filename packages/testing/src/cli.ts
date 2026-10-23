@@ -2,103 +2,30 @@
 /**
  * bayarkit-fake — run one fake gateway as a standalone server, for tests in any language.
  *
- *   npx bayarkit-fake <toyyibpay|bayarcash|billplz|stripe|chip|hitpay> [--control-port N] [--<option> <value> ...]
-  },
- *   npx bayarkit-fake <toyyibpay|bayarcash|billplz|stripe|chip|curlec> [--control-port N] [--<option> <value> ...]
+ *   npx bayarkit-fake <gateway> [--control-port N] [--<option> <value> ...]
  *
  * Prints ONE JSON line ({ gateway, url, control, options }) and serves until SIGINT/SIGTERM. Options are the fake's
  * own (e.g. --secretKey, --webhookSecret); test defaults are used for the rest and echoed in `options`.
- * Imports the fakes directly, not the package index, so vitest is not needed.
+ * Each gateway is one file in ./cli/ (loaded on demand), so adding a gateway never edits this file, and vitest is not
+ * needed (the package index, which pulls in the conformance suite, is not imported).
  */
+import { readdirSync } from 'node:fs'
+import type { CliFake } from './cli/types.js'
 import { startControlServer } from './control.js'
-import { startFake2C2P } from './fakes/2c2p.js'
-import { startFakeBayarcash } from './fakes/bayarcash.js'
-import { startFakeBillplz } from './fakes/billplz.js'
-import { startFakeChip } from './fakes/chip.js'
-import { startFakeCurlec } from './fakes/curlec.js'
-import { startFakeHitPay } from './fakes/hitpay.js'
-import { startFakeSenangPay } from './fakes/senangpay.js'
-import { startFakeStripe } from './fakes/stripe.js'
-import { startFakeToyyibPay } from './fakes/toyyibpay.js'
-import type { FakeGateway } from './fakes/types.js'
 
-const FAKES: Record<
-  string,
-  { defaults: Record<string, string>; start(o: Record<string, string>): Promise<FakeGateway> }
-> = {
-  toyyibpay: {
-    defaults: { secretKey: 'fake-secret', categoryCode: 'fakecat' },
-    start: (o) => startFakeToyyibPay({ secretKey: o.secretKey ?? '', categoryCode: o.categoryCode ?? '' }),
-  },
-  bayarcash: {
-    defaults: { token: 'fake-token', secretKey: 'fake-secret', portalKey: 'fake-portal' },
-    start: (o) =>
-      startFakeBayarcash({
-        token: o.token ?? '',
-        secretKey: o.secretKey ?? '',
-        portalKey: o.portalKey ?? '',
-      }),
-  },
-  billplz: {
-    defaults: { secretKey: 'fake-secret', xSignatureKey: 'fake-x-signature', collectionId: 'fakecollection' },
-    start: (o) =>
-      startFakeBillplz({
-        secretKey: o.secretKey ?? '',
-        xSignatureKey: o.xSignatureKey ?? '',
-        collectionId: o.collectionId ?? '',
-      }),
-  },
-  stripe: {
-    defaults: { secretKey: 'sk_test_fake', webhookSecret: 'whsec_fake' },
-    start: (o) => startFakeStripe({ secretKey: o.secretKey ?? '', webhookSecret: o.webhookSecret ?? '' }),
-  },
-  chip: {
-    defaults: { secretKey: 'fake-secret', brandId: 'fake-brand' },
-    start: (o) => startFakeChip({ secretKey: o.secretKey ?? '', brandId: o.brandId ?? '' }),
-  },
-  hitpay: {
-    defaults: { apiKey: 'fake-api-key', apiSalt: 'fake-api-salt', webhookSalt: 'fake-webhook-salt' },
-    start: (o) =>
-      startFakeHitPay({ apiKey: o.apiKey ?? '', apiSalt: o.apiSalt ?? '', webhookSalt: o.webhookSalt ?? '' }),
-  },
-  '2c2p': {
-    defaults: { merchantId: 'JT07', secretKey: 'FAKE2C2PSECRETKEY' },
-    start: (o) => startFake2C2P({ merchantId: o.merchantId ?? '', secretKey: o.secretKey ?? '' }),
-  },
-  senangpay: {
-    defaults: {
-      clientId: 'BRN-fake-0001',
-      secretKey: 'fake-secret',
-      apiKey: 'fake-api-key',
-      notificationPath: '/notifications/doku',
-    },
-    start: (o) =>
-      startFakeSenangPay({
-        clientId: o.clientId ?? '',
-        secretKey: o.secretKey ?? '',
-        apiKey: o.apiKey ?? '',
-        notificationPath: o.notificationPath ?? '',
-      }),
-  },
-  curlec: {
-    defaults: { keyId: 'rzp_test_fake', keySecret: 'fake-key-secret', webhookSecret: 'fake-webhook-secret' },
-    start: (o) =>
-      startFakeCurlec({
-        keyId: o.keyId ?? '',
-        keySecret: o.keySecret ?? '',
-        webhookSecret: o.webhookSecret ?? '',
-      }),
-  },
-}
+const dir = new URL('./cli/', import.meta.url)
+const available = readdirSync(dir)
+  .filter((f) => f.endsWith('.js') && f !== 'types.js')
+  .map((f) => f.slice(0, -3))
+  .sort()
 
 const [gateway, ...rest] = process.argv.slice(2)
-const entry = gateway ? FAKES[gateway] : undefined
-if (!gateway || !entry) {
-  console.error(
-    `usage: bayarkit-fake <${Object.keys(FAKES).join('|')}> [--control-port N] [--<option> <value> ...]`,
-  )
+// Only names that exist in ./cli/ are imported, so the argument can never reach another path.
+if (!gateway || !available.includes(gateway)) {
+  console.error(`usage: bayarkit-fake <${available.join('|')}> [--control-port N] [--<option> <value> ...]`)
   process.exit(64)
 }
+const entry = ((await import(new URL(`${gateway}.js`, dir).href)) as { default: CliFake }).default
 const options: Record<string, string> = { ...entry.defaults }
 let controlPort = 0
 for (let i = 0; i < rest.length; i += 2) {

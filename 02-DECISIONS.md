@@ -61,3 +61,10 @@ fail repo rasminya (API GitHub, `sha` setiap fail); Xendit tiada tandatangan bad
 (tanya semula) menjadi satu-satunya perlindungan. Contoh rasmi yang dikesan gitleaks ditanda `gitleaks:allow` SEBARIS
 dengan sebab (berkesan untuk imbasan pre-commit DAN sejarah). Spesifikasi Markdown dikecualikan daripada Biome.
 Adyen + Airwallex ditangguh (global, dokumen sangat besar).
+
+**D12 — 23 Okt 2026 — Kumpulan 1 (senangPay/DOKU, Curlec, HitPay, 2C2P) digabung: 9 adapter, 310 ujian. Fail kongsi
+dihapuskan sebagai punca konflik.** Setiap gabungan selari bertembung pada peta CLI dan setup asap (penyelesai teks
+gagal dua kali — bentuk penutup berbeza). Kini setiap gateway = `packages/testing/src/cli/<id>.ts` (dimuat dinamik; nama
+mesti wujud dalam folder itu) + `scripts/smoke/<id>.mjs` (senarai = nama fail); `rujukan lint` menuntut kedua-duanya.
+`pre-merge-commit` menjalankan gerbang untuk gabungan tanpa konflik (git melangkau pre-commit). Pelajaran: buang
+worktree SELEPAS komit gabungan disahkan, bukan dalam arahan yang sama.

@@ -157,6 +157,12 @@ function lint() {
       else {
         const src = readFileSync(join(pkgDir, 'src', 'index.ts'), 'utf8')
         const kind = /evidence:\s*\{\s*kind:\s*'(measured|docs)'/.exec(src)?.[1]
+        for (const [path, what] of [
+          [join(ROOT, 'packages', 'testing', 'src', 'cli', `${gw.id}.ts`), 'bayarkit-fake entry'],
+          [join(ROOT, 'scripts', 'smoke', `${gw.id}.mjs`), 'packed smoke setup'],
+        ]) {
+          if (!existsSync(path)) problems.push(`${gw.id}: ${what} missing (${path.slice(ROOT.length + 1)})`)
+        }
         if (kind !== gw.adapter.evidence) {
           problems.push(`${gw.id}: registry says evidence "${gw.adapter.evidence}", adapter says "${kind}"`)
         }

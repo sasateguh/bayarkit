@@ -4,10 +4,13 @@
 # Every gateway goes through the same steps: an early callback is refused, a paid one confirms, a tampered one is refused.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-GATEWAYS=(toyyibpay bayarcash billplz stripe chip hitpay 2c2p senangpay curlec)
+# One setup file per gateway in scripts/smoke/<id>.mjs: adding a gateway adds a file, never edits this script.
+GATEWAYS=()
+for f in scripts/smoke/*.mjs; do GATEWAYS+=("$(basename "$f" .mjs)"); done
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 for p in core testing "${GATEWAYS[@]}"; do (cd "packages/$p" && npm pack --silent --pack-destination "$tmp" >/dev/null); done
+mkdir -p "$tmp/setups" && cp scripts/smoke/*.mjs "$tmp/setups/"
 cd "$tmp"
 npm init -y >/dev/null
 npm install --silent --no-audit --no-fund ./bayarkit-*.tgz vitest@5.0.5 >/dev/null
@@ -18,59 +21,10 @@ import * as testing from '@bayarkit/testing'
 const order = { reference: 'SMOKE1', amount: 1500, description: 'Smoke test', customer: { name: 'Ali', email: 'a@example.com' },
   returnUrl: 'https://x/return', callbackUrl: 'https://x/cb' }
 
-const setups = {
-  toyyibpay: async () => {
-    const fake = await testing.startFakeToyyibPay({ secretKey: 's', categoryCode: 'c' })
-    const { toyyibpay } = await import('@bayarkit/toyyibpay')
-    return { fake, gateway: toyyibpay({ secretKey: 's', categoryCode: 'c', environment: 'sandbox', baseUrl: fake.url }) }
-  },
-  bayarcash: async () => {
-    const fake = await testing.startFakeBayarcash({ token: 't', secretKey: 's', portalKey: 'p' })
-    const { bayarcash } = await import('@bayarkit/bayarcash')
-    return { fake, gateway: bayarcash({ token: 't', secretKey: 's', portalKey: 'p', environment: 'sandbox', baseUrl: fake.url }) }
-  },
-  billplz: async () => {
-    const fake = await testing.startFakeBillplz({ secretKey: 's', xSignatureKey: 'x', collectionId: 'c' })
-    const { billplz } = await import('@bayarkit/billplz')
-    return { fake, gateway: billplz({ secretKey: 's', xSignatureKey: 'x', collectionId: 'c', environment: 'sandbox', baseUrl: fake.url }) }
-  },
-  stripe: async () => {
-    const fake = await testing.startFakeStripe({ secretKey: 'sk_test_smoke', webhookSecret: 'whsec_smoke' })
-    const { stripe } = await import('@bayarkit/stripe')
-    return { fake, gateway: stripe({ secretKey: 'sk_test_smoke', webhookSecret: 'whsec_smoke', baseUrl: fake.url }) }
-  },
-  chip: async () => {
-    const fake = await testing.startFakeChip({ secretKey: 's', brandId: 'b' })
-    const { chip } = await import('@bayarkit/chip')
-    const publicKey = await chip({ secretKey: 's', brandId: 'b', baseUrl: fake.url }).fetchPublicKey()
-    return { fake, gateway: chip({ secretKey: 's', brandId: 'b', publicKey, baseUrl: fake.url }) }
-  },
-  hitpay: async () => {
-    const fake = await testing.startFakeHitPay({ apiKey: 'k', apiSalt: 'as', webhookSalt: 'ws' })
-    const { hitpay } = await import('@bayarkit/hitpay')
-    return { fake, gateway: hitpay({ apiKey: 'k', apiSalt: 'as', webhookSalt: 'ws', environment: 'sandbox', baseUrl: fake.url }) }
-  },
-  '2c2p': async () => {
-    const fake = await testing.startFake2C2P({ merchantId: 'JT07', secretKey: 'SMOKEKEY' })
-    const { twoc2p } = await import('@bayarkit/2c2p')
-    return { fake, gateway: twoc2p({ merchantId: 'JT07', secretKey: 'SMOKEKEY', environment: 'sandbox', baseUrl: fake.url }) }
-  },
-  senangpay: async () => {
-    const keys = { clientId: 'BRN-smoke', secretKey: 's', apiKey: 'k', notificationPath: '/doku' }
-    const fake = await testing.startFakeSenangPay(keys)
-    const { senangpay } = await import('@bayarkit/senangpay')
-    return { fake, gateway: senangpay({ ...keys, environment: 'sandbox', baseUrl: fake.url }) }
-  },
-  curlec: async () => {
-    const fake = await testing.startFakeCurlec({ keyId: 'rzp_test_smoke', keySecret: 'ks', webhookSecret: 'ws' })
-    const { curlec } = await import('@bayarkit/curlec')
-    return { fake, gateway: curlec({ keyId: 'rzp_test_smoke', keySecret: 'ks', webhookSecret: 'ws', baseUrl: fake.url }) }
-  },
-}
-
 const names = process.argv.slice(2)
 for (const name of names) {
-  const { fake, gateway } = await setups[name]()
+  const { default: setup } = await import(`./setups/${name}.mjs`)
+  const { fake, gateway } = await setup(testing)
   const created = await gateway.createPayment(order)
   const early = await confirmPayment(gateway, fake.callbackFor(created.id), order)
   fake.markPaid(created.id)

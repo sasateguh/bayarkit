@@ -30,6 +30,8 @@ and `node tools/rujukan.mjs skills`.
      constant time (`timingSafeEqualText`);
    - errors are `GatewayError`, and their messages quote the gateway's response only, never a key or secret;
    - `info.evidence` is `{ kind: 'docs', ... }` until the next step is done.
+     Add `packages/testing/src/cli/<gateway>.ts` (test defaults for `bayarkit-fake`) and `scripts/smoke/<gateway>.mjs`
+     (the packed smoke setup); `node tools/rujukan.mjs lint` fails without them. No shared list needs editing.
 4. **Run the conformance suite** with `gatewayConformance('<gateway>', setup)` in `packages/<gateway>/test/`.
    Every test must pass.
 5. **Measure the sandbox.** Run the adapter against the gateway's real sandbox, including one test-bank payment.
