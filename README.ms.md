@@ -78,11 +78,13 @@ Contoh lengkap checkout dan callback dengan pengendali piawai web (Next.js, Hono
 [examples/web-standard/checkout.ts](examples/web-standard/checkout.ts). Untuk guna Bayarcash, gantikan panggilan
 `toyyibpay(...)` dengan `bayarcash({ token, secretKey, portalKey, environment: 'sandbox' })`.
 
-Untuk CHIP, guna `chip({ secretKey, brandId, publicKey })`. CHIP ada satu hos sahaja: kunci rahsia mod ujian membuat
+Untuk CHIP, guna `chip({ secretKey, brandId, publicKey, environment: 'test' })`. CHIP ada satu hos sahaja: kunci rahsia mod ujian membuat
 pembelian ujian. Callback ditandatangani dengan kunci RSA CHIP atas badan mentah, jadi bacalah dengan `readCallback`
 (bukan badan yang sudah dihurai). Dapatkan kunci awam sekali dengan
-`await chip({ secretKey, brandId }).fetchPublicKey()` (kunci rahsia yang sama), simpan, dan hantar sebagai `publicKey`;
+`await chip({ secretKey, brandId, environment: 'test' }).fetchPublicKey()` (kunci rahsia yang sama), simpan, dan hantar sebagai `publicKey`;
 tanpanya setiap callback ditolak. CHIP menolak `callbackUrl` yang ada port, walaupun `:443`.
+`environment` wajib (`'test'` dengan kunci ujian, `'live'` dengan kunci hidup): pembelian daripada mod yang satu lagi,
+atau yang tidak menyatakan modnya, ditolak, jadi bayaran ujian tidak boleh menanda pesanan sebenar sebagai dibayar.
 
 ## Apa yang `confirmPayment` semak
 

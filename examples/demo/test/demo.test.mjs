@@ -120,10 +120,66 @@ describe('demo memory stays bounded', () => {
       )
       expect(res.status).toBe(303)
     }
-    await new Promise((r) => setTimeout(r, 200))
+    await small.settled()
+    // Hard bound under any timing: at most 2 sets, each at most 2 × perGeneration (back-pressure while rotating).
     const { orders, generations } = small.stats()
     expect(generations).toBeLessThanOrEqual(2)
-    expect(orders).toBeLessThanOrEqual(10)
+    expect(orders).toBeLessThanOrEqual(2 * 2 * 5)
     await small.close()
   }, 60_000)
+
+  it('when rotation keeps failing it answers 503 instead of growing (and never retries on every request)', async () => {
+    const net = await import('node:net')
+    const small = await startDemo({ perGeneration: 2 })
+    const listen = net.Server.prototype.listen
+    net.Server.prototype.listen = () => {
+      throw Object.assign(new Error('EMFILE: too many open files'), { code: 'EMFILE' })
+    }
+    const errors = console.error
+    let logged = 0
+    console.error = () => {
+      logged += 1
+    }
+    try {
+      const statuses = []
+      for (let i = 0; i < 8; i++) {
+        const res = await small.handle(
+          new Request('http://demo.test/checkout', {
+            method: 'POST',
+            headers: { 'content-type': 'application/x-www-form-urlencoded' },
+            body: 'gateway=toyyibpay&amount=1.00',
+          }),
+        )
+        statuses.push(res.status)
+        await small.settled()
+      }
+      expect(statuses.filter((s) => s === 303).length).toBe(4)
+      expect(statuses.slice(4).every((s) => s === 503)).toBe(true)
+      expect(small.stats().orders).toBe(4)
+      expect(logged).toBe(1) // one failed attempt, then cooling down
+    } finally {
+      net.Server.prototype.listen = listen
+      console.error = errors
+    }
+    await small.close()
+  })
+
+  it('holds the bound under 100 parallel checkouts', async () => {
+    const small = await startDemo({ perGeneration: 5 })
+    const one = () =>
+      small.handle(
+        new Request('http://demo.test/checkout', {
+          method: 'POST',
+          headers: { 'content-type': 'application/x-www-form-urlencoded' },
+          body: 'gateway=toyyibpay&amount=1.00',
+        }),
+      )
+    const statuses = await Promise.all(Array.from({ length: 100 }, one).map((p) => p.then((r) => r.status)))
+    expect(statuses.every((s) => s === 303)).toBe(true)
+    await small.settled()
+    const { orders, generations } = small.stats()
+    expect(generations).toBeLessThanOrEqual(2)
+    expect(orders).toBeLessThanOrEqual(2 * 2 * 5)
+    await small.close()
+  }, 120_000)
 })

@@ -13,7 +13,7 @@ Install `@bayarkit/core` and `@bayarkit/chip`. Evidence: **written from the offi
 import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { chip } from '@bayarkit/chip'
 
-const gateway = chip({ secretKey, brandId, publicKey })
+const gateway = chip({ secretKey, brandId, publicKey, environment: 'test' })
 const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
 return checkoutResponse(payment) // a 303 redirect, or a self-submitting page when the gateway wants a POST form
 // then, in the callback route:

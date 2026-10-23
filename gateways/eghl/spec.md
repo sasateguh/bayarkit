@@ -172,3 +172,7 @@ The NON-PUBLIC v2.8n guide gives five more examples (password `abc123`, ServiceI
 - WooCommerce rewrites every posted value with `str_replace(':', '=>')` before verifying HashValue2. Any hashed field containing `:` would fail verification. (WOO `:394-398`)
 - Omnipay `getTransactionReference()` reads `$data` instead of `$this->data`, so it always returns `false`. Read `TxnID` directly. (OMNI `CompletePurchaseResponse.php#lines-94`)
 - `pay.e-ghl.com` is the **test** host. Production is `securepay.e-ghl.com`. (OMNI `PurchaseResponse.php#lines-14:16`)
+
+## Independent review notes (23 Oct 2026)
+
+`HashValue2` = sha256(password + fields) with no separator: a genuine FAILED callback for `INV20`/RM5.00 re-splits into a verifying PAID claim for `INV2`/RM15.00 (`INV20|1|5.00` and `INV2|0|15.00` concatenate alike). `confirmPayment` still refuses because the QUERY answer is hash-checked and eGHL's own, provided QUERY does not echo the requested Amount (the spec says it must match the original: UNCONFIRMED until measured). A weakness of eGHL's scheme, not of the adapter.

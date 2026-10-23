@@ -14,6 +14,12 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- CHIP (both twins): `environment` is required and a purchase that does not state `is_test` is refused, so a test
+  payment can never mark a live order paid. **Breaking:** pass `environment: 'test' | 'live'` (`CHIP_ENV` in PHP).
+- Gkash: references are upper-case only (`[A-Z0-9._-]`); Gkash's signature does not cover letter case.
+  **Breaking** for lower-case references.
+- senangPay: compares `payment.amount` when the retrieve carries it.
+- demo: memory bound holds under parallel load (100 at once), and a failing rotation cools down and answers 503.
 - Billplz: a bill from ANOTHER collection of the same account is refused (`FOREIGN_COLLECTION`; the X Signature
   key is account-wide), and a paid bill is compared on `paid_amount`, the money received.
 - Bayarcash: a transaction reported for another portal is refused (`FOREIGN_PORTAL`).

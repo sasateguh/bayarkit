@@ -127,3 +127,17 @@ pilihan setiap pesanan (palsu→tolak dahulu = DIBAYAR), rujukan rawak, redirect
 memori terhad dengan generasi gateway palsu. rujukan: pengawal CLI atas realpath (symlink dahulu keluar 0 tanpa kerja).
 README PHP: rahsia toyyibPay dalam BADAN permintaan → sorok dalam Telescope/log. Keserasian kini dibuktikan, bukan
 didakwa: `scripts/php-compat.sh` (PHP 8.2 + kebergantungan terendah = Laravel 11; PHP 8.4 + terbaru = Laravel 12).
+
+**D18 — 23 Okt 2026 — Audit laluan "dibayar" ke atas KESEMUA 14 adapter (dua penyemak bebas) + semakan diff pembaikan
+D17: tiada laluan bayaran belum-dibayar/separa/dipulangkan/dibenarkan-sahaja dibaca sebagai dibayar.** Laluan sampingan
+yang ditutup (ujian merah dahulu setiap satu): Billplz menolak bil KOLEKSI lain dalam akaun sama + banding `paid_amount`;
+Bayarcash menolak transaksi portal lain bila dilaporkan (tiada dalam dokumen → rujukan mesti unik merentas portal);
+CHIP `environment` WAJIB dan rekod tanpa `is_test` ditolak (satu hos, kunci memutuskan mod) — kedua-dua kembar;
+Gkash rujukan huruf besar sahaja (tandatangan meng-uppercase, jadi huruf besar/kecil `cartid` tidak ditandatangani);
+senangPay guna `payment.amount` bila ada. Set keakuran kini memberi `{}`/null/tatasusunan kepada semua 14 adapter
+(toyyibPay + Bayarcash dahulu melempar). Kelemahan skema tandatangan gateway sendiri (iPay88, eGHL, Fiuu, HitPay tanpa
+pemisah) + keadaan refund yang tidak dibaca (HitPay, Curlec, Xendit) direkod dalam spec setiap gateway sebagai perkara
+untuk DIUKUR — bukan diubah atas tekaan. Pariti kembar TS/PHP: nombor melalui teks perpuluhan JS, `Text::of` =
+`Number::toString` ECMAScript, ruang ASCII; pembeza rawak 20,030 input × PHP 8.2/8.3/8.4 = 0 perbezaan. Demo: putaran
+diputuskan SEBELUM set diambil (letusan 100 selari dahulu masuk satu set), tekanan balik, penyejukan 30 s + 503
+selepas putaran gagal (dahulu cuba semula setiap permintaan).

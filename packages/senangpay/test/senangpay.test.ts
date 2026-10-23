@@ -410,3 +410,35 @@ describe('senangpay: requests (Create / Retrieve Checkout)', () => {
     ).rejects.toBeInstanceOf(GatewayError)
   })
 })
+
+describe('senangpay: once paid, the amount is what was paid', () => {
+  const checkout = (payment: Record<string, unknown>) => async () =>
+    new Response(
+      JSON.stringify({
+        id: 'chk1',
+        order: { invoice_number: 'R1', amount: 50, currency: 'MYR', status: 'PAID' },
+        payment,
+      }),
+      { status: 200, headers: { 'content-type': 'application/json' } },
+    )
+
+  it('uses payment.amount when the retrieve carries one', async () => {
+    const g = senangpay({
+      ...keys,
+      environment: 'sandbox',
+      baseUrl: 'https://doku.test',
+      fetch: checkout({ status: 'SUCCESS', amount: 30 }),
+    })
+    expect((await g.getPayment('chk1')).amount).toBe(3000)
+  })
+
+  it('falls back to order.amount (the documented retrieve shape) when it does not', async () => {
+    const g = senangpay({
+      ...keys,
+      environment: 'sandbox',
+      baseUrl: 'https://doku.test',
+      fetch: checkout({ status: 'SUCCESS' }),
+    })
+    expect((await g.getPayment('chk1')).amount).toBe(5000)
+  })
+})

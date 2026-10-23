@@ -81,8 +81,27 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
   let gateways = await startGeneration()
   const generations = [gateways]
   const orders = new Map()
-  let created = 0
+  // Orders started per fake set: rotation is decided on this count, re-checked on every checkout, so a rotation that
+  // is still running never makes the next ones skip (a modulo check did, and memory grew under load).
+  const started = new Map()
   let rotating = null
+
+  // After a failed rotation, no new attempt for a while: retrying on every request would start 14 servers each time.
+  const RETRY_AFTER_MS = 30_000
+  let failedAt = 0
+  const coolingDown = () => Date.now() - failedAt < RETRY_AFTER_MS
+
+  function startRotation() {
+    // A failed rotation keeps the current set and is logged; it must never take the server down.
+    rotating = rotate()
+      .catch((e) => {
+        failedAt = Date.now()
+        console.error('demo: rotation failed:', e instanceof Error ? e.message : e)
+      })
+      .finally(() => {
+        rotating = null
+      })
+  }
 
   async function rotate() {
     const next = await startGeneration()
@@ -91,6 +110,7 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
     while (generations.length > 2) {
       const old = generations.shift()
       for (const [ref, order] of orders) if (order.generation === old) orders.delete(ref)
+      started.delete(old)
       for (const g of old.values()) await g.fake.close()
     }
   }
@@ -144,14 +164,34 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
     )
   }
 
+  /** 503 while the demo cannot make room (rotation failing): refusing keeps memory bounded. */
+  function busy(lang) {
+    const t = translator(lang)
+    const response = page(lang, t('errors.busy'), `<p class="card error">${t('errors.busy')}</p>`, 503)
+    response.headers.set('retry-after', String(RETRY_AFTER_MS / 1000))
+    return response
+  }
+
   async function checkout(lang, request) {
     const t = translator(lang)
     const form = await request.formData().catch(() => null)
     const values = { gateway: String(form?.get('gateway') ?? ''), amount: String(form?.get('amount') ?? '') }
+    // Rotation is decided BEFORE a set is taken, in synchronous code, so parallel checkouts see each other: a full set
+    // starts a rotation, and past twice its share a checkout waits for the new set (back-pressure). No set ever holds
+    // more than 2 × perGeneration, whatever the timing (tested with 100 parallel checkouts).
+    for (;;) {
+      const count = started.get(gateways) ?? 0
+      if (count >= perGeneration && !rotating && !coolingDown()) startRotation()
+      if (count >= 2 * perGeneration && !rotating && coolingDown()) return busy(lang)
+      if (!rotating || count < 2 * perGeneration) break
+      await rotating
+    }
     // Take the set ONCE: a rotation can finish while createPayment is awaited, and the order must stay with the set its
     // gateway came from (otherwise it outlives that set's closed fakes).
     const generation = gateways
     const g = generation.get(values.gateway)
+    // Counted now, not after createPayment: parallel checkouts must see each other in the check above.
+    if (g) started.set(generation, (started.get(generation) ?? 0) + 1)
     if (!g) return home(lang, t('errors.gateway'), values)
     const amount = /^\s*\d{1,7}(\.\d{1,2})?\s*$/.test(values.amount) ? toSen(values.amount) : Number.NaN
     if (!Number.isInteger(amount)) return home(lang, t('errors.amount'), values)
@@ -182,15 +222,6 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
       choice: null,
       result: null,
     })
-    created += 1
-    if (created % perGeneration === 0 && !rotating) {
-      // A failed rotation keeps the current set and is logged; it must never take the server down.
-      rotating = rotate()
-        .catch((e) => console.error('demo: rotation failed:', e instanceof Error ? e.message : e))
-        .finally(() => {
-          rotating = null
-        })
-    }
     return seeOther(`${lang === 'en' ? '/en' : ''}/pay/${reference}`)
   }
 
@@ -327,6 +358,10 @@ ${r && !r.ok ? `<details><summary>${t('order.detail')}</summary><p><code>${esc(r
     handle,
     /** For tests: how many orders and fake generations are held right now. */
     stats: () => ({ orders: orders.size, generations: generations.length }),
+    /** Resolves when no rotation is running (tests). */
+    settled: async () => {
+      while (rotating) await rotating
+    },
     get gateways() {
       return gateways
     },

@@ -80,10 +80,11 @@ export interface ChipConfig {
    */
   publicKey?: string
   /**
-   * Optional guard: `'test'` or `'live'`. CHIP has one host, so this picks nothing; when set, a purchase whose `is_test`
-   * says otherwise is refused with a `GatewayError` (code `MODE_MISMATCH`).
+   * Required: `'test'` or `'live'`. CHIP has one host and the secret key alone decides the mode, so this picks no host;
+   * it is the guard that a test purchase can never mark a live order paid: a purchase whose `is_test` says otherwise is
+   * refused (`MODE_MISMATCH`), and one that does not say (`MODE_UNKNOWN`) is refused too.
    */
-  environment?: 'test' | 'live'
+  environment: 'test' | 'live'
   /** Restrict the payment page to these methods (values from `GET /payment_methods/`). Default: all enabled methods. */
   paymentMethods?: ChipPaymentMethod[]
   /** Override the base URL including `/api/v1` (tests point this at the fake from `@bayarkit/testing`). */
@@ -198,6 +199,14 @@ export function chip(config: ChipConfig): Gateway & {
    */
   fetchPublicKey(): Promise<string>
 } {
+  if (config.environment !== 'test' && config.environment !== 'live') {
+    throw new GatewayError(
+      "environment must be 'test' or 'live' (the guard against test payments)",
+      'chip',
+      0,
+      'CONFIG',
+    )
+  }
   const base = (config.baseUrl ?? BASE_URL).replace(/\/+$/, '')
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
@@ -235,7 +244,14 @@ export function chip(config: ChipConfig): Gateway & {
   }
 
   function checkMode(p: Record<string, unknown>) {
-    if (!config.environment || typeof p.is_test !== 'boolean') return
+    if (typeof p.is_test !== 'boolean') {
+      throw new GatewayError(
+        'purchase does not say whether it is a test (is_test)',
+        'chip',
+        0,
+        'MODE_UNKNOWN',
+      )
+    }
     if (p.is_test !== (config.environment === 'test')) {
       throw new GatewayError(
         `purchase is_test=${p.is_test} but environment is "${config.environment}"`,

@@ -20,7 +20,8 @@
     "minimum": "Jumlah minimum untuk gateway ini ialah RM{min}.",
     "gateway": "Gateway tidak dikenali.",
     "refused": "Gateway menolak: {message}",
-    "order": "Pesanan tidak ditemui. Pesanan demo disimpan dalam memori dan hilang bila pelayan dimulakan semula."
+    "order": "Pesanan tidak ditemui. Pesanan demo disimpan dalam memori dan hilang bila pelayan dimulakan semula.",
+    "busy": "Demo sedang penuh. Cuba lagi sebentar lagi."
   },
   "pay": {
     "banner": "Halaman bayaran SIMULASI · {gateway} palsu · tiada wang bergerak",

@@ -2,6 +2,14 @@
 export default async function setup(testing) {
   const fake = await testing.startFakeChip({ secretKey: 's', brandId: 'b' })
   const { chip } = await import('@bayarkit/chip')
-  const publicKey = await chip({ secretKey: 's', brandId: 'b', baseUrl: fake.url }).fetchPublicKey()
-  return { fake, gateway: chip({ secretKey: 's', brandId: 'b', publicKey, baseUrl: fake.url }) }
+  const publicKey = await chip({
+    secretKey: 's',
+    brandId: 'b',
+    environment: 'test',
+    baseUrl: fake.url,
+  }).fetchPublicKey()
+  return {
+    fake,
+    gateway: chip({ secretKey: 's', brandId: 'b', publicKey, environment: 'test', baseUrl: fake.url }),
+  }
 }

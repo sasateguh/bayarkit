@@ -115,3 +115,7 @@ Line numbers like `OP:69` refer to the `.md` export as fetched.
 8. **Refund endpoint:** OA, SDK and CLI use `POST /v1/refund` with a required `payment_id` + `amount`. SK refunds.md:11-19 documents `POST /v1/payment-requests/{id}/refund` with an optional amount, which **is not in the OpenAPI**. WOO:1571 says "Only one refund allowed per transaction"; SK refunds.md:372 says multiple partial refunds are allowed.
 9. **CLI`trigger`:** docs (LF:1217, /apis/guide/cli) say it "posts a signed payload". CLI trigger.ts sends **no`Hitpay-Signature`**, sets `Hitpay-Event-Type: <full event name>` and `Hitpay-Event-Object: event` — so it cannot exercise signature verification.
 10. **`send_sms` default:** the description says "Default is false". The schema says `default: 'true'` (CR:187-196).
+
+## Independent review notes (23 Oct 2026)
+
+The legacy form `hmac` joins key+value without separators, so fields can be re-keyed while the hmac checks; harmless because the UUID `payment_request_id` cannot change. `payments[].status` (`refunded`, `partially_refunded`) is not read: a refunded request still confirms if a callback is replayed before the order was marked paid.

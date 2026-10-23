@@ -210,3 +210,7 @@ Capture: `POST /v1/payments/{id}/capture` with `amount` equal to the authorised 
     "24 hours after event creation timestamp" (i.e. starting after 24 h).
 11. **Capture timeout.** CS L42-43 give 3 days as the maximum, but the step example at CS L53 says "For example, 5 days".
 12. **Callback fields.** CB FAQ L64 says only three fields are ever posted. CB L36-50 documents an `error` object for failures.
+
+## Independent review notes (23 Oct 2026)
+
+A refunded order stays `paid` (documented, OC L242-248): `confirmPayment` still returns ok after a full refund for a replayed callback on an order not yet marked paid.

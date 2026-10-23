@@ -77,10 +77,12 @@ A complete checkout and callback with Web-standard handlers (Next.js, Hono, Bun,
 [examples/web-standard/checkout.ts](examples/web-standard/checkout.ts). To use Bayarcash instead, replace the
 `toyyibpay(...)` call with `bayarcash({ token, secretKey, portalKey, environment: 'sandbox' })`.
 
-For CHIP, use `chip({ secretKey, brandId, publicKey })`. CHIP has one host: a test-mode secret key makes test
+For CHIP, use `chip({ secretKey, brandId, publicKey, environment: 'test' })`. CHIP has one host: a test-mode secret key makes test
 purchases. Callbacks are signed with CHIP's RSA key over the raw body, so read them with `readCallback` (not a parsed
-body). Get the public key once with `await chip({ secretKey, brandId }).fetchPublicKey()` (same secret key), store it,
+body). Get the public key once with `await chip({ secretKey, brandId, environment: 'test' }).fetchPublicKey()` (same secret key), store it,
 and pass it as `publicKey`; without it every callback is refused. CHIP rejects a `callbackUrl` with a port, even `:443`.
+`environment` is required (`'test'` with a test key, `'live'` with a live key): a purchase from the other mode, or one
+that does not say which it is, is refused, so a test payment can never mark a live order paid.
 
 ## What `confirmPayment` checks
 

@@ -228,3 +228,7 @@ after expiry, and Xendit reconciliation can take up to about 24 h (DW L31, L43-4
 Session-level minimum amount. Allowed MYR decimal places. Idempotency on `/sessions` and `/v3/payment_requests`. Webhook
 timeout for v3. Webhook source IP list (only "contact our CS", IS L29). Any replay protection. Any published webhook-token
 or ECDSA test vector. The maximum session `expires_at` (error says "maximum allowed expiry duration" without a number).
+
+## Independent review notes (23 Oct 2026)
+
+The refund state of a `SUCCEEDED` payment request is not read (same consequence as HitPay/Curlec). Anyone who knows the static callback token can make the adapter query any `ps-`/`pr-` id; reference, amount and currency still come from Xendit's own GET.

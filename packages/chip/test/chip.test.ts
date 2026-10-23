@@ -8,7 +8,7 @@ const keys = { secretKey: 'test_fake-secret', brandId: '00000000-0000-0000-0000-
 
 gatewayConformance('chip', async () => {
   const fake = await startFakeChip(keys)
-  const publicKey = await chip({ ...keys, baseUrl: fake.url }).fetchPublicKey()
+  const publicKey = await chip({ ...keys, environment: 'test', baseUrl: fake.url }).fetchPublicKey()
   return { fake, gateway: chip({ ...keys, publicKey, environment: 'test', baseUrl: fake.url }) }
 })
 
@@ -19,8 +19,8 @@ describe('chip: rules from the official OpenAPI', () => {
 
   beforeAll(async () => {
     fake = await startFakeChip(keys)
-    publicKey = await chip({ ...keys, baseUrl: fake.url }).fetchPublicKey()
-    gw = chip({ ...keys, publicKey, baseUrl: fake.url })
+    publicKey = await chip({ ...keys, environment: 'test', baseUrl: fake.url }).fetchPublicKey()
+    gw = chip({ ...keys, environment: 'test', publicKey, baseUrl: fake.url })
   })
   afterAll(() => fake.close())
 
@@ -33,7 +33,12 @@ describe('chip: rules from the official OpenAPI', () => {
   })
 
   it('accepts a public key stored with literal \\n sequences (environment variables)', async () => {
-    const g = chip({ ...keys, publicKey: publicKey.replace(/\n/g, '\\n'), baseUrl: fake.url })
+    const g = chip({
+      ...keys,
+      environment: 'test',
+      publicKey: publicKey.replace(/\n/g, '\\n'),
+      baseUrl: fake.url,
+    })
     const created = await g.createPayment(sampleInput())
     expect(g.verifyCallback(fake.callbackFor(created.id))).not.toBeNull()
   })
@@ -42,8 +47,8 @@ describe('chip: rules from the official OpenAPI', () => {
     const ec = generateKeyPairSync('ec', { namedCurve: 'P-256' })
       .publicKey.export({ type: 'spki', format: 'pem' })
       .toString()
-    expect(() => chip({ ...keys, publicKey: ec })).toThrow(GatewayError)
-    expect(() => chip({ ...keys, publicKey: 'not a key' })).toThrow(GatewayError)
+    expect(() => chip({ ...keys, environment: 'test', publicKey: ec })).toThrow(GatewayError)
+    expect(() => chip({ ...keys, environment: 'test', publicKey: 'not a key' })).toThrow(GatewayError)
   })
 
   it('verifies X-Signature over the RAW body: the same JSON re-serialised does not verify', async () => {
@@ -66,7 +71,7 @@ describe('chip: rules from the official OpenAPI', () => {
   it('returns null without a configured public key, without the header, or with bad base64', async () => {
     const created = await gw.createPayment(sampleInput())
     const cb = fake.callbackFor(created.id)
-    expect(chip(keys).verifyCallback(cb)).toBeNull()
+    expect(chip({ ...keys, environment: 'test' }).verifyCallback(cb)).toBeNull()
     expect(gw.verifyCallback({ ...cb, headers: { 'content-type': 'application/json' } })).toBeNull()
     expect(
       gw.verifyCallback({ ...cb, headers: { ...cb.headers, 'x-signature': '%%%not-base64%%%' } }),
@@ -77,7 +82,7 @@ describe('chip: rules from the official OpenAPI', () => {
 
   it('a callback signed by another key does not verify', async () => {
     const other = await startFakeChip(keys)
-    const g = chip({ ...keys, baseUrl: other.url })
+    const g = chip({ ...keys, environment: 'test', baseUrl: other.url })
     const created = await g.createPayment(sampleInput())
     expect(gw.verifyCallback(other.callbackFor(created.id))).toBeNull()
     await other.close()
@@ -123,7 +128,13 @@ describe('chip: rules from the official OpenAPI', () => {
   })
 
   it('sends the documented body: brand, client, sen products, top-level URLs, due + due_strict, whitelist', async () => {
-    const g = chip({ ...keys, publicKey, baseUrl: fake.url, paymentMethods: ['fpx', 'duitnow_qr'] })
+    const g = chip({
+      ...keys,
+      environment: 'test',
+      publicKey,
+      baseUrl: fake.url,
+      paymentMethods: ['fpx', 'duitnow_qr'],
+    })
     const expiresAt = new Date('2026-12-01T00:00:00Z')
     const input = sampleInput({ amount: 2599, expiresAt })
     await g.createPayment(input)
@@ -168,7 +179,7 @@ describe('chip: rules from the official OpenAPI', () => {
   })
 
   it("quotes CHIP's error, never the key, on a wrong secret key", async () => {
-    const g = chip({ ...keys, secretKey: 'test_wrong-key', baseUrl: fake.url })
+    const g = chip({ ...keys, environment: 'test', secretKey: 'test_wrong-key', baseUrl: fake.url })
     const err = await g.createPayment(sampleInput()).catch((e) => e)
     expect(err).toBeInstanceOf(GatewayError)
     expect(err).toMatchObject({ status: 401, code: 'authentication_failed' })
@@ -224,5 +235,26 @@ describe('chip: rules from the official OpenAPI', () => {
     const created = await gw.createPayment(input)
     const cb = fake.callbackFor(created.id, { status: 'error' })
     expect(gw.verifyCallback(cb)?.claimedStatus).toBe('pending')
+  })
+})
+
+describe('chip: the test/live guard is not optional', () => {
+  it('refuses a config without environment (one host for test and live: the key alone decides)', () => {
+    expect(() => chip({ ...keys } as Parameters<typeof chip>[0])).toThrow(/environment/)
+    expect(() => chip({ ...keys, environment: 'prod' as 'live' })).toThrow(/environment/)
+  })
+
+  it('refuses a purchase record that does not say whether it is a test', async () => {
+    const purchase = {
+      id: 'p1',
+      reference: 'R1',
+      status: 'paid',
+      purchase: { total: 1050, currency: 'MYR' },
+      payment: { amount: 1050, currency: 'MYR' },
+    }
+    const fetch = async () =>
+      new Response(JSON.stringify(purchase), { status: 200, headers: { 'content-type': 'application/json' } })
+    const g = chip({ ...keys, environment: 'live', baseUrl: 'https://chip.test/api/v1', fetch })
+    await expect(g.getPayment('p1')).rejects.toMatchObject({ code: 'MODE_UNKNOWN' })
   })
 })

@@ -408,3 +408,26 @@ describe('gkash: callbacks', () => {
     expect(cb?.raw.description).toBe('00 - Approved')
   })
 })
+
+describe('gkash: the signature upper-cases everything, so references are upper-case only', () => {
+  it('refuses a reference with lower-case letters before calling Gkash', async () => {
+    const fake = await startFakeGkash(keys)
+    const g = gkash({ ...keys, environment: 'sandbox', baseUrl: fake.url })
+    await expect(g.createPayment(sampleInput({ reference: 'ord-abc' }))).rejects.toMatchObject({
+      code: 'INVALID_REFERENCE',
+    })
+    await fake.close()
+  })
+
+  it('a signed callback with its cartid re-cased (the signature still checks) is not ours', async () => {
+    const fake = await startFakeGkash(keys)
+    const g = gkash({ ...keys, environment: 'sandbox', baseUrl: fake.url })
+    const created = await g.createPayment(sampleInput({ reference: 'ORD-ABC1' }))
+    fake.markPaid(created.id)
+    const cb = fake.callbackFor(created.id)
+    const recased = { ...cb, fields: { ...cb.fields, cartid: 'ord-abc1' }, rawBody: '' }
+    expect(g.verifyCallback(cb)).not.toBeNull()
+    expect(g.verifyCallback(recased)).toBeNull()
+    await fake.close()
+  })
+})

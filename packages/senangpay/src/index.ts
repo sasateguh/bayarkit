@@ -366,7 +366,9 @@ export function senangpay(config: SenangPayConfig): Gateway {
         id: typeof json.id === 'string' ? json.id : id,
         reference: text(order?.invoice_number),
         status: checkoutStatus(text(order?.status), text(payment?.status)),
-        amount: senOf(order?.amount),
+        // What was paid when the retrieve says so (`payment.amount`, the create-payment schema); the checkout retrieve
+        // documents only `order.amount`, which is used otherwise.
+        amount: senOf(payment?.amount ?? order?.amount),
         currency: text(order?.currency),
         // DOKU reports no fee and, for non-card channels, no paid-at time.
         fee: null,

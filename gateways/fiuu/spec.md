@@ -225,3 +225,7 @@ Researched 2026-10-23. Read-only. Official material only (Fiuu's own GitHub org 
 - Retry behaviour for the notification URL (as opposed to the callback URL) when IPN is off.
 - Whether the `/MOLPay/` path prefix is still supported.
 - Whether the callback ACK tolerates the spaced variant (`CBTOKEN: MPSTATOK`).
+
+## Independent review notes (23 Oct 2026)
+
+The inner hash `md5(tranID.orderid.…)` has no separators: with numeric order ids digits can move between tranID and orderid and still verify. Harmless (the requery is keyed on TranID and answers Fiuu's own record). The fake's requery answer carries `Currency` and a `Q204` amount error that §7 does not document: if real Fiuu omits `Currency`, every confirmation becomes a `mismatch` (fails safe). **Measure.**

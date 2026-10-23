@@ -174,3 +174,7 @@ The string is **not** uppercased, and the **hex output is uppercase**. For examp
 ## 10. Not confirmed by any official material
 
 Payment expiry/timeout · gateway minimum amount · `v_cartid` max length · behaviour on a duplicate `v_cartid` · callback retry schedule · callback source IPs · timezone of `refunddate` · any paid-time field · partial-refund semantics · cancel/void of online payments · rate limits.
+
+## Independent review notes (23 Oct 2026)
+
+The signature upper-cases its whole string, so the CASE of `cartid` is not signed: references are restricted to upper case (`[A-Z0-9._-]`), and a callback whose cartid has lower-case letters is not ours (fixed 23 Oct 2026 after review).

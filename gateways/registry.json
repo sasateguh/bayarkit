@@ -170,7 +170,7 @@
         "package": "@bayarkit/chip",
         "factory": "chip",
         "evidence": "docs",
-        "configExample": "{ secretKey, brandId, publicKey }",
+        "configExample": "{ secretKey, brandId, publicKey, environment: 'test' }",
         "fake": "startFakeChip",
         "label": {
           "en": "CHIP (CHIP Collect)",

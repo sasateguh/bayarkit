@@ -102,7 +102,9 @@ export interface GkashConfig {
 }
 
 const NAME = 'gkash'
-const CART = /^[A-Za-z0-9._-]{1,255}$/
+// Upper-case only: the signature upper-cases its whole string, so the CASE of cartid is not signed. A payer holding
+// the signed return of order "ORD-1" could otherwise present it as "ord-1" (review, 23 Oct 2026).
+const CART = /^[A-Z0-9._-]{1,255}$/
 const ID = /^([A-Za-z0-9._-]{1,255}):(\d{1,15})$/
 const HEX = /^[0-9a-f]{128}$/
 
@@ -211,7 +213,7 @@ export function gkash(config: GkashConfig): Gateway {
       const cartid = input.reference
       if (!CART.test(cartid)) {
         throw new GatewayError(
-          'reference must be 1–255 letters, digits, "-", "_" or "."',
+          'reference must be 1–255 UPPER-CASE letters, digits, "-", "_" or "." (Gkash does not sign letter case)',
           NAME,
           0,
           'INVALID_REFERENCE',
