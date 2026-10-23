@@ -5,10 +5,21 @@ description: Integrate Billplz payments (Malaysia) safely. Use when adding Billp
 
 # Billplz
 
-## No bayarkit adapter yet
+## Use the bayarkit adapter
 
-Implement it with the official sources below, then follow the rules in this skill. To contribute an adapter, see
-CONTRIBUTING.md in https://github.com/aimanmalib/bayarkit.
+Install `@bayarkit/core` and `@bayarkit/billplz`. Evidence: **written from the official docs, not yet measured on the sandbox**.
+
+```ts
+import { confirmPayment, readCallback } from '@bayarkit/core'
+import { billplz } from '@bayarkit/billplz'
+
+const gateway = billplz({ secretKey, xSignatureKey, collectionId, environment: 'sandbox' })
+const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
+// redirect to payment.url; then, in the callback route:
+const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
+```
+
+Test without real money: `startFakeBillplz` from `@bayarkit/testing`.
 
 The full contract with a source for every fact: `gateways/billplz/spec.md` in the bayarkit repository.
 

@@ -22,12 +22,13 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 
 ## Gateway
 
-| Gateway                             | Pakej                 | Bukti                                                                                 |
-| ----------------------------------- | --------------------- | ------------------------------------------------------------------------------------- |
-| toyyibPay                           | `@bayarkit/toyyibpay` | Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian |
-| Bayarcash (juga di belakang BCL.my) | `@bayarkit/bayarcash` | Dokumen rasmi API v3 dan SDK PHP; belum diukur pada sandbox                           |
+| Gateway                             | Pakej                 | Bukti                                                                                                          |
+| ----------------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| toyyibPay                           | `@bayarkit/toyyibpay` | Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian                          |
+| Bayarcash (juga di belakang BCL.my) | `@bayarkit/bayarcash` | Dokumen rasmi API v3 dan SDK PHP; belum diukur pada sandbox                                                    |
+| Billplz                             | `@bayarkit/billplz`   | Dokumen rasmi API (V3 Bills, vektor ujian X Signature) dan plugin WooCommerce rasmi; belum diukur pada sandbox |
 
-Seterusnya dirancang: CHIP, Billplz, senangPay, Stripe (Malaysia). Satu adapter disenaraikan sebagai _diukur_ hanya
+Seterusnya dirancang: CHIP, senangPay, Stripe (Malaysia). Satu adapter disenaraikan sebagai _diukur_ hanya
 selepas set ujian piawai dijalankan terhadap sandbox gateway itu.
 
 Amaun sentiasa dalam **sen** integer (`1050` = RM10.50), jadi tiada ringgit titik terapung dibandingkan.

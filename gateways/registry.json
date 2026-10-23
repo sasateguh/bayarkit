@@ -100,7 +100,13 @@
           "mustContain": ["hash_hmac", "x_signature"]
         }
       ],
-      "adapter": null,
+      "adapter": {
+        "package": "@bayarkit/billplz",
+        "factory": "billplz",
+        "evidence": "docs",
+        "configExample": "{ secretKey, xSignatureKey, collectionId, environment: 'sandbox' }",
+        "fake": "startFakeBillplz"
+      },
       "spec": true,
       "gotchas": [
         {

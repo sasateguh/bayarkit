@@ -5,15 +5,16 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
-for p in core testing toyyibpay bayarcash; do (cd "packages/$p" && npm pack --silent --pack-destination "$tmp" >/dev/null); done
+for p in core testing toyyibpay bayarcash billplz; do (cd "packages/$p" && npm pack --silent --pack-destination "$tmp" >/dev/null); done
 cd "$tmp"
 npm init -y >/dev/null
-npm install --silent --no-audit --no-fund ./bayarkit-core-*.tgz ./bayarkit-testing-*.tgz ./bayarkit-toyyibpay-*.tgz ./bayarkit-bayarcash-*.tgz vitest@5.0.5 >/dev/null
+npm install --silent --no-audit --no-fund ./bayarkit-core-*.tgz ./bayarkit-testing-*.tgz ./bayarkit-toyyibpay-*.tgz ./bayarkit-bayarcash-*.tgz ./bayarkit-billplz-*.tgz vitest@5.0.5 >/dev/null
 cat > smoke.mjs <<'JS'
 import { confirmPayment } from '@bayarkit/core'
-import { startFakeToyyibPay, startFakeBayarcash } from '@bayarkit/testing'
+import { startFakeToyyibPay, startFakeBayarcash, startFakeBillplz } from '@bayarkit/testing'
 import { toyyibpay } from '@bayarkit/toyyibpay'
 import { bayarcash } from '@bayarkit/bayarcash'
+import { billplz } from '@bayarkit/billplz'
 
 const order = { reference: 'SMOKE1', amount: 1500, description: 'Smoke test', customer: { name: 'A', email: 'a@example.com' },
   returnUrl: 'https://x/return', callbackUrl: 'https://x/cb' }
@@ -25,8 +26,12 @@ const bc = await startFakeBayarcash({ token: 't', secretKey: 's', portalKey: 'p'
 const g2 = bayarcash({ token: 't', secretKey: 's', portalKey: 'p', environment: 'sandbox', baseUrl: bc.url })
 const b2 = await g2.createPayment(order); bc.markPaid(b2.id)
 const r2 = await confirmPayment(g2, bc.callbackFor(b2.id), order)
-await tp.close(); await bc.close()
-if (!r1.ok || !r2.ok) { console.error(r1, r2); process.exit(1) }
-console.log('smoke ok: toyyibpay + bayarcash confirmed from packed tarballs')
+const bp = await startFakeBillplz({ secretKey: 's', xSignatureKey: 'x', collectionId: 'c' })
+const g3 = billplz({ secretKey: 's', xSignatureKey: 'x', collectionId: 'c', environment: 'sandbox', baseUrl: bp.url })
+const b3 = await g3.createPayment(order); bp.markPaid(b3.id)
+const r3 = await confirmPayment(g3, bp.callbackFor(b3.id), order)
+await tp.close(); await bc.close(); await bp.close()
+if (!r1.ok || !r2.ok || !r3.ok) { console.error(r1, r2, r3); process.exit(1) }
+console.log('smoke ok: toyyibpay + bayarcash + billplz confirmed from packed tarballs')
 JS
 node smoke.mjs

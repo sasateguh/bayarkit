@@ -10,6 +10,7 @@ export default defineConfig({
       '@bayarkit/testing': src('testing'),
       '@bayarkit/toyyibpay': src('toyyibpay'),
       '@bayarkit/bayarcash': src('bayarcash'),
+      '@bayarkit/billplz': src('billplz'),
     },
   },
   test: { include: ['packages/*/test/**/*.test.ts'], testTimeout: 15_000 },

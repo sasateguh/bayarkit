@@ -21,12 +21,13 @@ Write your checkout once; switch gateways by changing one line.
 
 ## Gateways
 
-| Gateway                        | Package               | Evidence                                                                     |
-| ------------------------------ | --------------------- | ---------------------------------------------------------------------------- |
-| toyyibPay                      | `@bayarkit/toyyibpay` | Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment |
-| Bayarcash (also behind BCL.my) | `@bayarkit/bayarcash` | Official API v3 docs and PHP SDK; not yet measured on the sandbox            |
+| Gateway                        | Package               | Evidence                                                                                                                    |
+| ------------------------------ | --------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| toyyibPay                      | `@bayarkit/toyyibpay` | Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment                                                |
+| Bayarcash (also behind BCL.my) | `@bayarkit/bayarcash` | Official API v3 docs and PHP SDK; not yet measured on the sandbox                                                           |
+| Billplz                        | `@bayarkit/billplz`   | Official API docs (V3 Bills, X Signature test vectors) and the official WooCommerce plugin; not yet measured on the sandbox |
 
-Planned next: CHIP, Billplz, senangPay, Stripe (Malaysia). An adapter is listed as _measured_ only after the
+Planned next: CHIP, senangPay, Stripe (Malaysia). An adapter is listed as _measured_ only after the
 conformance suite has run against that gateway's sandbox.
 
 Amounts are always integer **sen** (`1050` = RM10.50), so nothing compares floating-point ringgit.
