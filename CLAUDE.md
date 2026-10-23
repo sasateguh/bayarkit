@@ -1,7 +1,9 @@
 # bayarkit — peraturan agen
 
 Mula di `NEXT.md`; keputusan dalam `02-DECISIONS.md`. Fail ini = peraturan + perangkap, bukan keadaan.
-- Gerbang: `npm run gate` (typecheck, biome, vitest, build, pasang tarball dibungkus ke projek kosong). Lari sendiri.
+- Gerbang: `npm run gate` (typecheck, biome, vitest, build, pasang tarball dibungkus ke projek kosong, `scripts/php-gate.sh`).
+  Lari sendiri. Hos tiada PHP: php-gate guna imej dipin (Docker); `PHP_GATE_STATIC=0` = sabotaj sahaja.
+- Adapter PHP (`php/`) = kembar adapter TS: ubah peraturan di SATU = ubah di kedua-dua (ujian keakuran yang sama).
 - **Amaun = sen integer**; jangan tambah API yang menerima ringgit.
 - **Satu-satunya cara "dibayar" = `confirmPayment`.** Jangan tambah jalan pintas yang percaya badan callback / return URL.
 - **Gateway palsu meniru sandbox YANG DIUKUR.** Kelakuan baharu: ubah palsu dahulu (ujian merah), kemudian adapter.

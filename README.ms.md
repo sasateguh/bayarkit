@@ -143,6 +143,13 @@ satu baris JSON dengan `url`nya dan URL `control`. Halakan aplikasi anda ke `url
 `POST <control>/paid/<id>` menanda bayaran dibayar, `GET <control>/callback/<id>` memulangkan callback bertandatangan
 yang tepat (`/tampered` untuk callback palsu) untuk dihantar ke laluan callback anda. Ia tidak memerlukan vitest.
 
+## PHP dan Laravel
+
+[`php/`](php/README.ms.md) ialah kembar PHP untuk projek Laravel: antara muka yang sama dan peraturan `confirmPayment`
+yang sama (`Bayarkit\Confirm::payment`), penyedia servis yang ditetapkan dari `.env`, `Callback::from($request)` dan
+`Checkout::response($payment)`. Ia meliputi toyyibPay dan CHIP, dan setiap adapter PHP diuji terhadap gateway palsu
+yang sama dengan kembar TypeScriptnya (`scripts/php-gate.sh`, sebahagian gerbang).
+
 ## Menambah gateway
 
 Tulis satu adapter dan satu gateway palsu, kemudian pastikan kedua-duanya lulus `gatewayConformance` daripada

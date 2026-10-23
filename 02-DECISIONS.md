@@ -77,3 +77,20 @@ worktree SELEPAS komit gabungan disahkan, bukan dalam arahan yang sama.
   skrip walaupun JS hidup. TIADA `Referrer-Policy`: iPay88 menyemak Referer terhadap tapak berdaftar. Fiuu/eGHL kini
   POST secara lalai melalui `checkoutResponse` (emel pelanggan + tandatangan tidak masuk sejarah pelayar/log); `url` GET
   dikekalkan. Undur: buang `form` daripada adapter = kembali ke redirect, tiada perubahan API.
+
+**D14 — 23 Okt 2026 — Pakej PHP/Laravel dalam monorepo yang sama (`php/`), bukan repo berasingan; toyyibPay + CHIP
+dahulu.** Empat projek PHP pemilik (tempahan v5, OSIS, HomestayPro, Dulang) semuanya guna toyyibPay; tempahan/OSIS sudah
+merancang CHIP sebagai gateway kedua (D49 repo itu). Satu repo = satu gerbang: adapter PHP diuji terhadap gateway palsu
+YANG SAMA (`bayarkit-fake`, dimulakan oleh `scripts/php-gate.sh`) dengan kes keakuran yang sama, jadi kembar TS/PHP
+tidak boleh hanyut tanpa gerbang merah; skrip + hash CSP halaman checkout dipin silang (ujian membaca fail TS). Sifar
+kebergantungan masa jalan (ext-curl/json/openssl); Laravel pilihan (`LaravelTransport` supaya `Http::fake()` berfungsi).
+Hos tiada PHP → imej ujian dipin `php:8.3.36-cli-alpine` + composer 2.8.12; Depot/Actions guna setup-php dipin SHA.
+Gerbang yang senyap bila gagal pernah lulus palsu semasa ditulis (`-q`) — kini setiap langkah memapar ralatnya; fake
+hilang = GAGAL, bukan langkau (`failOnSkipped`). Sabotaj: 6/6 ditangkap. Packagist = selepas D7 (pecahan `php/` ke
+repo terbitan). Projek pemilik TIDAK dipindah dari sini: kod bayaran pengeluaran milik repo masing-masing (D49 tempahan,
+"Settle" atas `transactions()`); pindah = keputusan setiap projek, dengan ujian projek itu. Undur: buang `php/` + satu
+baris gate.sh; tiada pakej TS berubah.
+Semakan semula 23 Okt: `scripts/security.sh` menyenaraikan pakej dengan TANGAN, jadi 9 adapter selepas D10 (senangPay,
+Curlec, HitPay, 2C2P, Gkash, iPay88, Xendit, Fiuu, eGHL) tidak pernah diimbas semgrep walaupun "security lulus". Kini
+glob `packages/*/src` + `php/` + `p/php`, dan skrip GAGAL bila mana-mana folder sumber tiada dalam senarai yang diimbas
+(48 → 86 fail, 0 penemuan; `eval` ditanam dalam PHP ditangkap).

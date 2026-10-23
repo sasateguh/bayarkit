@@ -139,6 +139,13 @@ with its `url` and a `control` URL. Point your app at `url`, then drive it over 
 payment paid, `GET <control>/callback/<id>` returns the exact signed callback (`/tampered` for a forged one) to post to
 your callback route. It does not need vitest.
 
+## PHP and Laravel
+
+[`php/`](php/README.md) is the PHP twin for Laravel projects: the same interface and the same `confirmPayment` rule
+(`Bayarkit\Confirm::payment`), a service provider configured from `.env`, `Callback::from($request)` and
+`Checkout::response($payment)`. It covers toyyibPay and CHIP, and every PHP adapter is tested against the same fake
+gateways as its TypeScript twin (`scripts/php-gate.sh`, part of the gate).
+
 ## Adding a gateway
 
 Write an adapter and a fake, then make them pass `gatewayConformance` from `@bayarkit/testing`.

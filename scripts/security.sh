@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Security checks before a release (D7), using the same scanners and policy as Perisai (~/perisai/config/polisi.yaml):
-# - semgrep p/default + p/owasp-top-ten + p/typescript over packages/*/src and tools/. --no-git-ignore is required
+# - semgrep p/default + p/owasp-top-ten + p/typescript + p/php over EVERY packages/*/src (a glob: a hand list once left
+#   nine adapters unscanned), php/src, php/config and tools/. --no-git-ignore is required
 #   (without it semgrep can scan 0 files and still exit 0), coverage fails on any per-rule timeout;
 # - osv-scanner over package-lock.json (runtime AND dev dependencies);
 # - gitleaks over the whole git history.
@@ -13,9 +14,8 @@ fail=0
 
 semgrep scan --metrics=off --quiet --no-git-ignore --json -o "$out/semgrep.json" \
   --timeout 60 --timeout-threshold 0 \
-  --config p/default --config p/owasp-top-ten --config p/typescript \
-  packages/core/src packages/toyyibpay/src packages/bayarcash/src packages/billplz/src packages/stripe/src \
-  packages/chip/src packages/testing/src tools || true
+  --config p/default --config p/owasp-top-ten --config p/typescript --config p/php \
+  packages/*/src php/src php/config tools || true
 python3 - "$out/semgrep.json" <<'PY' || fail=1
 import json, sys
 d = json.load(open(sys.argv[1]))
@@ -25,7 +25,14 @@ results = d.get("results", [])
 print(f"semgrep: {scanned} files scanned, {len(timeouts)} rule timeouts, {len(results)} findings")
 for r in results:
     print(f"  {r['extra'].get('severity')} {r['check_id'].split('.')[-1]} {r['path']}:{r['start']['line']}")
-sys.exit(1 if scanned == 0 or timeouts or results else 0)
+# Every source directory must be in the scan, so a new package can never be silently skipped.
+import glob, os
+dirs = sorted(glob.glob("packages/*/src")) + ["php/src"]
+paths = d.get("paths", {}).get("scanned", [])
+missing = [x for x in dirs if not any(p.startswith(x + "/") for p in paths)]
+for x in missing:
+    print(f"  NOT SCANNED: {x}")
+sys.exit(1 if scanned == 0 or timeouts or results or missing else 0)
 PY
 
 if osv-scanner scan --lockfile package-lock.json >"$out/osv.txt" 2>&1; then

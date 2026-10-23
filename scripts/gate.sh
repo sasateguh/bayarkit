@@ -10,4 +10,5 @@ node tools/rujukan.mjs skills --check
 rm -rf packages/*/dist
 npm run build >/dev/null
 bash scripts/smoke-pack.sh
+bash scripts/php-gate.sh
 echo "✓ gate bayarkit lulus"
