@@ -1,0 +1,119 @@
+# bayarkit
+
+One TypeScript interface for Malaysian payment gateways, and the safe way to confirm a payment.
+Write your checkout once; switch gateways by changing one line.
+
+[Bahasa Melayu](README.ms.md)
+
+> **Status:** pre-release (0.1.0), not on npm yet. Two gateways, with more planned below.
+
+## Why
+
+- **Switching gateways should not mean rewriting checkout.** Every adapter implements the same `Gateway` interface:
+  `createPayment`, `getPayment`, `verifyCallback`.
+- **Confirming a payment is where shops lose money.** `confirmPayment` does all three checks every time: the callback
+  signature, a fresh query to the gateway (a valid signature can be replayed), and an exact match on reference, amount
+  and currency.
+- **Sandboxes do not always behave like their docs.** The toyyibPay adapter and its fake follow what the sandbox
+  actually returned, not what the reference says (table below). Each adapter states where its behaviour comes from.
+- **Test without real money.** `@bayarkit/testing` ships fake gateways and a conformance suite that every adapter must
+  pass.
+
+## Gateways
+
+| Gateway                        | Package               | Evidence                                                                     |
+| ------------------------------ | --------------------- | ---------------------------------------------------------------------------- |
+| toyyibPay                      | `@bayarkit/toyyibpay` | Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment |
+| Bayarcash (also behind BCL.my) | `@bayarkit/bayarcash` | Official API v3 docs and PHP SDK; not yet measured on the sandbox            |
+
+Planned next: CHIP, Billplz, senangPay, Stripe (Malaysia). An adapter is listed as _measured_ only after the
+conformance suite has run against that gateway's sandbox.
+
+Amounts are always integer **sen** (`1050` = RM10.50), so nothing compares floating-point ringgit.
+
+## Quick start
+
+```ts
+import { confirmPayment, readCallbackBody } from '@bayarkit/core'
+import { toyyibpay } from '@bayarkit/toyyibpay'
+
+const gateway = toyyibpay({ secretKey, categoryCode, environment: 'sandbox' })
+
+// 1. Checkout: one reference per attempt, then redirect the customer.
+const payment = await gateway.createPayment({
+  reference: 'ORD1001',
+  amount: 1050,
+  description: 'Order 1001',
+  customer: { name: 'Ali', email: 'ali@example.com' },
+  returnUrl: 'https://shop.example/thank-you',
+  callbackUrl: 'https://shop.example/api/payment/callback',
+})
+// redirect to payment.url
+
+// 2. Callback: never mark an order paid from the callback body or the return URL alone.
+const body = await readCallbackBody(request) // JSON, url-encoded or multipart (toyyibPay posts multipart)
+const result = await confirmPayment(gateway, body, { reference: 'ORD1001', amount: 1050 })
+if (result.ok) {
+  // mark the order paid (idempotently: gateways retry callbacks)
+}
+```
+
+A complete checkout and callback with Web-standard handlers (Next.js, Hono, Bun, Deno) is in
+[examples/web-standard/checkout.ts](examples/web-standard/checkout.ts). To use Bayarcash instead, replace the
+`toyyibpay(...)` call with `bayarcash({ token, secretKey, portalKey, environment: 'sandbox' })`.
+
+## What `confirmPayment` checks
+
+| Step                              | Rejects                                                        | Result              |
+| --------------------------------- | -------------------------------------------------------------- | ------------------- |
+| Callback signature                | forged or altered callbacks                                    | `invalid_signature` |
+| Fresh query to the gateway        | replayed callbacks, callbacks sent before payment, leaked keys | `not_paid`          |
+| Reference, amount (sen), currency | a real payment for another order or another amount             | `mismatch`          |
+| Gateway unreachable               | — (you retry later)                                            | `gateway_error`     |
+
+## toyyibPay: docs vs the sandbox
+
+Measured on `dev.toyyibpay.com`, 10 October 2026:
+
+| Thing                     | Docs               | Sandbox                                                                                                   |
+| ------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------- |
+| Response body             | JSON               | prefixed with tabs, sent as `text/html`                                                                   |
+| Bill with no transactions | `[]`               | the text `No data found!`                                                                                 |
+| `getCategoryDetails`      | `[{categoryName}]` | `{CategoryName}`                                                                                          |
+| createBill errors         | not documented     | `[KEY-DID-NOT-EXIST-OR-USER-IS-NOT-ACTIVE]`, `[CATEGORY-NOT-MATCH]`, or JSON `{"status":"error","msg":…}` |
+| `billExpiryDate`          | format only        | read in Malaysia time                                                                                     |
+| Minimum amount            | "more than RM1.00" | RM1.00 itself is accepted                                                                                 |
+| Callback body             | form post          | `multipart/form-data`                                                                                     |
+
+## Testing your own code
+
+```ts
+import { startFakeToyyibPay } from '@bayarkit/testing'
+
+const fake = await startFakeToyyibPay({ secretKey: 's', categoryCode: 'c' })
+const gateway = toyyibpay({ secretKey: 's', categoryCode: 'c', environment: 'sandbox', baseUrl: fake.url })
+const payment = await gateway.createPayment(order)
+fake.markPaid(payment.id)
+await yourCallbackHandler(fake.callbackFor(payment.id)) // signed exactly like the real gateway
+```
+
+## Adding a gateway
+
+Write an adapter and a fake, then make them pass `gatewayConformance` from `@bayarkit/testing`.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## How this was built
+
+bayarkit was built with AI coding assistance (Claude Code) under the direction of its author, Muhammad Aiman.
+
+The evidence that it works is meant to be checkable:
+- The adapters come from the author's own systems: toyyibPay from an ERP checkout that was tested end to end against
+  the toyyibPay sandbox (10 October 2026); Bayarcash from a SaaS checkout, written from the official docs and not yet
+  run against the sandbox.
+- The test suite, run with `npm run gate`, runs offline against the fakes, and installs the packed packages into an
+  empty project before passing.
+- Each adapter's `info.evidence` says whether it was measured on a sandbox or written from documentation only.
+
+## License
+
+MIT. See [LICENSE](LICENSE). Security issues: see [SECURITY.md](SECURITY.md).
