@@ -5,10 +5,21 @@ description: Integrate 2C2P payments (Malaysia) safely. Use when adding 2C2P che
 
 # 2C2P
 
-## No bayarkit adapter yet
+## Use the bayarkit adapter
 
-Implement it with the official sources below, then follow the rules in this skill. To contribute an adapter, see
-CONTRIBUTING.md in https://github.com/aimanmalib/bayarkit.
+Install `@bayarkit/core` and `@bayarkit/2c2p`. Evidence: **written from the official docs, not yet measured on the sandbox**.
+
+```ts
+import { confirmPayment, readCallback } from '@bayarkit/core'
+import { twoc2p } from '@bayarkit/2c2p'
+
+const gateway = twoc2p({ merchantId, secretKey, environment: 'sandbox' })
+const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
+// redirect to payment.url; then, in the callback route:
+const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
+```
+
+Test without real money: `startFake2C2P` from `@bayarkit/testing`.
 
 The full contract with a source for every fact: `gateways/2c2p/spec.md` in the bayarkit repository.
 

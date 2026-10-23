@@ -31,3 +31,7 @@ All notable changes to this project are documented here. The format follows
   ringgit at the edge; BOTH callback schemes verified as separate paths with separate salts (event webhook
   `Hitpay-Signature` over the RAW body with the webhook salt; legacy per-request `hmac` over sorted key+value fields
   with the API salt); re-serialised JSON is refused. `startFakeHitPay` in `@bayarkit/testing`.
+- `@bayarkit/2c2p`: 2C2P PGW Payment API v4.x (Payment Token + Payment Inquiry), from the official docs (not yet
+  measured): HS256 JWT with node:crypto (secret key used as ASCII text, any `alg` but HS256 refused), all three
+  official JWT test vectors reproduced, backend notification verified, the unsigned frontend return never trusted,
+  decimal ringgit converted to sen without rounding. `startFake2C2P` in `@bayarkit/testing`.

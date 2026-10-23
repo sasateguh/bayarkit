@@ -9,6 +9,7 @@
  * Imports the fakes directly, not the package index, so vitest is not needed.
  */
 import { startControlServer } from './control.js'
+import { startFake2C2P } from './fakes/2c2p.js'
 import { startFakeBayarcash } from './fakes/bayarcash.js'
 import { startFakeBillplz } from './fakes/billplz.js'
 import { startFakeChip } from './fakes/chip.js'
@@ -55,6 +56,10 @@ const FAKES: Record<
     defaults: { apiKey: 'fake-api-key', apiSalt: 'fake-api-salt', webhookSalt: 'fake-webhook-salt' },
     start: (o) =>
       startFakeHitPay({ apiKey: o.apiKey ?? '', apiSalt: o.apiSalt ?? '', webhookSalt: o.webhookSalt ?? '' }),
+  },
+  '2c2p': {
+    defaults: { merchantId: 'JT07', secretKey: 'FAKE2C2PSECRETKEY' },
+    start: (o) => startFake2C2P({ merchantId: o.merchantId ?? '', secretKey: o.secretKey ?? '' }),
   },
 }
 
