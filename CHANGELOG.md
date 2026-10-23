@@ -14,6 +14,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- From an independent review (no false "paid" path found; every fix has a test from the reviewer's scenario):
+  PHP reads gateway JSON like the TS twin (`true` is not status "1"), never throws from `verifyCallback` or
+  `Confirm::payment`, caps `toSen` at a safe integer (both twins), works on Laravel 11 with any timeout and wraps
+  Guzzle transfer errors; the demo survives malformed requests, caps memory, uses relative redirects and one choice
+  per order; `rujukan` runs through a symlink.
 - `toSen` parses ringgit strings as exact decimals ("10.505" → 1051, not 1050 through a float) and refuses
   `"1e3"`, `".5"`, `"+10"`; `toRinggit` uses integer arithmetic. The TS and PHP twins now share
   `packages/core/test/money-vectors.json`.

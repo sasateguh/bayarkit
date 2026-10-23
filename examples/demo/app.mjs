@@ -9,6 +9,7 @@
  * packed-tarball smoke test uses (scripts/smoke/<id>.mjs), so the demo cannot drift from what the gate checks.
  * All text lives in i18n/<lang>.json. Orders are kept in memory, capped, and vanish on restart.
  */
+import { randomBytes } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import {
   checkoutResponse,
@@ -27,7 +28,9 @@ const LANGS = {
   en: JSON.parse(readFileSync(new URL('i18n/en.json', here), 'utf8')),
 }
 const CSS = readFileSync(new URL('demo.css', here), 'utf8')
-const MAX_ORDERS = 500
+// Memory stays bounded when hosted: every PER_GENERATION checkouts a fresh set of fakes starts, and the set before the
+// previous one is closed with its orders (the fakes keep every bill they ever saw).
+const PER_GENERATION = 250
 // Not called: the demo delivers callbacks itself. Gateways still validate them, so they must look real.
 const ORIGIN = 'https://demo.bayarkit.invalid'
 const CUSTOMER = { name: 'Pelanggan Demo', email: 'demo@example.com', phone: '0123456789' }
@@ -51,23 +54,43 @@ function translator(lang) {
 }
 
 /** Start every fake + adapter listed in the registry. */
-export async function startDemo() {
+export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
   const registry = JSON.parse(readFileSync(new URL('gateways/registry.json', root), 'utf8'))
-  const gateways = new Map()
-  for (const entry of registry.gateways) {
-    if (!entry.adapter) continue
-    const { default: setup } = await import(new URL(`scripts/smoke/${entry.id}.mjs`, root).href)
-    const { fake, gateway } = await setup(testing)
-    gateways.set(entry.id, {
-      id: entry.id,
-      label: entry.adapter.label,
-      evidence: entry.adapter.evidence,
-      fake,
-      gateway,
-    })
+  async function startGeneration() {
+    const set = new Map()
+    for (const entry of registry.gateways) {
+      if (!entry.adapter) continue
+      const { default: setup } = await import(new URL(`scripts/smoke/${entry.id}.mjs`, root).href)
+      const { fake, gateway } = await setup(testing)
+      set.set(entry.id, {
+        id: entry.id,
+        label: entry.adapter.label,
+        evidence: entry.adapter.evidence,
+        fake,
+        gateway,
+      })
+    }
+    return set
   }
+  let gateways = await startGeneration()
+  const generations = [gateways]
   const orders = new Map()
-  let n = 0
+  let created = 0
+  let rotating = null
+
+  async function rotate() {
+    const next = await startGeneration()
+    generations.push(next)
+    gateways = next
+    while (generations.length > 2) {
+      const old = generations.shift()
+      for (const [ref, order] of orders) if (order.generation === old) orders.delete(ref)
+      for (const g of old.values()) await g.fake.close()
+    }
+  }
+
+  /** A relative 303: the Host header never decides where a visitor is sent. */
+  const seeOther = (path) => new Response(null, { status: 303, headers: { location: path } })
 
   function page(lang, title, body, status = 200) {
     const t = translator(lang)
@@ -125,8 +148,8 @@ export async function startDemo() {
     if (!Number.isInteger(amount)) return home(lang, t('errors.amount'), values)
     const min = g.gateway.info.minimumAmount
     if (amount < min) return home(lang, t('errors.minimum', { min: toRinggit(min) }), values)
-    n += 1
-    const reference = `DEMO${Date.now().toString(36).toUpperCase()}${n}`
+    // Unguessable, and within the shortest reference limit of any adapter (eGHL: 20 characters).
+    const reference = `DEMO${randomBytes(8).toString('hex').toUpperCase()}`
     let payment
     try {
       payment = await g.gateway.createPayment({
@@ -141,10 +164,18 @@ export async function startDemo() {
       const message = e instanceof GatewayError ? e.message : 'error'
       return home(lang, t('errors.refused', { message }), values)
     }
-    orders.set(reference, { reference, amount, gateway: g, payment, result: null })
-    // Oldest first out, so a public demo cannot grow without bound.
-    while (orders.size > MAX_ORDERS) orders.delete(orders.keys().next().value)
-    return Response.redirect(new URL(`${lang === 'en' ? '/en' : ''}/pay/${reference}`, request.url), 303)
+    orders.set(reference, {
+      reference,
+      amount,
+      gateway: g,
+      generation: gateways,
+      payment,
+      choice: null,
+      result: null,
+    })
+    created += 1
+    if (created % perGeneration === 0 && !rotating) rotating = rotate().finally(() => (rotating = null))
+    return seeOther(`${lang === 'en' ? '/en' : ''}/pay/${reference}`)
   }
 
   function payPage(lang, order) {
@@ -173,7 +204,12 @@ export async function startDemo() {
   async function pay(lang, order, request) {
     const form = await request.formData().catch(() => null)
     const choice = String(form?.get('action') ?? '')
+    const orderPath = `${lang === 'en' ? '/en' : ''}/order/${order.reference}`
+    // One choice per order: "forge" marks the fake paid, so a later "decline" would (correctly) confirm as paid and
+    // show a scenario the visitor did not pick. Another scenario = another order.
+    if (order.choice) return seeOther(orderPath)
     if (!['pay', 'decline', 'forge'].includes(choice)) return payPage(lang, order)
+    order.choice = choice
     const { fake } = order.gateway
     if (choice !== 'decline') fake.markPaid(order.payment.id)
     let cb = fake.callbackFor(order.payment.id)
@@ -190,10 +226,7 @@ export async function startDemo() {
           body: new URLSearchParams(cb.fields).toString(),
         })
     await handle(delivery)
-    return Response.redirect(
-      new URL(`${lang === 'en' ? '/en' : ''}/order/${order.reference}`, request.url),
-      303,
-    )
+    return seeOther(orderPath)
   }
 
   /** The shop's callback route: exactly what an app does. */
@@ -264,7 +297,10 @@ ${r && !r.ok ? `<details><summary>${t('order.detail')}</summary><p><code>${esc(r
     const order = m ? orders.get(m[2]) : undefined
     if (m && !order)
       return page(lang, t('errors.order'), `<p class="card error">${t('errors.order')}</p>`, 404)
-    if (m?.[1] === 'pay' && request.method === 'GET') return payPage(lang, order)
+    if (m?.[1] === 'pay' && request.method === 'GET')
+      return order.choice
+        ? seeOther(`${lang === 'en' ? '/en' : ''}/order/${order.reference}`)
+        : payPage(lang, order)
     if (m?.[1] === 'pay' && request.method === 'POST') return pay(lang, order, request)
     if (m?.[1] === 'order' && request.method === 'GET') return orderPage(lang, order)
     if (m?.[1] === 'callback' && request.method === 'POST') return callback(order, request)
@@ -273,9 +309,14 @@ ${r && !r.ok ? `<details><summary>${t('order.detail')}</summary><p><code>${esc(r
 
   return {
     handle,
-    gateways,
+    /** For tests: how many orders and fake generations are held right now. */
+    stats: () => ({ orders: orders.size, generations: generations.length }),
+    get gateways() {
+      return gateways
+    },
     async close() {
-      for (const g of gateways.values()) await g.fake.close()
+      await rotating
+      for (const set of generations) for (const g of set.values()) await g.fake.close()
     },
   }
 }

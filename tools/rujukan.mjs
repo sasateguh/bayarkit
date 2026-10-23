@@ -15,9 +15,9 @@
  * the toyyibPay, Bayarcash SDK, Billplz and Stripe sources, so a change is a change, not page noise.
  */
 import { createHash } from 'node:crypto'
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { dirname, join, resolve } from 'node:path'
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -401,8 +401,10 @@ function skills(args) {
   return 0
 }
 
-// Run only as a CLI, so tests (and the re-baseline check) can import `normalise`.
-if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+// Run only as a CLI, so tests (and the re-baseline check) can import `normalise`. Real paths on both sides: through a
+// symlink the comparison once failed and the CLI exited 0 having checked nothing.
+const invoked = process.argv[1] && existsSync(process.argv[1]) ? realpathSync(process.argv[1]) : ''
+if (invoked && realpathSync(fileURLToPath(import.meta.url)) === invoked) {
   const [command, ...args] = process.argv.slice(2)
   const commands = { check, lint, skills }
   if (!commands[command]) {

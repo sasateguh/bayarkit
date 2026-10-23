@@ -22,12 +22,12 @@ const post = (path, fields) =>
 async function order(gateway, action, prefix = '') {
   const created = await post(`${prefix}/checkout`, { gateway, amount: '2.50' })
   expect(created.status, `${gateway} checkout`).toBe(303)
-  const payPath = new URL(created.headers.get('location')).pathname
+  const payPath = created.headers.get('location')
   const payPage = await (await get(payPath)).text()
   expect(payPage).toContain('RM2.50')
   const paid = await post(payPath, { action })
   expect(paid.status).toBe(303)
-  return (await get(new URL(paid.headers.get('location')).pathname)).text()
+  return (await get(paid.headers.get('location'))).text()
 }
 
 describe('demo', () => {
@@ -70,7 +70,7 @@ describe('demo', () => {
 
   it('a callback posted by a stranger never marks an order paid', async () => {
     const created = await post('/checkout', { gateway: 'toyyibpay', amount: '1.00' })
-    const ref = new URL(created.headers.get('location')).pathname.split('/').pop()
+    const ref = created.headers.get('location').split('/').pop()
     await post(`/callback/${ref}`, { billcode: 'x', status_id: '1', order_id: ref, hash: 'f'.repeat(32) })
     expect(await (await get(`/order/${ref}`)).text()).toContain('class="status notPaid"')
   })
@@ -82,4 +82,48 @@ describe('demo', () => {
     expect(res.headers.get('x-robots-tag')).toBe('noindex')
     expect((await get('/order/NOPE')).status).toBe(404)
   })
+
+  it('one choice per order: a second choice cannot turn a forged order into a paid one', async () => {
+    const created = await post('/checkout', { gateway: 'toyyibpay', amount: '1.00' })
+    const payPath = created.headers.get('location')
+    await post(payPath, { action: 'forge' })
+    const again = await post(payPath, { action: 'decline' })
+    expect(again.status).toBe(303)
+    const orderPath = again.headers.get('location')
+    expect(await (await get(orderPath)).text()).toContain('tandatangan tidak sah')
+    expect((await get(payPath)).headers.get('location')).toBe(orderPath)
+  })
+
+  it('redirects are relative (the Host header never decides) and references are unguessable', async () => {
+    const created = await demo.handle(
+      new Request('http://evil.example/checkout', {
+        method: 'POST',
+        headers: { 'content-type': 'application/x-www-form-urlencoded', host: 'evil.example' },
+        body: 'gateway=eghl&amount=1.00',
+      }),
+    )
+    const location = created.headers.get('location')
+    expect(location).toMatch(/^\/pay\/DEMO[0-9A-F]{16}$/)
+  })
+})
+
+describe('demo memory stays bounded', () => {
+  it('rotates fakes and drops old orders', async () => {
+    const small = await startDemo({ perGeneration: 5 })
+    for (let i = 0; i < 23; i++) {
+      const res = await small.handle(
+        new Request('http://demo.test/checkout', {
+          method: 'POST',
+          headers: { 'content-type': 'application/x-www-form-urlencoded' },
+          body: 'gateway=toyyibpay&amount=1.00',
+        }),
+      )
+      expect(res.status).toBe(303)
+    }
+    await new Promise((r) => setTimeout(r, 200))
+    const { orders, generations } = small.stats()
+    expect(generations).toBeLessThanOrEqual(2)
+    expect(orders).toBeLessThanOrEqual(10)
+    await small.close()
+  }, 60_000)
 })

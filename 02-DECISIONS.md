@@ -114,3 +114,16 @@ adapter; sabotaj 2/2). Belum diukur (sandbox 10 Okt memulangkan yuran tanpa kunc
 Merentas projek: ERP `tunwan-business` mengisi `orders.yuran_gateway` dari `transactionCharge` dan memanggil tanpa
 kunci — dilapor kepada pemilik, TIDAK diubah dari sini (repo sesi lain). Undur: buang `userSecretKey` dari satu baris
 setiap adapter.
+
+**D17 — 23 Okt 2026 — Semakan bebas (ejen penyemak tanpa konteks): 12 dapatan, 0 laluan ke "dibayar" palsu; semua
+dibaiki dengan ujian dari senario penyemak.** PHP: `CallbackInput` menapis bukan-teks (verifyCallback tak boleh dilempar
+oleh `$request->all()`); `Text::of` = semantik `String()` JS (`true` dahulu dibaca "1" = DIBAYAR dalam PHP, `unknown`
+dalam TS); `toSen` terhad pada integer selamat JS dalam KEDUA-DUA kembar (dahulu limpahan = TypeError); `Confirm`
+tidak membiarkan pengecualian terlepas (kelas sahaja dalam butiran); masa tamat Laravel = saat integer (Laravel 11
+`timeout(int)`: 2500 ms = TypeError setiap panggilan); `TransferException` Guzzle dibungkus (Laravel 11 hanya menukar
+ConnectException); URL dengan aksara kawalan ditolak. Dua yang terakhir (Laravel) DIBUKTIKAN pada Laravel 11 sebenar:
+sabotaj = merah pada 11.33.2. Demo: pelayan tak boleh dimatikan satu permintaan (405/400/413, asas URL tetap), satu
+pilihan setiap pesanan (palsu→tolak dahulu = DIBAYAR), rujukan rawak, redirect relatif (tiada redirect terbuka Host),
+memori terhad dengan generasi gateway palsu. rujukan: pengawal CLI atas realpath (symlink dahulu keluar 0 tanpa kerja).
+README PHP: rahsia toyyibPay dalam BADAN permintaan → sorok dalam Telescope/log. Keserasian kini dibuktikan, bukan
+didakwa: `scripts/php-compat.sh` (PHP 8.2 + kebergantungan terendah = Laravel 11; PHP 8.4 + terbaru = Laravel 12).
