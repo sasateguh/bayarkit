@@ -408,7 +408,21 @@
           "mustContain": ["API Specification documents", "Razer API Spec for Merchant", "Recurring API"]
         }
       ],
-      "adapter": null,
+      "adapter": {
+        "package": "@bayarkit/fiuu",
+        "factory": "fiuu",
+        "evidence": "docs",
+        "configExample": "{ merchantId, verifyKey, secretKey, environment: 'sandbox' }",
+        "fake": "startFakeFiuu",
+        "label": {
+          "en": "Fiuu (formerly Razer Merchant Services / MOLPay)",
+          "ms": "Fiuu (dahulu Razer Merchant Services / MOLPay)"
+        },
+        "summary": {
+          "en": "Official API spec PDF v13.97 (the official vcode test vector), WooCommerce plugin and PHP SDK; not yet measured on the sandbox",
+          "ms": "PDF spesifikasi API rasmi v13.97 (vektor ujian vcode rasmi), plugin WooCommerce dan SDK PHP; belum diukur pada sandbox"
+        }
+      },
       "spec": true,
       "gotchas": [
         {

@@ -44,3 +44,9 @@ All notable changes to this project are documented here. The format follows
   `getPayment` reports the order's state, `createOrder` for Standard Checkout; webhooks verified over the RAW body with
   the webhook secret (the official Node sample's `JSON.stringify(parsed)` fails), Payment Link and Checkout callbacks
   with the key secret; all five official test vectors reproduced. `startFakeCurlec` in `@bayarkit/testing`.
+- `@bayarkit/fiuu`: Fiuu (formerly Razer Merchant Services / MOLPay) hosted payment page, from the official API spec
+  PDF v13.97, WooCommerce plugin and PHP SDK (not yet measured): `vcode` standard or extended (config flag; the official
+  vector reproduced), callback `skey` double MD5 over the strings exactly as posted (`RM` → `MYR` afterwards), requery
+  q_by_tid / q_by_oid with the answer's `VrfKey` checked, one request per `getPayment` (never polled). Ids carry the
+  order, amount and `tranID` because Fiuu has no create API and every requery hashes the amount. `startFakeFiuu` in
+  `@bayarkit/testing`.

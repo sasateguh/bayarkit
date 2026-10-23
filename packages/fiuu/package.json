@@ -1,0 +1,26 @@
+{
+  "name": "@bayarkit/fiuu",
+  "version": "0.1.0",
+  "description": "Fiuu (formerly Razer Merchant Services / MOLPay) hosted payment page adapter for bayarkit: vcode, skey, requery with VrfKey.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@bayarkit/core": "0.1.0"
+  }
+}
