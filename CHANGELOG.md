@@ -44,3 +44,8 @@ All notable changes to this project are documented here. The format follows
   `getPayment` reports the order's state, `createOrder` for Standard Checkout; webhooks verified over the RAW body with
   the webhook secret (the official Node sample's `JSON.stringify(parsed)` fails), Payment Link and Checkout callbacks
   with the key secret; all five official test vectors reproduced. `startFakeCurlec` in `@bayarkit/testing`.
+- `@bayarkit/eghl`: eGHL (ADAPTIS e-Commerce), from the official public code only (no public API guide; not yet
+  measured): GET/POST redirect to `payment.aspx` with the SALE HashValue, callbacks verified with the 10-field
+  HashValue2 of the eGHL_HASH class (the official Omnipay vector reproduced; the shorter Magento/OpenCart variants are
+  refused), status from a signed QUERY that repeats the original amount, sen ↔ ringgit at the edge.
+  `startFakeEghl` in `@bayarkit/testing`.
