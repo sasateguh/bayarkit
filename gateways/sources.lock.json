@@ -23,6 +23,30 @@
     "chars": 5471,
     "since": "2026-10-23"
   },
+  "airwallex/ai-payments-notes": {
+    "url": "https://www.airwallex.com/docs/developer-tools/ai-agent-payments-integration.md",
+    "sha256": "5921890b35f34aee0528ee972d243f0f4699fd1d10b601cc97f66a5cb2f6662c",
+    "chars": 6528,
+    "since": "2026-10-23"
+  },
+  "airwallex/fpx-md": {
+    "url": "https://www.airwallex.com/docs/payments/payment-methods/apac/fpx.md",
+    "sha256": "6c9994e85a73c1fe5fe759bc0988c075076aa8ea917cedcee7f3f95cd0a1c175",
+    "chars": 3673,
+    "since": "2026-10-23"
+  },
+  "airwallex/openapi": {
+    "url": "https://raw.githubusercontent.com/airwallex/airwallex-openapi/HEAD/openapi/client-api/latest/airwallex-openapi-latest.json",
+    "sha256": "ea238cb04abfc82c9ec683ba7b9800ae79701a34acff5ba22a87b48024aeb7f7",
+    "chars": 3967455,
+    "since": "2026-10-23"
+  },
+  "airwallex/webhooks-md": {
+    "url": "https://www.airwallex.com/docs/developer-tools/webhooks/listen-for-webhook-events.md",
+    "sha256": "da092daf604d4aeba7c05cd6f5e100e3ef58054dbdd052b4ccb9012071643b83",
+    "chars": 11610,
+    "since": "2026-10-23"
+  },
   "bayarcash/api-docs": {
     "url": "https://api.webimpian.support/bayarcash/llms-full.txt",
     "sha256": "866d411e0bcc47ce1622c5436db9ecf4f4b82c82bc91cd834d6f0ec974ab7f7b",

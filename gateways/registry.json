@@ -696,7 +696,10 @@
         "evidence": "docs",
         "configExample": "{ cid, signatureKey, environment: 'sandbox' }",
         "fake": "startFakeGkash",
-        "label": { "en": "Gkash", "ms": "Gkash" },
+        "label": {
+          "en": "Gkash",
+          "ms": "Gkash"
+        },
         "summary": {
           "en": "Official docs (SHA-512 signature test vectors), WooCommerce plugin and gkashmy SDKs; not yet measured on staging",
           "ms": "Dokumen rasmi (vektor ujian tandatangan SHA-512), plugin WooCommerce dan SDK gkashmy; belum diukur pada staging"
@@ -734,9 +737,53 @@
       "id": "airwallex",
       "name": "Airwallex",
       "site": "https://www.airwallex.com/en-my",
-      "sources": [],
+      "sandbox": "https://api.sandbox.airwallex.com (separate sandbox account at www.sandbox.airwallex.com with its own Client ID + API key; production https://api.airwallex.com; official Node SDK and SFCC cartridge use the alias https://api-demo.airwallex.com)",
+      "sources": [
+        {
+          "id": "openapi",
+          "title": "Airwallex Client API OpenAPI 3.1.0 spec (latest = 2026-08-21)",
+          "url": "https://raw.githubusercontent.com/airwallex/airwallex-openapi/HEAD/openapi/client-api/latest/airwallex-openapi-latest.json",
+          "mustContain": ["/api/v1/pa/payment_intents/create", "api.sandbox.airwallex.com", "x-client-id"]
+        },
+        {
+          "id": "webhooks-md",
+          "title": "Listen for webhook events (delivery headers + Check webhook signatures, Markdown export)",
+          "url": "https://www.airwallex.com/docs/developer-tools/webhooks/listen-for-webhook-events.md",
+          "mustContain": ["x-signature", "value_to_digest", "client-secret-key"]
+        },
+        {
+          "id": "ai-payments-notes",
+          "title": "Instructions for AI agents - Payments integration notes (amount units, HPP successUrl, hosts)",
+          "url": "https://www.airwallex.com/docs/developer-tools/ai-agent-payments-integration.md",
+          "mustContain": ["not cents-based", "successUrl", "api.sandbox.airwallex.com"]
+        },
+        {
+          "id": "fpx-md",
+          "title": "FPX payment method properties (MYR, min/max, refunds)",
+          "url": "https://www.airwallex.com/docs/payments/payment-methods/apac/fpx.md",
+          "mustContain": ["1.01 MYR", "2,000 MYR", "MOLPay"]
+        }
+      ],
       "adapter": null,
-      "spec": false
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "Amounts are decimal MAJOR units (MYR 12.50 is sent as 12.50), yet every official PaymentIntent example sends \"amount\": 100, so a cents habit overcharges 100x.",
+          "source": "https://www.airwallex.com/docs/developer-tools/ai-agent-payments-integration.md lines 40-43; using-payments-intent-api.md line 15 vs quickstart.md line 70"
+        },
+        {
+          "text": "Webhook x-signature is lowercase hex HMAC-SHA256 over x-timestamp (milliseconds, as received) concatenated with the RAW body; the official Koa sample nonetheless falls back to JSON.stringify(parsed body), which breaks verification, and test events are signed with the secret in their client-secret-key header instead of the subscription secret.",
+          "source": "listen-for-webhook-events.md lines 35-36, 83, 86-98, 178"
+        },
+        {
+          "text": "The PaymentIntent hosted page has no server-side URL: it needs Airwallex.js redirectToCheckout() in the browser and redirects to successUrl (return_url only as fallback); the JS-free Checkout Session needs API version 2026-05-29+ and is absent from the published OpenAPI (latest 2026-08-21).",
+          "source": "quickstart.md lines 117-166; ai-agent-payments-integration.md line 54; checkout-session/quickstart.md line 14; airwallex-openapi-latest.json paths"
+        },
+        {
+          "text": "FPX through Airwallex only accepts 1.01 to 2,000 MYR per transaction and needs 15-20 business days of activation; there is no generic minimum and no FPX-specific sandbox bank, only the generic simulate-shopper-action API.",
+          "source": "https://www.airwallex.com/docs/payments/payment-methods/apac/fpx.md lines 19, 24-25; simulate-shopper-action.md lines 18-42"
+        }
+      ]
     },
     {
       "id": "xendit",
@@ -845,7 +892,10 @@
         "evidence": "docs",
         "configExample": "{ serviceId, merchantPassword, environment: 'sandbox', fallbackCustomerIp }",
         "fake": "startFakeEghl",
-        "label": { "en": "eGHL (ADAPTIS e-Commerce)", "ms": "eGHL (ADAPTIS e-Commerce)" },
+        "label": {
+          "en": "eGHL (ADAPTIS e-Commerce)",
+          "ms": "eGHL (ADAPTIS e-Commerce)"
+        },
         "summary": {
           "en": "Official eGHL public code (hash class, merchant-api QUERY, Omnipay HashValue2 test vector; no public API guide exists); not yet measured on the test host",
           "ms": "Kod awam rasmi eGHL (kelas hash, QUERY merchant-api, vektor ujian HashValue2 Omnipay; tiada panduan API awam); belum diukur pada hos ujian"
