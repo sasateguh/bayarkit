@@ -209,6 +209,30 @@
     "chars": 463,
     "since": "2026-10-23"
   },
+  "senangpay/doku-notification-global": {
+    "url": "https://doku-developers.apidog.io/sample-notification-global-44767704e0.md",
+    "sha256": "e09476b3601b16addb01ae8195687935d09b13d0ce5daa5e20c884133de9aeec",
+    "chars": 7883,
+    "since": "2026-10-23"
+  },
+  "senangpay/doku-signature": {
+    "url": "https://doku-developers.apidog.io/generating-signature-2466482m0.md",
+    "sha256": "55680a39ef661258133377b1fecf16aa1520511d151d5dc7c482e6c2c3c20dba",
+    "chars": 775,
+    "since": "2026-10-23"
+  },
+  "senangpay/legacy-secure-hash": {
+    "url": "https://raw.githubusercontent.com/senangpay/api_catalog/HEAD/integration-api/manual-integration-api-open-api/generate-secure-hash.md",
+    "sha256": "bef33724bea0fda1ddf28f32adb4b57c4cf4d1d459a30cfa36015f9fb784e898",
+    "chars": 1803,
+    "since": "2026-10-23"
+  },
+  "senangpay/senangpay-doku-faq": {
+    "url": "https://senangpay.com/doku-migration-faq/",
+    "sha256": "47e77dc599c772e8126f24dda8eb5057a7f18d085df1337e62650d656f8b4ec5",
+    "chars": 19621,
+    "since": "2026-10-23"
+  },
   "stripe/checkout-create": {
     "url": "https://docs.stripe.com/api/checkout/sessions/create.md",
     "sha256": "3a9250dbab14917fa17471987ce88c33d190c7fcacd6f524a75812597694039b",

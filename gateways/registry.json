@@ -223,9 +223,57 @@
       "id": "senangpay",
       "name": "senangPay",
       "site": "https://senangpay.com",
-      "sources": [],
+      "sandbox": "Current (senangPay-DOKU): https://api-sandbox.doku.com (prod https://api.doku.com), sandbox account via https://sandbox.doku.com/bo/sandbox-registration?country=MY, test card 5120910000000012 CVV 100; FPX/e-wallet success/fail simulated on last step. Legacy https://sandbox.senangpay.my answered HTTP 530 on 2026-10-23.",
+      "sources": [
+        {
+          "id": "doku-signature",
+          "title": "DOKU Malaysia API Reference - Generating Signature (senangPay-DOKU)",
+          "url": "https://doku-developers.apidog.io/generating-signature-2466482m0.md",
+          "mustContain": ["HMACSHA256=", "BRN-0239-1709018494325", "/v3/payments"]
+        },
+        {
+          "id": "doku-notification-global",
+          "title": "DOKU Malaysia API Reference - Sample Notification - Global (OpenAPI)",
+          "url": "https://doku-developers.apidog.io/sample-notification-global-44767704e0.md",
+          "mustContain": [
+            "/merchants-url/receive-notification",
+            "doku-global.2025-12-01",
+            "EWALLET_SHOPEEPAY"
+          ]
+        },
+        {
+          "id": "senangpay-doku-faq",
+          "title": "senangPay - Frequently Asked Questions about senangPay-DOKU Migration",
+          "url": "https://senangpay.com/doku-migration-faq/",
+          "mustContain": ["RM2.00", "5120910000000012", "Card transactions only"]
+        },
+        {
+          "id": "legacy-secure-hash",
+          "title": "senangPay API catalog (legacy) - Generate Secure Hash",
+          "url": "https://raw.githubusercontent.com/senangpay/api_catalog/HEAD/integration-api/manual-integration-api-open-api/generate-secure-hash.md",
+          "mustContain": ["53-784", "0bde51ff340f110ab7331a902aa969e7", "74422328b44d30bf"]
+        }
+      ],
       "adapter": null,
-      "spec": false
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "senangPay merchants were migrated to the DOKU platform, so new integrations use DOKU's JSON API with an HMACSHA256= header signature; the legacy hash/form API at app.senangpay.my/payment/{merchantID} redirected to doku.com/not-found for the documented example merchant ID.",
+          "source": "https://guide.senangpay.com/common-faqs-regarding-senangpay-doku-migration + https://guide.senangpay.com/doku-api-integration-guide + live curl 2026-10-23"
+        },
+        {
+          "text": "DOKU's own Python and Node.js signature samples prefix the digest line with 'Digest:' (and the Go sample appends the digest twice), while the prose and the Java/Ruby samples use the bare base64 digest: Client-Id\\nRequest-Timestamp\\nPath\\nDigest.",
+          "source": "https://doku-developers.apidog.io/sample-code-2466484m0.md vs https://doku-developers.apidog.io/generating-signature-2466482m0.md"
+        },
+        {
+          "text": "Amounts are ringgit with decimals (DOKU float 100.05; legacy '25.50' with exactly two decimals that must byte-match the hashed string), not sen, except legacy tokenisation amount_paid which is in sen (200 = RM2.00); minimum payment is RM2.00.",
+          "source": "https://doku-developers.apidog.io/create-checkout-44767692e0.md + api_catalog swagger spelling checked.yaml l.1389-1392 + https://senangpay.com/doku-migration-faq/#Payments"
+        },
+        {
+          "text": "Do not query a DOKU payment right after the redirect: Retrieve Payment/Checkout must be called at least 60 seconds after payment completion, and the {id} is your own request id, not a DOKU id.",
+          "source": "https://doku-developers.apidog.io/retrieve-payment-status-44767696e0.md"
+        }
+      ]
     },
     {
       "id": "ipay88",
