@@ -10,9 +10,13 @@ Keadaan: tanya sistem (`npm run gate`, `git log`). Fail ini = apa seterusnya.
 
 ## Seterusnya (satu demi satu)
 
-0. Ukur di sandbox toyyibPay (bila akaun ada): `getBillTransactions` dengan/tanpa `userSecretKey` — yuran kosong tanpa
-   kunci? bentuk jawapan untuk kunci akaun lain (`[]` atau "No data found!")? (D16)
-
+0. **Ukur dahulu bila akaun sandbox ada** (setiap satu = dakwaan dokumen yang keselamatannya bergantung padanya; D16, D18):
+   - toyyibPay: `getBillTransactions` dengan/tanpa `userSecretKey` (yuran kosong? bentuk jawapan kunci akaun lain?).
+   - iPay88: `enquiry.asp` dengan jumlah SALAH mesti bukan `00` (skema tandatangan boleh dianjak antara medan).
+   - eGHL: QUERY tidak menggemakan Amount yang diminta (HashValue2 boleh dipecah semula).
+   - Fiuu: jawapan requery ada `Currency`? (fake ada, §7 tidak — tanpanya semua pengesahan = `mismatch`).
+   - CHIP: kunci hidup boleh baca pembelian ujian? `is_test` sentiasa ada?
+   - Bayarcash: `GET /transactions/{id}` ada medan portal?
 1. ~~Adapter Billplz, CHIP, Stripe~~ SIAP 23 Okt (D9, label `docs`). Untuk `measured`: akaun sandbox pemilik + larian set
    ujian piawai terhadap sandbox sebenar (Bayarcash, Billplz, CHIP, Stripe).
 2. ~~Kaji gateway inventori + adapter~~ SIAP 23 Okt (D11–D13): 14 adapter dalam `main`, semua `docs`. Adyen + Airwallex
