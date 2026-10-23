@@ -4,7 +4,7 @@
 # Every gateway goes through the same steps: an early callback is refused, a paid one confirms, a tampered one is refused.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-GATEWAYS=(toyyibpay bayarcash billplz stripe chip)
+GATEWAYS=(toyyibpay bayarcash billplz stripe chip hitpay)
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 for p in core testing "${GATEWAYS[@]}"; do (cd "packages/$p" && npm pack --silent --pack-destination "$tmp" >/dev/null); done
@@ -44,6 +44,11 @@ const setups = {
     const { chip } = await import('@bayarkit/chip')
     const publicKey = await chip({ secretKey: 's', brandId: 'b', baseUrl: fake.url }).fetchPublicKey()
     return { fake, gateway: chip({ secretKey: 's', brandId: 'b', publicKey, baseUrl: fake.url }) }
+  },
+  hitpay: async () => {
+    const fake = await testing.startFakeHitPay({ apiKey: 'k', apiSalt: 'as', webhookSalt: 'ws' })
+    const { hitpay } = await import('@bayarkit/hitpay')
+    return { fake, gateway: hitpay({ apiKey: 'k', apiSalt: 'as', webhookSalt: 'ws', environment: 'sandbox', baseUrl: fake.url }) }
   },
 }
 

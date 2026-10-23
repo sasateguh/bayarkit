@@ -2,7 +2,7 @@
 /**
  * bayarkit-fake — run one fake gateway as a standalone server, for tests in any language.
  *
- *   npx bayarkit-fake <toyyibpay|bayarcash|billplz|stripe|chip> [--control-port N] [--<option> <value> ...]
+ *   npx bayarkit-fake <toyyibpay|bayarcash|billplz|stripe|chip|hitpay> [--control-port N] [--<option> <value> ...]
  *
  * Prints ONE JSON line ({ gateway, url, control, options }) and serves until SIGINT/SIGTERM. Options are the fake's
  * own (e.g. --secretKey, --webhookSecret); test defaults are used for the rest and echoed in `options`.
@@ -12,6 +12,7 @@ import { startControlServer } from './control.js'
 import { startFakeBayarcash } from './fakes/bayarcash.js'
 import { startFakeBillplz } from './fakes/billplz.js'
 import { startFakeChip } from './fakes/chip.js'
+import { startFakeHitPay } from './fakes/hitpay.js'
 import { startFakeStripe } from './fakes/stripe.js'
 import { startFakeToyyibPay } from './fakes/toyyibpay.js'
 import type { FakeGateway } from './fakes/types.js'
@@ -49,6 +50,11 @@ const FAKES: Record<
   chip: {
     defaults: { secretKey: 'fake-secret', brandId: 'fake-brand' },
     start: (o) => startFakeChip({ secretKey: o.secretKey ?? '', brandId: o.brandId ?? '' }),
+  },
+  hitpay: {
+    defaults: { apiKey: 'fake-api-key', apiSalt: 'fake-api-salt', webhookSalt: 'fake-webhook-salt' },
+    start: (o) =>
+      startFakeHitPay({ apiKey: o.apiKey ?? '', apiSalt: o.apiSalt ?? '', webhookSalt: o.webhookSalt ?? '' }),
   },
 }
 

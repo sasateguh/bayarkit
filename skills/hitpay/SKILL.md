@@ -5,10 +5,21 @@ description: Integrate HitPay payments (Malaysia) safely. Use when adding HitPay
 
 # HitPay
 
-## No bayarkit adapter yet
+## Use the bayarkit adapter
 
-Implement it with the official sources below, then follow the rules in this skill. To contribute an adapter, see
-CONTRIBUTING.md in https://github.com/aimanmalib/bayarkit.
+Install `@bayarkit/core` and `@bayarkit/hitpay`. Evidence: **written from the official docs, not yet measured on the sandbox**.
+
+```ts
+import { confirmPayment, readCallback } from '@bayarkit/core'
+import { hitpay } from '@bayarkit/hitpay'
+
+const gateway = hitpay({ apiKey, apiSalt, webhookSalt, environment: 'sandbox' })
+const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
+// redirect to payment.url; then, in the callback route:
+const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
+```
+
+Test without real money: `startFakeHitPay` from `@bayarkit/testing`.
 
 The full contract with a source for every fact: `gateways/hitpay/spec.md` in the bayarkit repository.
 
