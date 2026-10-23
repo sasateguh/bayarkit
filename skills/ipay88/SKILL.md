@@ -5,10 +5,21 @@ description: Integrate NTT DATA Payment Services Malaysia (formerly iPay88) — 
 
 # NTT DATA Payment Services Malaysia (formerly iPay88) — iPay88 OPSG / ADAPTIS e-Commerce
 
-## No bayarkit adapter yet
+## Use the bayarkit adapter
 
-Implement it with the official sources below, then follow the rules in this skill. To contribute an adapter, see
-CONTRIBUTING.md in https://github.com/aimanmalib/bayarkit.
+Install `@bayarkit/core` and `@bayarkit/ipay88`. Evidence: **written from the official docs, not yet measured on the sandbox**.
+
+```ts
+import { confirmPayment, readCallback } from '@bayarkit/core'
+import { ipay88 } from '@bayarkit/ipay88'
+
+const gateway = ipay88({ merchantCode, merchantKey, environment: 'production' })
+const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
+// redirect to payment.url; then, in the callback route:
+const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
+```
+
+Test without real money: `startFakeIPay88` from `@bayarkit/testing`.
 
 The full contract with a source for every fact: `gateways/ipay88/spec.md` in the bayarkit repository.
 
@@ -17,6 +28,7 @@ The full contract with a source for every fact: `gateways/ipay88/spec.md` in the
 - The signature is HMAC-SHA512 (lower-case hex, 128 chars) keyed with the MerchantKey, but the MerchantKey is ALSO the first part of the hashed message (key+code+refno+amount+currency), so a 'normal' HMAC over the fields alone will never match. *(https://payment.ipay88.com.my/epayment/testing/TestSignatureIpay88.asp lines 35 and 46 (strBeforehash = MerchantKey + ...; GetHmacSHA512(strBeforehash, MerchantKey)))*
 - Amount is posted in ringgit with two decimals (e.g. 1.00) but must be signed with '.' and ',' removed (100); the gateway's own tool removes only the FIRST '.' and FIRST ',' (JS String.replace), so amounts with two thousands separators (1,000,000.00) give a different string there than a full strip. *(https://payment.ipay88.com.my/epayment/testing/TestSignatureIpay88.asp line 31)*
 - enquiry.asp answers with a bare text/html body, not JSON: only the exact string '00' means paid; 'Invalid parameters' and 'Record not found' are returned with HTTP 200. *(https://payment.ipay88.com.my/epayment/enquiry.asp (live probe 2026-10-23: empty POST -> 'Invalid parameters', unknown RefNo -> 'Record not found', both HTTP 200))*
+- A payment starts with a browser form POST to entry.asp, not a redirect: with @bayarkit/ipay88 serve `payment.html` (or post `payment.form`) instead of redirecting to `payment.url`. The BackendURL page must answer exactly `RECEIVEOK` or iPay88 retries. *(gateways/ipay88/spec.md §2 and §4 (iPay88 Technical Specification 1.6.4.4 p.10 and p.14; UNCONFIRMED: not officially hosted))*
 
 ## Rules that apply to every Malaysian gateway
 

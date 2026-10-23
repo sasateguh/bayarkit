@@ -44,3 +44,9 @@ All notable changes to this project are documented here. The format follows
   `getPayment` reports the order's state, `createOrder` for Standard Checkout; webhooks verified over the RAW body with
   the webhook secret (the official Node sample's `JSON.stringify(parsed)` fails), Payment Link and Checkout callbacks
   with the key secret; all five official test vectors reproduced. `startFakeCurlec` in `@bayarkit/testing`.
+- `@bayarkit/ipay88`: iPay88 Malaysia (OPSG, now NTT DATA Payment Services), from the official public tools on the
+  gateway host (no developer docs are public; not yet measured): HMAC-SHA512 keyed with the MerchantKey over a message
+  that also starts with it, all three official HMAC vectors reproduced, every "." and "," stripped from the signed
+  amount (the official tool strips only the first of each); the checkout is a form POST (`form` + `html`, not a
+  redirect); re-query through `enquiry.asp` where only the exact text `00` is paid; `BACKEND_ACK` = `RECEIVEOK`.
+  `startFakeIPay88` in `@bayarkit/testing`.

@@ -1,0 +1,26 @@
+{
+  "name": "@bayarkit/ipay88",
+  "version": "0.1.0",
+  "description": "iPay88 Malaysia (NTT DATA Payment Services, OPSG, HMAC-SHA512 Signature) adapter for bayarkit.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@bayarkit/core": "0.1.0"
+  }
+}
