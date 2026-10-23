@@ -49,3 +49,9 @@ All notable changes to this project are documented here. The format follows
   `010`), every official test vector reproduced, the signed checkout response verified, the unsigned query checked
   against the cart id asked for, only status `88` is paid; DOC's own callback example (wrong CID) is refused.
   `startFakeGkash` in `@bayarkit/testing`.
+- `@bayarkit/ipay88`: iPay88 Malaysia (OPSG, now NTT DATA Payment Services), from the official public tools on the
+  gateway host (no developer docs are public; not yet measured): HMAC-SHA512 keyed with the MerchantKey over a message
+  that also starts with it, all three official HMAC vectors reproduced, every "." and "," stripped from the signed
+  amount (the official tool strips only the first of each); the checkout is a form POST (`form` + `html`, not a
+  redirect); re-query through `enquiry.asp` where only the exact text `00` is paid; `BACKEND_ACK` = `RECEIVEOK`.
+  `startFakeIPay88` in `@bayarkit/testing`.

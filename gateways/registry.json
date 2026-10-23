@@ -354,7 +354,21 @@
           "mustContain": ["iPay88 SHA-256 Signature Testing", "should take out"]
         }
       ],
-      "adapter": null,
+      "adapter": {
+        "package": "@bayarkit/ipay88",
+        "factory": "ipay88",
+        "evidence": "docs",
+        "configExample": "{ merchantCode, merchantKey, environment: 'production' }",
+        "fake": "startFakeIPay88",
+        "label": {
+          "en": "iPay88 (NTT DATA Payment Services Malaysia)",
+          "ms": "iPay88 (NTT DATA Payment Services Malaysia)"
+        },
+        "summary": {
+          "en": "Official signature tools and HMAC script on the gateway host (three vectors), enquiry.asp probed live; no public API docs; not yet measured",
+          "ms": "Alat tandatangan dan skrip HMAC rasmi pada hos gateway (tiga vektor), enquiry.asp diuji secara langsung; tiada dokumen API awam; belum diukur"
+        }
+      },
       "spec": true,
       "gotchas": [
         {
@@ -368,6 +382,10 @@
         {
           "text": "enquiry.asp answers with a bare text/html body, not JSON: only the exact string '00' means paid; 'Invalid parameters' and 'Record not found' are returned with HTTP 200.",
           "source": "https://payment.ipay88.com.my/epayment/enquiry.asp (live probe 2026-10-23: empty POST -> 'Invalid parameters', unknown RefNo -> 'Record not found', both HTTP 200)"
+        },
+        {
+          "text": "A payment starts with a browser form POST to entry.asp, not a redirect: with @bayarkit/ipay88 serve `payment.html` (or post `payment.form`) instead of redirecting to `payment.url`. The BackendURL page must answer exactly `RECEIVEOK` or iPay88 retries.",
+          "source": "gateways/ipay88/spec.md §2 and §4 (iPay88 Technical Specification 1.6.4.4 p.10 and p.14; UNCONFIRMED: not officially hosted)"
         }
       ]
     },
