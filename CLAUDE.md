@@ -4,6 +4,11 @@ Mula di `NEXT.md`; keputusan dalam `02-DECISIONS.md`. Fail ini = peraturan + per
 - Gerbang: `npm run gate` (typecheck, biome, vitest, build, pasang tarball dibungkus ke projek kosong, `scripts/php-gate.sh`).
   Lari sendiri. Hos tiada PHP: php-gate guna imej dipin (Docker); `PHP_GATE_STATIC=0` = sabotaj sahaja.
 - Adapter PHP (`php/`) = kembar adapter TS: ubah peraturan di SATU = ubah di kedua-dua (ujian keakuran yang sama).
+  Wang/teks nombor dipin oleh `packages/core/test/{money,number-text}-vectors.json` yang dibaca KEDUA-DUA suite.
+- DIJANA (`node tools/rujukan.mjs skills`; `--check` dalam gerbang): `skills/`, `gateways/README.md`, jadual README,
+  `packages/*/README.md` + metadata `packages/*/package.json` (dari `package.json` akar + registry). Jangan sunting tangan.
+- Penemuan semakan bebas = ujian merah dahulu, kemudian pembaikan; kelemahan skema gateway sendiri = catatan spec untuk
+  DIUKUR, bukan diubah atas tekaan (D17, D18).
 - **Amaun = sen integer**; jangan tambah API yang menerima ringgit.
 - **Satu-satunya cara "dibayar" = `confirmPayment`.** Jangan tambah jalan pintas yang percaya badan callback / return URL.
 - **Gateway palsu meniru sandbox YANG DIUKUR.** Kelakuan baharu: ubah palsu dahulu (ujian merah), kemudian adapter.

@@ -2,11 +2,24 @@
 
 Keadaan: tanya sistem (`npm run gate`, `git log`). Fail ini = apa seterusnya.
 
+## Mula sesi (5 minit)
+
+- `git pull --ff-only` → `npm install` → `npm run gate` (TS + kembar PHP; PHP melalui Docker bila hos tiada PHP).
+- Dokumen gateway berubah? `node tools/rujukan.mjs check` (cron `BAYARKIT-RUJUKAN` 02:53 menghantar Telegram). Semak
+  setiap satu sebelum `--update` (corak D16: buktikan kosmetik dengan hash, ubah fake dahulu bila sebenar).
+- Sebelum keluaran / selepas ubah `php/composer.json`: `bash scripts/php-compat.sh` + `bash scripts/security.sh`.
+- Ubah UI demo: `npm run demo` → `python3 scripts/demo-webkit.py <folder>` + `python3 scripts/demo-shot.py` (gambar README).
+- Ubah registry / `package.json` akar: `node tools/rujukan.mjs skills` (README pakej + metadata npm DIJANA — jangan sunting tangan).
+
 ## Menunggu pemilik (MANUAL — akaun atas nama Aiman / Sasa Teguh)
 
 - Akaun SANDBOX: CHIP, Stripe (mod ujian), Billplz (billplz-sandbox.com), senangPay, Bayarcash. Tanpa akaun, adapter
   hanya boleh dilabel `docs`.
 - Skop npm `@bayarkit` (organisasi percuma pada akaun npm aimendev) — perlu sebelum terbit.
+- KEPUTUSAN D7: buka repo kepada umum (FLAG: teks awam atas nama pemilik). Selepas itu sahaja: muat naik kad pratonton
+  sosial (`~/gilap/state/aset/kad/bayarkit.png`, Settings → Social preview; tiada API), hos demo, kajian kes /work.
+- Makluman merentas projek (bukan kerja repo ini): ERP `tunwan-business` mengisi `orders.yuran_gateway` dari
+  `transactionCharge` tanpa `userSecretKey` — dokumen toyyibPay 23 Okt kata yuran kosong tanpanya (D16).
 
 ## Seterusnya (satu demi satu)
 
@@ -27,3 +40,10 @@ Keadaan: tanya sistem (`npm run gate`, `git log`). Fail ini = apa seterusnya.
    lain bila projek memerlukannya; memindah projek pemilik = kerja repo masing-masing (bukan dari sini).
 5. ~~Laman demo~~ SIAP dalam repo 23 Okt (D15, `npm run demo`, gateway palsu). Menghos + kajian kes /work = FLAG
    bersama D7 (teks awam atas nama pemilik; repo masih private).
+6. Aliran keluaran (boleh dibina sebelum D7, diuji hanya selepasnya): `.github/workflows/release.yml` pada tag `v*` —
+   npm trusted publishing + provenance (npm ≥11.5.1, Node ≥22.14; konfigurasi luput jika tiada terbitan dalam 48 jam;
+   `publishConfig.provenance` sudah dalam setiap pakej) dan pecahan `php/` ke repo terbitan untuk Packagist (D14).
+   Jangan cipta token npm (gilap D22: Trusted Publishing sahaja). Bila awam: corak crewforge (CodeQL, Scorecard,
+   ruleset `main`) — lihat `~/gilap/NEXT.md`; `gilap semak` bayarkit sudah ✓14 (repo private, CI dari Depot, gilap D28).
+7. Adapter Adyen / Airwallex bila ada permintaan (spec + sumber sudah ada); kembar PHP gateway lain bila projek PHP
+   pemilik memerlukannya.
