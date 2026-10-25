@@ -13,13 +13,13 @@
     "typescript",
     "gkash"
   ],
-  "homepage": "https://github.com/aimanmalib/bayarkit/tree/main/packages/gkash#readme",
+  "homepage": "https://github.com/sasateguh/bayarkit/tree/main/packages/gkash#readme",
   "bugs": {
-    "url": "https://github.com/aimanmalib/bayarkit/issues"
+    "url": "https://github.com/sasateguh/bayarkit/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aimanmalib/bayarkit.git",
+    "url": "git+https://github.com/sasateguh/bayarkit.git",
     "directory": "packages/gkash"
   },
   "license": "MIT",

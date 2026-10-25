@@ -1,6 +1,6 @@
 # @bayarkit/curlec
 
-Razorpay Curlec for [bayarkit](https://github.com/aimanmalib/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+Razorpay Curlec for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official docs (Payment Links + Orders, three signatures, all five official test vectors); not yet measured in test mode.
@@ -36,11 +36,11 @@ included), and `npx bayarkit-fake curlec` runs it as a server for tests in other
 - An authorized payment that is not captured within 3 days is auto-refunded, and auto-capture applies only to payments created through the Orders API. (https://curlec.com/docs/payments/payments/capture-settings.md L24, L37)
 - Docs say a failed attempt needs a NEW order and that receipt must be unique, yet the official WooCommerce plugin reuses the order and repeats the receipt, so test retry behaviour yourself. (https://curlec.com/docs/api/orders/create.md L19-21, L359-365 vs razorpay-woocommerce woo-razorpay.php L1188-1210, L1569)
 
-The full contract, with a source for every fact: [gateways/curlec/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/curlec/spec.md).
+The full contract, with a source for every fact: [gateways/curlec/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/curlec/spec.md).
 
 ## Bahasa Melayu
 
-Razorpay Curlec untuk [bayarkit](https://github.com/aimanmalib/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+Razorpay Curlec untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
 **Bukti:** Dokumen rasmi (Payment Links + Orders, tiga tandatangan, kelima-lima vektor ujian rasmi); belum diukur dalam mod ujian.
@@ -55,6 +55,6 @@ Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu b
 
 Uji tanpa wang sebenar: `startFakeCurlec` daripada `@bayarkit/testing`, atau `npx bayarkit-fake curlec` sebagai
 pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/curlec/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/curlec/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+[gateways/curlec/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/curlec/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

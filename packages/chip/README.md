@@ -1,6 +1,6 @@
 # @bayarkit/chip
 
-CHIP (CHIP Collect) for [bayarkit](https://github.com/aimanmalib/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+CHIP (CHIP Collect) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official CHIP Collect OpenAPI; not yet measured in test mode.
@@ -35,11 +35,11 @@ included), and `npx bayarkit-fake chip` runs it as a server for tests in other l
 - CHIP's own AI skill lists fields and a status that do not exist (`failure_callback`, `cancel_callback`, status `failed`) and a wrapped payload; the OpenAPI spec has none of these. There is no `failed` status: paid means `paid`, `cleared` or `settled`. (CHIP Collect OpenAPI status enum vs github.com/CHIPAsia/skill SKILL.md)
 - `success_callback` must not contain a port, not even `:443`; redirect and callback fields go at the top level of the create body (nested inside `purchase` they are ignored). (CHIP Collect OpenAPI L2953–2975; docs /overview/callbacks)
 
-The full contract, with a source for every fact: [gateways/chip/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/chip/spec.md).
+The full contract, with a source for every fact: [gateways/chip/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/chip/spec.md).
 
 ## Bahasa Melayu
 
-CHIP (CHIP Collect) untuk [bayarkit](https://github.com/aimanmalib/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+CHIP (CHIP Collect) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
 **Bukti:** OpenAPI rasmi CHIP Collect; belum diukur dalam mod ujian.
@@ -54,6 +54,6 @@ Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu b
 
 Uji tanpa wang sebenar: `startFakeChip` daripada `@bayarkit/testing`, atau `npx bayarkit-fake chip` sebagai
 pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/chip/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/chip/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+[gateways/chip/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/chip/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

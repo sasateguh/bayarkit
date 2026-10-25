@@ -1,6 +1,6 @@
 # @bayarkit/toyyibpay
 
-toyyibPay for [bayarkit](https://github.com/aimanmalib/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+toyyibPay for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment.
@@ -35,11 +35,11 @@ included), and `npx bayarkit-fake toyyibpay` runs it as a server for tests in ot
 - Callbacks arrive as `multipart/form-data`; code that only parses URL-encoded bodies sees no fields. (gateways/toyyibpay/spec.md (measured))
 - `billExpiryDate` is read in Malaysia time, and RM1.00 (100 sen) itself is accepted although the docs say "more than RM1.00". (gateways/toyyibpay/spec.md (measured))
 
-The full contract, with a source for every fact: [gateways/toyyibpay/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/toyyibpay/spec.md).
+The full contract, with a source for every fact: [gateways/toyyibpay/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/toyyibpay/spec.md).
 
 ## Bahasa Melayu
 
-toyyibPay untuk [bayarkit](https://github.com/aimanmalib/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+toyyibPay untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
 **Bukti:** Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian.
@@ -54,6 +54,6 @@ Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu b
 
 Uji tanpa wang sebenar: `startFakeToyyibPay` daripada `@bayarkit/testing`, atau `npx bayarkit-fake toyyibpay` sebagai
 pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/toyyibpay/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/toyyibpay/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+[gateways/toyyibpay/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/toyyibpay/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

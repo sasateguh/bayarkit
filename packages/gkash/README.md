@@ -1,6 +1,6 @@
 # @bayarkit/gkash
 
-Gkash for [bayarkit](https://github.com/aimanmalib/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+Gkash for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official docs (SHA-512 signature test vectors), WooCommerce plugin and gkashmy SDKs; not yet measured on staging.
@@ -36,11 +36,11 @@ included), and `npx bayarkit-fake gkash` runs it as a server for tests in other 
 - Query and refund responses carry no signature, so a query cannot be authenticated beyond TLS and has no paid-time field. (https://doc.gkash.my/query-transaction-status#handle-query-response; https://doc.gkash.my/refund#handle-refund-response)
 - Docs say version "1.5.5" while the official plugin and all SDKs send "1.5.0", and the production host api.gkash.my appears only in plugin/SDK code. (https://doc.gkash.my/v2/web-payments#web-payments-create-checkout-session; wc-gkash.php L137-142, L280)
 
-The full contract, with a source for every fact: [gateways/gkash/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/gkash/spec.md).
+The full contract, with a source for every fact: [gateways/gkash/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/gkash/spec.md).
 
 ## Bahasa Melayu
 
-Gkash untuk [bayarkit](https://github.com/aimanmalib/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+Gkash untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
 **Bukti:** Dokumen rasmi (vektor ujian tandatangan SHA-512), plugin WooCommerce dan SDK gkashmy; belum diukur pada staging.
@@ -55,6 +55,6 @@ Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu b
 
 Uji tanpa wang sebenar: `startFakeGkash` daripada `@bayarkit/testing`, atau `npx bayarkit-fake gkash` sebagai
 pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/gkash/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/gkash/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+[gateways/gkash/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/gkash/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

@@ -8,7 +8,7 @@ description: Integrate Adyen payments (Malaysia) safely. Use when adding Adyen c
 ## No bayarkit adapter yet
 
 Implement it with the official sources below, then follow the rules in this skill. To contribute an adapter, see
-CONTRIBUTING.md in https://github.com/aimanmalib/bayarkit.
+CONTRIBUTING.md in https://github.com/sasateguh/bayarkit.
 
 The full contract with a source for every fact: `gateways/adyen/spec.md` in the bayarkit repository.
 

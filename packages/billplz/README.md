@@ -1,6 +1,6 @@
 # @bayarkit/billplz
 
-Billplz for [bayarkit](https://github.com/aimanmalib/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+Billplz for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official API docs (V3 Bills, X Signature test vectors) and the official WooCommerce plugin; not yet measured on the sandbox.
@@ -35,11 +35,11 @@ included), and `npx bayarkit-fake billplz` runs it as a server for tests in othe
 - Answer the callback with HTTP 200 within 20 s or Billplz retries (up to 5 attempts over ~24 h), and callback and redirect arrive in no fixed order. (support.billplz.com/api callback retry schedule)
 - A deleted bill comes back if the customer completes a payment already in flight, so `paid=true` can arrive after DELETE. (support.billplz.com/api delete bill)
 
-The full contract, with a source for every fact: [gateways/billplz/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/billplz/spec.md).
+The full contract, with a source for every fact: [gateways/billplz/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/billplz/spec.md).
 
 ## Bahasa Melayu
 
-Billplz untuk [bayarkit](https://github.com/aimanmalib/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+Billplz untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
 **Bukti:** Dokumen rasmi API (V3 Bills, vektor ujian X Signature) dan plugin WooCommerce rasmi; belum diukur pada sandbox.
@@ -54,6 +54,6 @@ Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu b
 
 Uji tanpa wang sebenar: `startFakeBillplz` daripada `@bayarkit/testing`, atau `npx bayarkit-fake billplz` sebagai
 pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/billplz/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/billplz/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+[gateways/billplz/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/billplz/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

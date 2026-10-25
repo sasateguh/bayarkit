@@ -1,6 +1,6 @@
 # @bayarkit/fiuu
 
-Fiuu (formerly Razer Merchant Services / MOLPay) for [bayarkit](https://github.com/aimanmalib/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+Fiuu (formerly Razer Merchant Services / MOLPay) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official API spec PDF v13.97 (the official vcode test vector), WooCommerce plugin and PHP SDK; not yet measured on the sandbox.
@@ -36,11 +36,11 @@ included), and `npx bayarkit-fake fiuu` runs it as a server for tests in other l
 - When 'extended vcode' is enabled in the portal the currency must be appended to the vcode hash, but the official PHP SDK never appends it, so its payment links fail with error P03. (API Spec v13.97 PDF p.18-19 (pdf 19-20); SDK-Fiuu_PHP src/lib/Payment.php L36)
 - Callback currency can arrive as 'RM' instead of 'MYR' (the official plugin normalises it), so compare currencies after normalising but hash the raw value. (WooCommerce class-gateway.php L977-978)
 
-The full contract, with a source for every fact: [gateways/fiuu/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/fiuu/spec.md).
+The full contract, with a source for every fact: [gateways/fiuu/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/fiuu/spec.md).
 
 ## Bahasa Melayu
 
-Fiuu (dahulu Razer Merchant Services / MOLPay) untuk [bayarkit](https://github.com/aimanmalib/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+Fiuu (dahulu Razer Merchant Services / MOLPay) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
 **Bukti:** PDF spesifikasi API rasmi v13.97 (vektor ujian vcode rasmi), plugin WooCommerce dan SDK PHP; belum diukur pada sandbox.
@@ -55,6 +55,6 @@ Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu b
 
 Uji tanpa wang sebenar: `startFakeFiuu` daripada `@bayarkit/testing`, atau `npx bayarkit-fake fiuu` sebagai
 pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/fiuu/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/fiuu/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+[gateways/fiuu/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/fiuu/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

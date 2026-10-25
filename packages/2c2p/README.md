@@ -1,6 +1,6 @@
 # @bayarkit/2c2p
 
-2C2P (PGW Payment API v4.x) for [bayarkit](https://github.com/aimanmalib/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+2C2P (PGW Payment API v4.x) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official developer docs (Payment Token + HS256 JWT, three official JWT test vectors); not yet measured on the sandbox.
@@ -36,11 +36,11 @@ included), and `npx bayarkit-fake 2c2p` runs it as a server for tests in other l
 - The official WooCommerce plugin (2026 build v8.1.0) does not use the documented v4 JWT API but legacy RedirectV3 with an HMAC-SHA256 concatenated-field hash and 12-digit zero-padded minor-unit amounts, while the v4 API expects decimal major units (e.g. 2500.90000), so do not port amount or signing logic from the plugin. (wordpress-2c2p-build20260612.zip: 2c2p_woocommerce_new/2c2p.php L191, Includes/wc-2c2p-hash-helper.php L15-87, Includes/wc-2c2p-validation-helper.php L59-89 vs https://developer.2c2p.com/docs/api-payment-token-request-parameter.md L146)
 - Docs disagree on the API version path (4.3 in Sandbox Setup and the OpenAPI reference, 4.5 on the Payment Token and Payment Inquiry pages); both answer on sandbox, so pin one version explicitly and keep it in config. (https://developer.2c2p.com/docs/sandbox-setup.md L68; https://developer.2c2p.com/docs/api-payment-token.md L18-21)
 
-The full contract, with a source for every fact: [gateways/2c2p/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/2c2p/spec.md).
+The full contract, with a source for every fact: [gateways/2c2p/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/2c2p/spec.md).
 
 ## Bahasa Melayu
 
-2C2P (PGW Payment API v4.x) untuk [bayarkit](https://github.com/aimanmalib/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+2C2P (PGW Payment API v4.x) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
 **Bukti:** Dokumen pembangun rasmi (Payment Token + JWT HS256, tiga vektor ujian JWT rasmi); belum diukur pada sandbox.
@@ -55,6 +55,6 @@ Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu b
 
 Uji tanpa wang sebenar: `startFake2C2P` daripada `@bayarkit/testing`, atau `npx bayarkit-fake 2c2p` sebagai
 pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/2c2p/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/2c2p/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+[gateways/2c2p/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/2c2p/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

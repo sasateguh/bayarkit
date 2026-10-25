@@ -1,6 +1,6 @@
 # @bayarkit/hitpay
 
-HitPay for [bayarkit](https://github.com/aimanmalib/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+HitPay for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official docs (OpenAPI, Payment Requests, both webhook signatures) and official PHP SDK; not yet measured on the sandbox.
@@ -36,11 +36,11 @@ included), and `npx bayarkit-fake hitpay` runs it as a server for tests in other
 - The `webhook` create parameter is called deprecated in the guide, yet the OpenAPI does not mark it and the official WooCommerce plugin still relies on it and its v1 hmac. (online-payments.md lines 311-313; https://raw.githubusercontent.com/hit-pay/woocommerce/HEAD/hitpay-payment-gateway/includes/regular-checkout.php lines 1452, 1683)
 - Sandbox accounts must be Singapore businesses and do not list FPX, DuitNow or Touch 'n Go, so Malaysian methods cannot be exercised end-to-end before production. (https://docs.hitpayapp.com/apis/guide/sandbox.md lines 17-21)
 
-The full contract, with a source for every fact: [gateways/hitpay/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/hitpay/spec.md).
+The full contract, with a source for every fact: [gateways/hitpay/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/hitpay/spec.md).
 
 ## Bahasa Melayu
 
-HitPay untuk [bayarkit](https://github.com/aimanmalib/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+HitPay untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
 **Bukti:** Dokumen rasmi (OpenAPI, Payment Requests, kedua-dua tandatangan webhook) dan SDK PHP rasmi; belum diukur pada sandbox.
@@ -55,6 +55,6 @@ Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu b
 
 Uji tanpa wang sebenar: `startFakeHitPay` daripada `@bayarkit/testing`, atau `npx bayarkit-fake hitpay` sebagai
 pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/hitpay/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/hitpay/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+[gateways/hitpay/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/hitpay/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

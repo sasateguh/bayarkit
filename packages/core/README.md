@@ -1,6 +1,6 @@
 # @bayarkit/core
 
-The interface every [bayarkit](https://github.com/aimanmalib/bayarkit) gateway adapter implements, and `confirmPayment`: the only safe way to mark
+The interface every [bayarkit](https://github.com/sasateguh/bayarkit) gateway adapter implements, and `confirmPayment`: the only safe way to mark
 an order paid. Zero runtime dependencies. [Bahasa Melayu](#bahasa-melayu)
 
 ```bash
@@ -23,7 +23,7 @@ Adapters: `@bayarkit/toyyibpay`, `@bayarkit/bayarcash`, `@bayarkit/billplz`, `@b
 
 ## Bahasa Melayu
 
-Antara muka yang dilaksanakan oleh setiap adapter [bayarkit](https://github.com/aimanmalib/bayarkit), dan `confirmPayment`: satu-satunya cara
+Antara muka yang dilaksanakan oleh setiap adapter [bayarkit](https://github.com/sasateguh/bayarkit), dan `confirmPayment`: satu-satunya cara
 selamat untuk menanda pesanan dibayar. Sifar kebergantungan masa jalan.
 
 - `confirmPayment` — tandatangan callback mesti sah; gateway ditanya semula; rekod gateway sendiri mesti kata dibayar,
@@ -32,6 +32,6 @@ selamat untuk menanda pesanan dibayar. Sifar kebergantungan masa jalan.
 - `checkoutResponse(payment)` — redirect 303, atau halaman borang POST yang dihantar sendiri.
 - `toSen` / `toRinggit` — penukaran perpuluhan tepat, tidak pernah melalui float.
 
-Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

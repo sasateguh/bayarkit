@@ -1,6 +1,6 @@
 # @bayarkit/bayarcash
 
-Bayarcash (also behind BCL.my) for [bayarkit](https://github.com/aimanmalib/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+Bayarcash (also behind BCL.my) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official API v3 docs and PHP SDK; not yet measured on the sandbox.
@@ -34,11 +34,11 @@ included), and `npx bayarkit-fake bayarcash` runs it as a server for tests in ot
 - The checksum sorts values by field NAME and joins them with `|`; a `payment_channel` list is joined with `,` inside it. (official PHP SDK ChecksumGenerator + tests)
 - `amount` is ringgit with two decimals ("25.00") in both the JSON body and the checksum; a callback may carry it as a number. (official PHP SDK tests)
 
-The full contract, with a source for every fact: [gateways/bayarcash/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/bayarcash/spec.md).
+The full contract, with a source for every fact: [gateways/bayarcash/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/bayarcash/spec.md).
 
 ## Bahasa Melayu
 
-Bayarcash (juga di belakang BCL.my) untuk [bayarkit](https://github.com/aimanmalib/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+Bayarcash (juga di belakang BCL.my) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
 **Bukti:** Dokumen rasmi API v3 dan SDK PHP; belum diukur pada sandbox.
@@ -53,6 +53,6 @@ Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu b
 
 Uji tanpa wang sebenar: `startFakeBayarcash` daripada `@bayarkit/testing`, atau `npx bayarkit-fake bayarcash` sebagai
 pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/bayarcash/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/bayarcash/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+[gateways/bayarcash/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/bayarcash/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

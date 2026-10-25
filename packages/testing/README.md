@@ -1,6 +1,6 @@
 # @bayarkit/testing
 
-Fake Malaysian payment gateways and the [bayarkit](https://github.com/aimanmalib/bayarkit) conformance suite: test checkout and callbacks without real
+Fake Malaysian payment gateways and the [bayarkit](https://github.com/sasateguh/bayarkit) conformance suite: test checkout and callbacks without real
 money, in JavaScript or in any other language. [Bahasa Melayu](#bahasa-melayu)
 
 ```bash
@@ -18,11 +18,11 @@ Every fake has `markPaid(id)`, `callbackFor(id)` (a correctly signed callback) a
 
 ## Bahasa Melayu
 
-Gateway pembayaran Malaysia palsu dan set ujian keakuran [bayarkit](https://github.com/aimanmalib/bayarkit): uji checkout dan callback tanpa wang
+Gateway pembayaran Malaysia palsu dan set ujian keakuran [bayarkit](https://github.com/sasateguh/bayarkit): uji checkout dan callback tanpa wang
 sebenar, dalam JavaScript atau bahasa lain. Setiap fake menjawab seperti API gatewaynya dan menandatangani callback
 sama seperti gateway itu. `npx bayarkit-fake <gateway>` menjalankan satu fake sebagai pelayan dengan API kawalan
 (`POST /paid/<id>`, `GET /callback/<id>`, `GET /callback/<id>/tampered`) untuk ujian PHP, Python atau Go.
 
-Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

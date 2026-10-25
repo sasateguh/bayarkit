@@ -1,6 +1,6 @@
 # @bayarkit/ipay88
 
-iPay88 (NTT DATA Payment Services Malaysia) for [bayarkit](https://github.com/aimanmalib/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+iPay88 (NTT DATA Payment Services Malaysia) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official signature tools and HMAC script on the gateway host (three vectors), enquiry.asp probed live; no public API docs; not yet measured.
@@ -36,11 +36,11 @@ included), and `npx bayarkit-fake ipay88` runs it as a server for tests in other
 - enquiry.asp answers with a bare text/html body, not JSON: only the exact string '00' means paid; 'Invalid parameters' and 'Record not found' are returned with HTTP 200. (https://payment.ipay88.com.my/epayment/enquiry.asp (live probe 2026-10-23: empty POST -> 'Invalid parameters', unknown RefNo -> 'Record not found', both HTTP 200))
 - A payment starts with a browser form POST to entry.asp, not a redirect: with @bayarkit/ipay88 serve `payment.html` (or post `payment.form`) instead of redirecting to `payment.url`. The BackendURL page must answer exactly `RECEIVEOK` or iPay88 retries. (gateways/ipay88/spec.md §2 and §4 (iPay88 Technical Specification 1.6.4.4 p.10 and p.14; UNCONFIRMED: not officially hosted))
 
-The full contract, with a source for every fact: [gateways/ipay88/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/ipay88/spec.md).
+The full contract, with a source for every fact: [gateways/ipay88/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/ipay88/spec.md).
 
 ## Bahasa Melayu
 
-iPay88 (NTT DATA Payment Services Malaysia) untuk [bayarkit](https://github.com/aimanmalib/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+iPay88 (NTT DATA Payment Services Malaysia) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
 **Bukti:** Alat tandatangan dan skrip HMAC rasmi pada hos gateway (tiga vektor), enquiry.asp diuji secara langsung; tiada dokumen API awam; belum diukur.
@@ -55,6 +55,6 @@ Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu b
 
 Uji tanpa wang sebenar: `startFakeIPay88` daripada `@bayarkit/testing`, atau `npx bayarkit-fake ipay88` sebagai
 pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/ipay88/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/ipay88/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+[gateways/ipay88/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/ipay88/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

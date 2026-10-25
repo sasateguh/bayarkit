@@ -325,7 +325,7 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
 <ol class="steps">${steps}</ol>${reason ? `<p class="reason">${t(`order.reasons.${reason}`)}</p>` : ''}
 ${r && !r.ok ? `<details><summary>${t('order.detail')}</summary><p><code>${esc(r.detail)}</code></p></details>` : ''}
 <p class="actions"><a class="button" href="${prefix}/">${t('order.again')}</a>
-<a href="https://github.com/aimanmalib/bayarkit/blob/main/packages/core/src/confirm.ts">${t('order.code')}</a></p></section>`,
+<a href="https://github.com/sasateguh/bayarkit/blob/main/packages/core/src/confirm.ts">${t('order.code')}</a></p></section>`,
     )
   }
 

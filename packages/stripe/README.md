@@ -1,6 +1,6 @@
 # @bayarkit/stripe
 
-Stripe (Malaysia): card + FPX for [bayarkit](https://github.com/aimanmalib/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+Stripe (Malaysia): card + FPX for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official docs (Checkout Sessions, API `2026-09-30.endive`) and stripe-node's webhook check; not yet measured in test mode.
@@ -35,11 +35,11 @@ included), and `npx bayarkit-fake stripe` runs it as a server for tests in other
 - Minimum charge in MYR is RM2.00 (200 sen); FPX needs a Malaysian Stripe account with a business registration number, MYR, one-time payments only. (docs.stripe.com minimum charge amounts; FPX docs)
 - Webhook signatures cover `${t}.${rawBody}` with the full `whsec_…` secret; several `v1` values can appear during secret rotation. Without the raw body, verification is impossible. (docs.stripe.com/webhooks/signature; stripe-node webhooks.js)
 
-The full contract, with a source for every fact: [gateways/stripe/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/stripe/spec.md).
+The full contract, with a source for every fact: [gateways/stripe/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/stripe/spec.md).
 
 ## Bahasa Melayu
 
-Stripe (Malaysia): kad + FPX untuk [bayarkit](https://github.com/aimanmalib/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+Stripe (Malaysia): kad + FPX untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
 **Bukti:** Dokumen rasmi (Checkout Sessions, API `2026-09-30.endive`) dan semakan webhook stripe-node; belum diukur dalam mod ujian.
@@ -54,6 +54,6 @@ Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu b
 
 Uji tanpa wang sebenar: `startFakeStripe` daripada `@bayarkit/testing`, atau `npx bayarkit-fake stripe` sebagai
 pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/stripe/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/stripe/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+[gateways/stripe/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/stripe/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

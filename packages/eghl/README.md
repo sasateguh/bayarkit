@@ -1,6 +1,6 @@
 # @bayarkit/eghl
 
-eGHL (ADAPTIS e-Commerce) for [bayarkit](https://github.com/aimanmalib/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+eGHL (ADAPTIS e-Commerce) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official eGHL public code (hash class, merchant-api QUERY, Omnipay HashValue2 test vector; no public API guide exists); not yet measured on the test host.
@@ -36,11 +36,11 @@ included), and `npx bayarkit-fake eghl` runs it as a server for tests in other l
 - The server callback must answer with the plain body 'OK'; the browser return URL and the server callback receive the same fields, so both must verify the hash and be idempotent. (https://bitbucket.org/eghl/eghl-omnipay/raw/HEAD/README.md (lines 37-38, 96))
 - Amount is ringgit as a string with exactly two decimals and no comma ('10.00', not sen), and the query must repeat the original Amount and CurrencyCode exactly or it will not find the transaction. (https://bitbucket.org/eghl/paramvalidator/raw/HEAD/src/core/validatorBase.php (isValidAmount) + https://bitbucket.org/eghl/merchantapi/raw/HEAD/README.md)
 
-The full contract, with a source for every fact: [gateways/eghl/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/eghl/spec.md).
+The full contract, with a source for every fact: [gateways/eghl/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/eghl/spec.md).
 
 ## Bahasa Melayu
 
-eGHL (ADAPTIS e-Commerce) untuk [bayarkit](https://github.com/aimanmalib/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+eGHL (ADAPTIS e-Commerce) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
 **Bukti:** Kod awam rasmi eGHL (kelas hash, QUERY merchant-api, vektor ujian HashValue2 Omnipay; tiada panduan API awam); belum diukur pada hos ujian.
@@ -55,6 +55,6 @@ Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu b
 
 Uji tanpa wang sebenar: `startFakeEghl` daripada `@bayarkit/testing`, atau `npx bayarkit-fake eghl` sebagai
 pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/eghl/spec.md](https://github.com/aimanmalib/bayarkit/blob/main/gateways/eghl/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/aimanmalib/bayarkit/blob/main/README.ms.md).
+[gateways/eghl/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/eghl/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

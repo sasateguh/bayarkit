@@ -6,11 +6,11 @@
   "author": "Muhammad Aiman (https://github.com/aimanmalib)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aimanmalib/bayarkit.git"
+    "url": "git+https://github.com/sasateguh/bayarkit.git"
   },
-  "homepage": "https://github.com/aimanmalib/bayarkit#readme",
+  "homepage": "https://github.com/sasateguh/bayarkit#readme",
   "bugs": {
-    "url": "https://github.com/aimanmalib/bayarkit/issues"
+    "url": "https://github.com/sasateguh/bayarkit/issues"
   },
   "keywords": [
     "payment",

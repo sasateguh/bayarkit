@@ -61,7 +61,7 @@ const fingerprint = (text) => createHash('sha256').update(text).digest('hex')
 
 async function fetchSource(source) {
   const res = await fetch(source.url, {
-    headers: { 'user-agent': 'bayarkit-rujukan (+https://github.com/aimanmalib/bayarkit)' },
+    headers: { 'user-agent': 'bayarkit-rujukan (+https://github.com/sasateguh/bayarkit)' },
     redirect: 'follow',
     signal: AbortSignal.timeout(30_000),
   })
@@ -227,7 +227,7 @@ Test without real money: \`${gw.adapter.fake}\` from \`@bayarkit/testing\`.`
     : `## No bayarkit adapter yet
 
 Implement it with the official sources below, then follow the rules in this skill. To contribute an adapter, see
-CONTRIBUTING.md in https://github.com/aimanmalib/bayarkit.`
+CONTRIBUTING.md in https://github.com/sasateguh/bayarkit.`
   const spec = gw.spec
     ? `\nThe full contract with a source for every fact: \`gateways/${gw.id}/spec.md\` in the bayarkit repository.\n`
     : ''
