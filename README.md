@@ -91,7 +91,7 @@ that does not say which it is, is refused, so a test payment can never mark a li
 | Callback signature                | forged or altered callbacks                                    | `invalid_signature` |
 | Fresh query to the gateway        | replayed callbacks, callbacks sent before payment, leaked keys | `not_paid`          |
 | Reference, amount (sen), currency | a real payment for another order or another amount             | `mismatch`          |
-| Gateway unreachable               | — (you retry later)                                            | `gateway_error`     |
+| Gateway unreachable               | nothing: retry later                                           | `gateway_error`     |
 
 ## toyyibPay: docs vs the sandbox
 
