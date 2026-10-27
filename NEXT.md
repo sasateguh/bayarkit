@@ -19,7 +19,7 @@ release.yml terbit 16 pakej 0.1.0 dengan provenance (trust npm kini kekal; tiada
 tag ke cermin · GitHub Release v0.1.0 dari CHANGELOG. Deploy keys org dihidupkan melalui API (UI pelan Free tiada pilihan).
 
 Baki pemilik:
-1. packagist.org → Submit `https://github.com/sasateguh/bayarkit-php` (nama `bayarkit/bayarkit`; OAuth GitHub sudah).
+1. ✓ 27 Okt: Packagist `bayarkit/bayarkit` v0.1.0 (webhook `packagist.org/api/github` pada cermin = kemas kini sendiri).
 2. Muat naik kad OG `~/portal/uploads/bayarkit-kad-og.png` di Settings → Social preview (tiada API).
 
 Baki sesi: daftar bayarkit dalam Perisai (profil pustaka, D20) · `gilap semak` · README profil/org dikemas sendiri.
