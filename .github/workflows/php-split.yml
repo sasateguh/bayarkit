@@ -9,6 +9,7 @@ on:
     branches: [main]
     paths: ["php/**"]
     tags: ["v*"]
+  workflow_dispatch: # resync the mirror by hand
 
 permissions:
   contents: read

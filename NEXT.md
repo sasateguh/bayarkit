@@ -11,31 +11,25 @@ Keadaan: tanya sistem (`npm run gate`, `git log`). Fail ini = apa seterusnya.
 - Ubah UI demo: `npm run demo` → `python3 scripts/demo-webkit.py <folder>` + `python3 scripts/demo-shot.py` (gambar README).
 - Ubah registry / `package.json` akar: `node tools/rujukan.mjs skills` (README pakej + metadata npm DIJANA — jangan sunting tangan).
 
-## Hari buka awam (D7) — keadaan 27 Okt 16:00 UTC; pemilik: "gilap dulu supaya padu, baru buka"
+## Hari buka awam (D7) — DIBUKA 27 Okt 2026 ~17:15 UTC (pemilik: "buka")
 
-SIAP: skop npm `@bayarkit` (aimendev) · `npm-trust.sh` dijalankan pemilik 27 Okt 15:23 UTC → 16 penanda `0.0.0` di npm +
-Trusted Publisher setiap pakej (⚠ LUPUT 29 Okt ~15:23 UTC jika tiada terbitan — selepas itu jalankan semula skrip) ·
-security.sh (D20) · penggilapan dari semakan pelawat pertama (README EN/BM, contoh diuji atas 14 gateway palsu, CHANGELOG
-0.1.0, perangkap BM, README PHP) · cermin Packagist `sasateguh/bayarkit-php` (PRIVATE, sudah ditolak tangan) · kad OG
-baharu (`~/portal/uploads/bayarkit-kad-og.png`) · topik + deskripsi lulus `gilap semak` (✗0).
+SIAP: `bayarkit` + `bayarkit-php` awam · persekitaran `npm` (tag `v*` sahaja) · pelaporan kerentanan peribadi · CodeQL
+default · secret scanning + push protection + Dependabot · ruleset `main` (padam + force-push) · tag `v0.1.0` →
+release.yml terbit 16 pakej 0.1.0 dengan provenance (trust npm kini kekal; tiada tarikh luput lagi) · php-split tolak
+tag ke cermin · GitHub Release v0.1.0 dari CHANGELOG. Deploy keys org dihidupkan melalui API (UI pelan Free tiada pilihan).
 
-Pemilik (urutan):
-1. ✓ 27 Okt: Deploy keys org dihidupkan melalui API (`gh api -X PATCH orgs/sasateguh -F deploy_keys_enabled_for_repositories=true`; UI pelan Free tidak memaparkannya); kunci deploy + secret `PHP_SPLIT_DEPLOY_KEY` dipasang.
-2. Balas **"buka"**. Sesi kemudian: kedua-dua repo (`bayarkit`, `bayarkit-php`) → awam · persekitaran GitHub `npm` (tag
-   `v*` sahaja) · Private vulnerability reporting ON (SECURITY.md menautnya) · CodeQL default setup · ruleset `main`
-   (padam + force-push sahaja) · tag `v0.1.0` (release.yml terbit npm; php-split.yml tolak tag ke cermin) · GitHub Release
-   dari CHANGELOG · sahkan `npm view @bayarkit/core` = 0.1.0 + provenance.
-3. packagist.org → log masuk GitHub → Submit `https://github.com/sasateguh/bayarkit-php` (nama `bayarkit/bayarkit`).
-4. Muat naik kad OG di Settings → Social preview (tiada API).
-   Selepas buka: daftar bayarkit dalam Perisai (profil pustaka, D20) · `gilap semak` · README profil/org dikemas sendiri.
+Baki pemilik:
+1. packagist.org → Submit `https://github.com/sasateguh/bayarkit-php` (nama `bayarkit/bayarkit`; OAuth GitHub sudah).
+2. Muat naik kad OG `~/portal/uploads/bayarkit-kad-og.png` di Settings → Social preview (tiada API).
+
+Baki sesi: daftar bayarkit dalam Perisai (profil pustaka, D20) · `gilap semak` · README profil/org dikemas sendiri.
+Keluaran seterusnya: naikkan versi semua pakej serentak (release-check), kemas CHANGELOG, tag `v<versi>`.
 
 ## Menunggu pemilik (MANUAL — akaun atas nama Aiman / Sasa Teguh)
 
 - Akaun SANDBOX: CHIP, Stripe (mod ujian), Billplz (billplz-sandbox.com), senangPay, Bayarcash. Tanpa akaun, adapter
   hanya boleh dilabel `docs`.
-- Skop npm `@bayarkit` (organisasi percuma pada akaun npm aimendev) — perlu sebelum terbit.
-- KEPUTUSAN D7: buka repo kepada umum (FLAG: teks awam atas nama pemilik). Selepas itu sahaja: muat naik kad pratonton
-  sosial (`~/gilap/state/aset/kad/bayarkit.png`, Settings → Social preview; tiada API), hos demo, kajian kes /work.
+- Selepas buka (D7 diputuskan): hos demo + kajian kes /work = FLAG (teks awam atas nama pemilik).
 - Makluman merentas projek (bukan kerja repo ini): ERP `tunwan-business` mengisi `orders.yuran_gateway` dari
   `transactionCharge` tanpa `userSecretKey` — dokumen toyyibPay 23 Okt kata yuran kosong tanpanya (D16).
 
