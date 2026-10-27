@@ -3,7 +3,7 @@
 Stripe (Malaysia): card + FPX for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
-**Evidence:** Official docs (Checkout Sessions, API `2026-09-30.endive`) and stripe-node's webhook check; not yet measured in test mode.
+**Evidence:** Measured in test mode, 27 Oct 2026: a card and an FPX payment through the adapter with a real webhook (API `2026-09-30.endive`), and a failed FPX payment.
 
 ```bash
 npm install @bayarkit/core @bayarkit/stripe
@@ -31,6 +31,8 @@ included), and `npx bayarkit-fake stripe` runs it as a server for tests in other
 
 ## Traps
 
+- A failed FPX payment sends no `checkout.session.*` event: the session stays `open` with `payment_status: unpaid` until it expires. Do not wait for a failure webhook; read the session (or `checkout.session.expired`). (gateways/stripe/spec.md (measured))
+- Below the RM2.00 minimum, Stripe's error does not mention the amount: it says every type in `allowed_payment_method_types` is invalid. (gateways/stripe/spec.md (measured))
 - API version `2026-09-30.endive` rejects `payment_method_types` on Checkout Sessions with HTTP 400. Use `allowed_payment_method_types[]` (or Dashboard payment methods), and always send a `Stripe-Version` header. (docs.stripe.com/changelog/endive/2026-09-30/remove-payment-method-types-checkout-sessions)
 - Minimum charge in MYR is RM2.00 (200 sen); FPX needs a Malaysian Stripe account with a business registration number, MYR, one-time payments only. (docs.stripe.com minimum charge amounts; FPX docs)
 - Webhook signatures cover `${t}.${rawBody}` with the full `whsec_…` secret; several `v1` values can appear during secret rotation. Without the raw body, verification is impossible. (docs.stripe.com/webhooks/signature; stripe-node webhooks.js)
@@ -42,7 +44,7 @@ The full contract, with a source for every fact: [gateways/stripe/spec.md](https
 Stripe (Malaysia): kad + FPX untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara bersemak untuk
 mengesahkan bayaran.
 
-**Bukti:** Dokumen rasmi (Checkout Sessions, API `2026-09-30.endive`) dan semakan webhook stripe-node; belum diukur dalam mod ujian.
+**Bukti:** Diukur dalam mod ujian, 27 Okt 2026: satu bayaran kad dan satu FPX melalui adapter dengan webhook sebenar (API `2026-09-30.endive`), dan satu bayaran FPX yang gagal.
 
 ```bash
 npm install @bayarkit/core @bayarkit/stripe
@@ -57,6 +59,8 @@ pelayan.
 
 ## Perangkap
 
+- Bayaran FPX yang gagal tidak menghantar sebarang acara `checkout.session.*`: sesi kekal `open` dengan `payment_status: unpaid` sehingga tamat tempoh. Jangan tunggu webhook kegagalan; baca sesi itu (atau `checkout.session.expired`). (gateways/stripe/spec.md (measured))
+- Di bawah minimum RM2.00, ralat Stripe tidak menyebut jumlah: ia mengatakan setiap jenis dalam `allowed_payment_method_types` tidak sah. (gateways/stripe/spec.md (measured))
 - Versi API `2026-09-30.endive` menolak `payment_method_types` pada Checkout Sessions dengan HTTP 400. Gunakan `allowed_payment_method_types[]` (atau kaedah pembayaran Dashboard), dan sentiasa hantar pengepala `Stripe-Version`. (docs.stripe.com/changelog/endive/2026-09-30/remove-payment-method-types-checkout-sessions)
 - Caj minimum dalam MYR ialah RM2.00 (200 sen); FPX memerlukan akaun Stripe Malaysia dengan nombor pendaftaran perniagaan, MYR, dan bayaran sekali sahaja. (docs.stripe.com minimum charge amounts; FPX docs)
 - Tandatangan webhook meliputi `${t}.${rawBody}` dengan rahsia `whsec_…` penuh; beberapa nilai `v1` boleh muncul semasa putaran rahsia. Tanpa badan mentah, pengesahan mustahil. (docs.stripe.com/webhooks/signature; stripe-node webhooks.js)

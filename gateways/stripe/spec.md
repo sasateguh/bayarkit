@@ -1,12 +1,27 @@
 # Stripe Checkout Sessions via raw REST: contract for a Malaysian merchant (MYR, FPX + card)
 
 Retrieved 2026-10-23. Sources are official only: docs.stripe.com (the `.md` rendering of each page), github.com/stripe/openapi,
-and github.com/stripe/stripe-node. Local copies are in `/tmp/claude-1000/-home-claude/f41b2d37-6b60-449b-b488-6dc6668537bc/scratchpad/stripe-src/`.
-- OpenAPI current: `stripe/openapi` master `latest/openapi.spec3.json`, `info.version` = `2026-09-30.endive` (commit 969d8c308ea6) → local `spec3.json`
-- OpenAPI previous: commit 9ac29c7795ab (`2026-08-26.dahlia`) → local `spec3_dahlia0826.json`
+and github.com/stripe/stripe-node.
+- OpenAPI current: `stripe/openapi` master `latest/openapi.spec3.json`, `info.version` = `2026-09-30.endive` (commit 969d8c308ea6)
+- OpenAPI previous: commit 9ac29c7795ab (`2026-08-26.dahlia`)
 - stripe-node: master @ `3af59f7c86a2350a8ea5298473f258d622bd8651`, `src/Webhooks.ts`, `src/crypto/NodeCryptoProvider.ts`, `src/platform/NodePlatformFunctions.ts`
 
 > ⚠ **The biggest finding: the latest API version removes `payment_method_types` from Checkout.** In `2026-09-30.endive`, `payment_method_types` can no longer be passed to create a Checkout Session. Sending it returns **400**. Use dynamic payment methods (Dashboard) or `allowed_payment_method_types`. See §2.3.
+
+## Measured in test mode (27 October 2026)
+
+A Malaysian sandbox account, through `@bayarkit/stripe` with `Stripe-Version: 2026-09-30.endive` and a real webhook endpoint:
+
+| Fact | Result |
+| --- | --- |
+| `allowed_payment_method_types[]=card,fpx` on create | accepted; echoed back on the session |
+| `payment_method_types[]` under endive | HTTP 400 `invalid_request_error`: "no longer supported when creating a Checkout Session" |
+| 199 sen MYR | refused, but the message blames `allowed_payment_method_types` ("All types … are invalid"), not the amount; 200 sen accepted |
+| Card `4242…` paid | one `checkout.session.completed`, `status: complete`, `payment_status: paid`, `currency: myr`, `client_reference_id` = reference |
+| FPX (test bank, Authorize) | the same single `checkout.session.completed` with `payment_status: paid`: no pending phase, no `async_payment_*` event |
+| FPX (test bank, Fail) | no `checkout.session.*` event; the session stays `open` / `unpaid` |
+| Webhook endpoint created without `api_version` | events carry the account default (`2026-09-30.endive` on this new account) |
+| Webhook signature | `t` + `v1` as documented; a one-byte change to the body fails verification |
 
 ---
 

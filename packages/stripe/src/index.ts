@@ -3,7 +3,11 @@
  *
  * Written from the official docs only, read 23 October 2026 (`gateways/stripe/spec.md`, a source next to every fact):
  * docs.stripe.com (`.md` renderings), github.com/stripe/openapi (`2026-09-30.endive`), and stripe-node
- * `src/Webhooks.ts` @ 3af59f7c for webhook verification. NOT yet measured against a Stripe test-mode account.
+ * `src/Webhooks.ts` @ 3af59f7c for webhook verification. MEASURED in test mode 27 Oct 2026 (Malaysian sandbox account,
+ * through this adapter): a card and an FPX payment each arrived as one `checkout.session.completed` with
+ * `payment_status: paid` (FPX in test mode has no pending phase), the webhook signature and `confirmPayment` held, a
+ * failed FPX payment sent no Checkout event and left the session `open`/`unpaid` (read as `pending`); endive's 400 on
+ * `payment_method_types` and the 200-sen MYR minimum are real (below it Stripe's error blames the payment method types).
  *
  * - Every request pins `Stripe-Version` (default `2026-09-30.endive`): without it Stripe uses the account default,
  *   which can change under you.
@@ -78,9 +82,10 @@ export const info: GatewayInfo = {
   name: 'stripe',
   minimumAmount: 200,
   evidence: {
-    kind: 'docs',
-    date: '2026-10-23',
-    source: 'docs.stripe.com (.md) + stripe/openapi 2026-09-30.endive + stripe-node Webhooks.ts',
+    kind: 'measured',
+    date: '2026-10-27',
+    source:
+      'Stripe test mode (MY account): card + FPX + failed FPX; docs.stripe.com + stripe/openapi + stripe-node',
   },
 }
 

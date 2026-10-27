@@ -257,7 +257,7 @@
       "adapter": {
         "package": "@bayarkit/stripe",
         "factory": "stripe",
-        "evidence": "docs",
+        "evidence": "measured",
         "configExample": "{ secretKey, webhookSecret }",
         "fake": "startFakeStripe",
         "label": {
@@ -265,12 +265,22 @@
           "ms": "Stripe (Malaysia): kad + FPX"
         },
         "summary": {
-          "en": "Official docs (Checkout Sessions, API `2026-09-30.endive`) and stripe-node's webhook check; not yet measured in test mode",
-          "ms": "Dokumen rasmi (Checkout Sessions, API `2026-09-30.endive`) dan semakan webhook stripe-node; belum diukur dalam mod ujian"
+          "en": "Measured in test mode, 27 Oct 2026: a card and an FPX payment through the adapter with a real webhook (API `2026-09-30.endive`), and a failed FPX payment",
+          "ms": "Diukur dalam mod ujian, 27 Okt 2026: satu bayaran kad dan satu FPX melalui adapter dengan webhook sebenar (API `2026-09-30.endive`), dan satu bayaran FPX yang gagal"
         }
       },
       "spec": true,
       "gotchas": [
+        {
+          "text": "A failed FPX payment sends no `checkout.session.*` event: the session stays `open` with `payment_status: unpaid` until it expires. Do not wait for a failure webhook; read the session (or `checkout.session.expired`).",
+          "text_ms": "Bayaran FPX yang gagal tidak menghantar sebarang acara `checkout.session.*`: sesi kekal `open` dengan `payment_status: unpaid` sehingga tamat tempoh. Jangan tunggu webhook kegagalan; baca sesi itu (atau `checkout.session.expired`).",
+          "source": "gateways/stripe/spec.md (measured)"
+        },
+        {
+          "text": "Below the RM2.00 minimum, Stripe's error does not mention the amount: it says every type in `allowed_payment_method_types` is invalid.",
+          "text_ms": "Di bawah minimum RM2.00, ralat Stripe tidak menyebut jumlah: ia mengatakan setiap jenis dalam `allowed_payment_method_types` tidak sah.",
+          "source": "gateways/stripe/spec.md (measured)"
+        },
         {
           "text": "API version `2026-09-30.endive` rejects `payment_method_types` on Checkout Sessions with HTTP 400. Use `allowed_payment_method_types[]` (or Dashboard payment methods), and always send a `Stripe-Version` header.",
           "text_ms": "Versi API `2026-09-30.endive` menolak `payment_method_types` pada Checkout Sessions dengan HTTP 400. Gunakan `allowed_payment_method_types[]` (atau kaedah pembayaran Dashboard), dan sentiasa hantar pengepala `Stripe-Version`.",

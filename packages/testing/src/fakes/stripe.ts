@@ -1,7 +1,7 @@
 /**
- * A fake Stripe API (Checkout Sessions only), built from the official docs in `gateways/stripe/spec.md` (not yet
- * measured against a Stripe test-mode account). When someone measures test mode, change this file first so it answers
- * like the real thing, then the adapter.
+ * A fake Stripe API (Checkout Sessions only), built from the official docs in `gateways/stripe/spec.md` and checked
+ * against test mode 27 Oct 2026 (Malaysian account): the shapes it serves matched; one completed event per paid
+ * session, FPX included; a failed FPX payment sends no Checkout event. Change this file first when Stripe changes.
  *
  * What it checks, and where each rule comes from (spec sections in brackets):
  * - auth: `Authorization: Bearer <key>` or Basic `<key>:` with the configured `sk_test_` key, else 401 [§1];
