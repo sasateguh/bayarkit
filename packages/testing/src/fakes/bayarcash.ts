@@ -1,6 +1,9 @@
 /**
- * A fake Bayarcash API v3, built from the official documentation and PHP SDK (not yet measured against the sandbox).
- * When someone measures the sandbox, change this file first so it answers like the real thing, then the adapter.
+ * A fake Bayarcash API v3. Shapes MEASURED on the sandbox 27 Oct 2026 (api.console.bayarcash-sandbox.com, FPX mock bank,
+ * one paid and one failed payment): creating an intent answers 201 with `amount` as a number and one `payment_channel`;
+ * `GET /payment-intents/{id}` answers 201 (a read, still 201) with `status` "unpaid"/"paid" and its `attempts`;
+ * `/transactions/{intent id}` is 404 (an intent is not a transaction); a transaction names its portal by NAME (`portal`),
+ * not by key. Callback field lists still come from the official PHP SDK: the sandbox sent no server callback.
  */
 import { createHmac } from 'node:crypto'
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
@@ -36,7 +39,10 @@ export async function startFakeBayarcash(opts: {
   token: string
   secretKey: string
   portalKey: string
+  /** Shown as `portal` on every transaction and in GET /portals. */
+  portalName?: string
 }): Promise<FakeBayarcash> {
+  const portalName = opts.portalName ?? 'Fake portal'
   let n = 0
   const intents = new Map<string, Intent>()
   const transactions = new Map<string, Record<string, string>>()
@@ -76,20 +82,65 @@ export async function startFakeBayarcash(opts: {
         if (body.portal_key !== opts.portalKey) return send(422, { message: 'Invalid portal key.' })
         const id = `pi_fake${++n}`
         intents.set(id, { id, body })
-        return send(200, { id, url: `https://fake.bayarcash.test/pay/${id}` })
+        return send(201, {
+          type: 'payment_intent',
+          id,
+          payer_name: body.payer_name,
+          payer_email: body.payer_email,
+          payer_telephone_number: '',
+          order_number: body.order_number,
+          amount: Number(body.amount),
+          payment_channel: Number(String(channels).split(',')[0]),
+          url: `https://fake.bayarcash.test/payment-intent/${id}`,
+        })
+      }
+      const pi = /^\/payment-intents\/([A-Za-z0-9_-]+)$/.exec(path)
+      if (req.method === 'GET' && pi) {
+        const i = intents.get(pi[1] ?? '')
+        if (!i) return send(404, { code: 404, message: 'Resource not found.' })
+        const t = i.transactionId ? transactions.get(i.transactionId) : undefined
+        const paid = t?.status === '3'
+        return send(201, {
+          type: 'payment_intent',
+          id: i.id,
+          status: paid ? 'paid' : 'unpaid',
+          last_attempt: t ? t.datetime : null,
+          paid_at: paid ? t?.datetime : '',
+          order_number: i.body.order_number,
+          amount: Number(i.body.amount),
+          currency: 'MYR',
+          attempts: t
+            ? [
+                {
+                  transaction_id: t.transaction_id,
+                  order_number: t.order_number,
+                  amount: Number(t.amount),
+                  status: Number(t.status),
+                },
+              ]
+            : [],
+        })
       }
       const tx = /^\/transactions\/([A-Za-z0-9_-]+)$/.exec(path)
       if (req.method === 'GET' && tx) {
         const t = transactions.get(tx[1] ?? '')
-        if (!t) return send(404, { message: 'Not found.' })
-        return send(200, { ...t, id: t.transaction_id, amount: Number(t.amount) })
+        if (!t) return send(404, { code: 404, message: 'Resource not found.' })
+        const { record_type: _, transaction_id, ...rest } = t
+        return send(200, {
+          ...rest,
+          id: transaction_id,
+          amount: Number(t.amount),
+          status: Number(t.status),
+          portal: portalName,
+          payment_intent_id: [...intents.values()].find((i) => i.transactionId === transaction_id)?.id,
+        })
       }
       if (req.method === 'GET' && path === '/portals') {
         return send(200, {
           data: [
             {
               portal_key: opts.portalKey,
-              portal_name: 'Fake portal',
+              portal_name: portalName,
               payment_channels: [{ id: 1, name: 'FPX' }],
             },
           ],

@@ -81,7 +81,7 @@
       "adapter": {
         "package": "@bayarkit/bayarcash",
         "factory": "bayarcash",
-        "evidence": "docs",
+        "evidence": "measured",
         "configExample": "{ token, secretKey, portalKey, environment: 'sandbox' }",
         "fake": "startFakeBayarcash",
         "label": {
@@ -89,12 +89,22 @@
           "ms": "Bayarcash (juga di belakang BCL.my)"
         },
         "summary": {
-          "en": "Official API v3 docs and PHP SDK; not yet measured on the sandbox",
-          "ms": "Dokumen rasmi API v3 dan SDK PHP; belum diukur pada sandbox"
+          "en": "Measured on the sandbox, 27 Oct 2026: a paid and a failed FPX payment through the adapter (return URL, status query, portal); the server-to-server callback was not observed",
+          "ms": "Diukur pada sandbox, 27 Okt 2026: satu bayaran FPX berjaya dan satu gagal melalui adapter (URL return, pertanyaan status, portal); callback pelayan-ke-pelayan tidak diperhatikan"
         }
       },
       "spec": true,
       "gotchas": [
+        {
+          "text": "The API secret key is account-wide: a correctly signed return or callback can belong to another portal in the same account. A transaction names its portal by NAME (`portal`), so give every portal a unique name; the adapter compares it with the configured portal key's name.",
+          "text_ms": "Kunci rahsia API meliputi seluruh akaun: return atau callback yang ditandatangani dengan betul boleh milik portal lain dalam akaun yang sama. Transaksi menamakan portalnya ikut NAMA (`portal`), jadi beri setiap portal nama yang unik; adapter membandingkannya dengan nama bagi kunci portal yang dikonfigurasi.",
+          "source": "gateways/bayarcash/spec.md (measured)"
+        },
+        {
+          "text": "The checkout id is a payment intent (`pi_…`), not a transaction: `GET /transactions/pi_…` is 404. Read it with `GET /payment-intents/{id}` (status and attempts), which answers 201 even though it is a read.",
+          "text_ms": "Id checkout ialah payment intent (`pi_…`), bukan transaksi: `GET /transactions/pi_…` memberi 404. Baca dengan `GET /payment-intents/{id}` (status dan percubaan), yang menjawab 201 walaupun ia bacaan.",
+          "source": "gateways/bayarcash/spec.md (measured)"
+        },
         {
           "text": "The checksum sorts values by field NAME and joins them with `|`; a `payment_channel` list is joined with `,` inside it.",
           "text_ms": "Checksum mengisih nilai mengikut NAMA medan dan menyambungnya dengan `|`; senarai `payment_channel` disambung dengan `,` di dalamnya.",

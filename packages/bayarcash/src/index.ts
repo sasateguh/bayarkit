@@ -2,9 +2,14 @@
  * Bayarcash API v3 adapter (BCL.my runs on Bayarcash too).
  *
  * Written from the official documentation (api.webimpian.support/bayarcash) and the official PHP SDK
- * (webimpian/bayarcash-php-sdk: ChecksumGenerator, CallbackVerifications). NOT yet measured against the sandbox:
- * where the sandbox differs from the docs (toyyibPay did, in nine places), this adapter will be wrong until someone
- * runs the conformance suite with sandbox keys.
+ * (webimpian/bayarcash-php-sdk: ChecksumGenerator, CallbackVerifications), then MEASURED on the sandbox 27 Oct 2026
+ * (FPX mock bank: one paid and one failed payment through this adapter). Measured, unlike the docs:
+ * - a transaction names its portal by NAME (`portal`), not by key, so the portal check compares names (GET /portals);
+ * - the checkout id is a payment intent (`pi_…`), not a transaction: `/transactions/pi_…` is 404, and
+ *   `GET /payment-intents/{id}` (answered with 201) gives its status and attempts;
+ * - return-URL parameters carry `payment_intent_id` and `datetime` too; the checksum covers the nine fields below.
+ * Not observed: the sandbox mock bank sent no server-to-server callback in six minutes, so the 13 callback fields are
+ * still the SDK's.
  *
  * - checksum = HMAC-SHA256(API secret key, values sorted by field NAME, joined with `|`);
  * - amount = ringgit with two decimals ("25.00"), the same string in the JSON body and in the checksum;
@@ -60,9 +65,9 @@ export const info: GatewayInfo = {
   // The docs state no minimum; 100 sen is used until measured, so one value works across adapters.
   minimumAmount: 100,
   evidence: {
-    kind: 'docs',
-    date: '2026-10-23',
-    source: 'api.webimpian.support/bayarcash + webimpian/bayarcash-php-sdk',
+    kind: 'measured',
+    date: '2026-10-27',
+    source: 'sandbox api.console.bayarcash-sandbox.com (FPX mock bank) + webimpian/bayarcash-php-sdk',
   },
 }
 
@@ -151,6 +156,74 @@ export function bayarcash(config: BayarcashConfig): Gateway & {
     return { res, json }
   }
 
+  // The configured portal's NAME, read once: transactions name their portal, the secret is account-wide.
+  let portalName: Promise<string> | undefined
+  const ourPortalName = () => {
+    portalName ??= (async () => {
+      const { res, json } = await request('/portals', { headers: headers() })
+      const data = json?.data
+      if (!res.ok || !Array.isArray(data)) {
+        portalName = undefined // a failed lookup is retried on the next call
+        throw new GatewayError(`portals HTTP ${res.status}`, 'bayarcash', res.status)
+      }
+      const ours = data.find((p) => (p as Record<string, unknown>)?.portal_key === config.portalKey) as
+        | Record<string, unknown>
+        | undefined
+      if (!ours || typeof ours.portal_name !== 'string')
+        throw new GatewayError(
+          'portal key not found in this account',
+          'bayarcash',
+          res.status,
+          'FOREIGN_PORTAL',
+        )
+      return ours.portal_name
+    })()
+    return portalName
+  }
+
+  async function getIntent(intentId: string): Promise<PaymentRecord> {
+    const { res, json } = await request(`/payment-intents/${intentId}`, { headers: headers() })
+    if (!res.ok || !json) throw new GatewayError(`payment intent HTTP ${res.status}`, 'bayarcash', res.status)
+    const attempts = Array.isArray(json.attempts) ? (json.attempts as Record<string, unknown>[]) : []
+    const paid = attempts.find((a) => String(a?.status) === '3' && typeof a.transaction_id === 'string')
+    // Paid: read the transaction itself, which carries the portal check. Otherwise the intent is still open.
+    if (paid) return getTransaction(String(paid.transaction_id))
+    return {
+      id: String(json.id ?? intentId),
+      reference: String(json.order_number ?? ''),
+      status: 'pending',
+      amount: toSen(json.amount),
+      currency: String(json.currency ?? ''),
+      raw: json,
+    }
+  }
+
+  async function getTransaction(transactionId: string): Promise<PaymentRecord> {
+    const { res, json } = await request(`/transactions/${transactionId}`, { headers: headers() })
+    if (!res.ok || !json) throw new GatewayError(`transaction HTTP ${res.status}`, 'bayarcash', res.status)
+    // The secret is account-wide, so a signed callback/return can name another portal's transaction. Measured: the
+    // record names its portal (`portal`, a name); a key (`portal_key`) is checked too if it ever appears.
+    const foreign =
+      (json.portal_key !== undefined && json.portal_key !== config.portalKey) ||
+      (json.portal !== undefined && json.portal !== (await ourPortalName()))
+    if (foreign) {
+      throw new GatewayError(
+        'transaction belongs to another portal',
+        'bayarcash',
+        res.status,
+        'FOREIGN_PORTAL',
+      )
+    }
+    return {
+      id: String(json.id ?? transactionId),
+      reference: String(json.order_number ?? ''),
+      status: STATUS[String(json.status)] ?? 'unknown',
+      amount: toSen(json.amount),
+      currency: String(json.currency ?? ''),
+      raw: json,
+    }
+  }
+
   return {
     info,
 
@@ -205,31 +278,12 @@ export function bayarcash(config: BayarcashConfig): Gateway & {
       return { id: String(json?.id ?? ''), url, raw: json }
     },
 
-    async getPayment(transactionId: string): Promise<PaymentRecord> {
-      if (!/^[A-Za-z0-9_-]{1,64}$/.test(transactionId)) {
+    /** A transaction id (callbacks, return URL) or the payment intent id from `createPayment`. */
+    async getPayment(id: string): Promise<PaymentRecord> {
+      if (!/^[A-Za-z0-9_-]{1,64}$/.test(id)) {
         throw new GatewayError('invalid transaction id', 'bayarcash', 0, 'INVALID_ID')
       }
-      const { res, json } = await request(`/transactions/${transactionId}`, { headers: headers() })
-      if (!res.ok || !json) throw new GatewayError(`transaction HTTP ${res.status}`, 'bayarcash', res.status)
-      // The secret is account-wide, so a signed callback/return can name another portal's transaction. The documented
-      // transaction shows no portal field (UNCONFIRMED): when one is present it must be ours; when absent, references
-      // must be unique across the portals that share the account (README).
-      if (json.portal_key !== undefined && json.portal_key !== config.portalKey) {
-        throw new GatewayError(
-          'transaction belongs to another portal',
-          'bayarcash',
-          res.status,
-          'FOREIGN_PORTAL',
-        )
-      }
-      return {
-        id: String(json.id ?? transactionId),
-        reference: String(json.order_number ?? ''),
-        status: STATUS[String(json.status)] ?? 'unknown',
-        amount: toSen(json.amount),
-        currency: String(json.currency ?? ''),
-        raw: json,
-      }
+      return id.startsWith('pi_') ? getIntent(id) : getTransaction(id)
     },
 
     verifyCallback(callback: CallbackInput): VerifiedCallback | null {

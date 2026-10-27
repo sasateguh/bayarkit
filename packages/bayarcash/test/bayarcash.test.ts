@@ -98,4 +98,53 @@ describe('bayarcash: only this portal', () => {
     expect((await make(tx({ portal_key: 'portal-a' })).getPayment('trx_1')).status).toBe('paid')
     expect((await make(tx({})).getPayment('trx_1')).status).toBe('paid')
   })
+
+  // Measured 27 Oct 2026: a sandbox transaction names its portal by NAME (`portal`), never by key.
+  const named = (portal: string, portals = [{ portal_key: 'portal-a', portal_name: 'Shop A' }]) =>
+    make(async (u) =>
+      String(u).endsWith('/portals')
+        ? Response.json({ data: portals })
+        : Response.json({
+            id: 'trx_1',
+            order_number: 'R1',
+            amount: 10.5,
+            currency: 'MYR',
+            status: 3,
+            portal,
+          }),
+    )
+
+  it("refuses a transaction whose portal name is not the configured portal key's name", async () => {
+    await expect(named('Shop B').getPayment('trx_1')).rejects.toMatchObject({ code: 'FOREIGN_PORTAL' })
+    expect((await named('Shop A').getPayment('trx_1')).status).toBe('paid')
+  })
+
+  it("refuses when the configured portal key is not among the account's portals", async () => {
+    await expect(
+      named('Shop A', [{ portal_key: 'portal-z', portal_name: 'Shop A' }]).getPayment('trx_1'),
+    ).rejects.toMatchObject({
+      code: 'FOREIGN_PORTAL',
+    })
+  })
+})
+
+describe('bayarcash: the payment id from checkout (a payment intent)', () => {
+  const keys = { token: 't', secretKey: 's', portalKey: 'pk' }
+  it('reads an unpaid intent as pending, and a paid one through its transaction', async () => {
+    const fake = await startFakeBayarcash(keys)
+    try {
+      const gw = bayarcash({ ...keys, environment: 'sandbox', baseUrl: fake.url })
+      const created = await gw.createPayment(sampleInput({ amount: 1500 }))
+      expect(created.id).toMatch(/^pi_/)
+      const unpaid = await gw.getPayment(created.id)
+      expect(unpaid).toMatchObject({ status: 'pending', amount: 1500, currency: 'MYR' })
+      fake.markPaid(created.id)
+      const paid = await gw.getPayment(created.id)
+      expect(paid.status).toBe('paid')
+      expect(paid.id).toMatch(/^trx_/)
+      expect(paid.amount).toBe(1500)
+    } finally {
+      await fake.close()
+    }
+  })
 })

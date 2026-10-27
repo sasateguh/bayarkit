@@ -1,9 +1,10 @@
-# Bayarcash API v3 contract (from official sources; not yet measured on the sandbox)
+# Bayarcash API v3 contract (official sources, measured on the sandbox 27 Oct 2026)
 
 Sources: **[API]** = https://api.webimpian.support/bayarcash; **[SDK]** = official PHP SDK
 https://github.com/webimpian/bayarcash-php-sdk (`src/Actions/ChecksumGenerator.php`, `src/Actions/CallbackVerifications.php`,
 `tests/Unit/*`). Read 23 October 2026 for a production checkout and carried into `@bayarkit/bayarcash`.
-BCL.my processes payments through Bayarcash.
+**[MEASURED]** = the public sandbox (console.bayarcash-sandbox.com), 27 October 2026: one paid and one failed FPX payment
+through `@bayarkit/bayarcash`, raw answers recorded. BCL.my processes payments through Bayarcash.
 
 | Fact                                                                                                                                                                                                                                        | Source                      |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
@@ -11,10 +12,11 @@ BCL.my processes payments through Bayarcash.
 | Auth: `Authorization: Bearer <personal access token>`; JSON bodies                                                                                                                                                                          | [API]                       |
 | `POST /payment-intents` with `payment_channel` (list), `portal_key`, `order_number`, `amount` (ringgit, two decimals, e.g. `"25.00"`), `payer_name`, `payer_email`, `return_url`, `callback_url`, `checksum` → `{id, url}`                  | [API]; [SDK]                |
 | Request checksum = HMAC-SHA256(API secret key, values of `payment_channel` (joined with `,`), `order_number`, `amount`, `payer_name`, `payer_email`, sorted by field NAME, joined with `                                                    | `)                          | [SDK] ChecksumGenerator + tests (`[1,2]` → `"1,2"`) |
-| `GET /transactions/{id}` → `id`, `order_number`, `amount` (number), `currency`, `status`                                                                                                                                                    | [API]                       |
+| `GET /transactions/{id}` → `id`, `order_number`, `amount` (number), `currency`, `status` (number), `portal` (the portal's NAME, not its key), `payment_intent_id`, `platform_fees`, `nett_amount`; an intent id here is 404. MEASURED 27 Oct 2026 | [API]; [MEASURED] |
 | Status: 0 New · 1 Pending · 2 Failed · 3 Success · 4 Cancelled                                                                                                                                                                              | [API]                       |
 | Transaction callback signed over 13 fields: record_type, transaction_id, exchange_reference_number, exchange_transaction_id, order_number, currency, amount, payer_name, payer_email, payer_bank_name, status, status_description, datetime | [SDK] CallbackVerifications |
 | Pre-transaction callback (`record_type: pre_transaction`) signed over record_type, exchange_reference_number, order_number                                                                                                                  | [SDK] CallbackVerifications |
-| Return-URL parameters signed over 9 fields: transaction_id, exchange_reference_number, exchange_transaction_id, order_number, currency, amount, payer_bank_name, status, status_description                                                 | [SDK] CallbackVerifications |
+| Return-URL parameters signed over 9 fields: transaction_id, exchange_reference_number, exchange_transaction_id, order_number, currency, amount, payer_bank_name, status, status_description; the redirect also carries `payment_intent_id` and `datetime` (unsigned). MEASURED 27 Oct 2026 (paid: status 3 `Approved`; failed: status 2 `Insufficient Funds`) | [SDK]; [MEASURED] |
+| `POST /payment-intents` answers 201 `{type, id: "pi_…", order_number, amount (number), payment_channel (one number), url}`; `GET /payment-intents/{id}` answers 201 (a read) with `status` `unpaid`/`paid`, `paid_at`, `attempts[]` (each with `transaction_id` and a numeric `status`). Sandbox FPX = a mock bank (SBI Bank A success, B failed); the mock bank sent no server-to-server callback in six minutes. MEASURED 27 Oct 2026 | [MEASURED] |
 | `GET /portals` lists portals with their enabled payment channels                                                                                                                                                                            | [API]                       |
 | Minimum amount: not documented (UNCONFIRMED; bayarkit uses 100 sen until measured)                                                                                                                                                          | [API]                       |

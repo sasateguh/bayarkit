@@ -7,7 +7,7 @@ description: Integrate Bayarcash payments (Malaysia) safely. Use when adding Bay
 
 ## Use the bayarkit adapter
 
-Install `@bayarkit/core` and `@bayarkit/bayarcash`. Evidence: **written from the official docs, not yet measured on the sandbox**.
+Install `@bayarkit/core` and `@bayarkit/bayarcash`. Evidence: **measured on the Bayarcash sandbox**.
 
 ```ts
 import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
@@ -26,6 +26,8 @@ The full contract with a source for every fact: `gateways/bayarcash/spec.md` in 
 
 ## Bayarcash traps (each from an official source or a sandbox measurement)
 
+- The API secret key is account-wide: a correctly signed return or callback can belong to another portal in the same account. A transaction names its portal by NAME (`portal`), so give every portal a unique name; the adapter compares it with the configured portal key's name. *(gateways/bayarcash/spec.md (measured))*
+- The checkout id is a payment intent (`pi_…`), not a transaction: `GET /transactions/pi_…` is 404. Read it with `GET /payment-intents/{id}` (status and attempts), which answers 201 even though it is a read. *(gateways/bayarcash/spec.md (measured))*
 - The checksum sorts values by field NAME and joins them with `|`; a `payment_channel` list is joined with `,` inside it. *(official PHP SDK ChecksumGenerator + tests)*
 - `amount` is ringgit with two decimals ("25.00") in both the JSON body and the checksum; a callback may carry it as a number. *(official PHP SDK tests)*
 
