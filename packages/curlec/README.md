@@ -54,7 +54,16 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeCurlec` daripada `@bayarkit/testing`, atau `npx bayarkit-fake curlec` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/curlec/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/curlec/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- Sampel webhook Node rasmi mengesahkan JSON.stringify(parsedBody), tetapi tandatangan ialah HMAC-SHA256 ke atas bait badan MENTAH, jadi mensiri semula merosakkan pengesahan. (https://curlec.com/docs/webhooks/validate-test.md L134 vs L155-159)
+- Webhook ditandatangani dengan rahsia webhook Dashboard, manakala razorpay_signature checkout/callback ialah HMAC-SHA256(order_id|payment_id) berkunci rahsia kunci API, dan order_id mesti yang anda simpan, bukan yang di-POST. (https://curlec.com/docs/webhooks/setup-edit-payments.md L44-45; checkout integration-steps.md L624-640)
+- Bayaran yang dibenarkan (authorized) tetapi tidak di-capture dalam 3 hari dipulangkan secara automatik, dan auto-capture hanya terpakai pada bayaran yang dicipta melalui Orders API. (https://curlec.com/docs/payments/payments/capture-settings.md L24, L37)
+- Dokumen menyatakan percubaan yang gagal memerlukan order BAHARU dan receipt mesti unik, namun plugin WooCommerce rasmi menggunakan semula order dan mengulang receipt, jadi uji sendiri kelakuan cubaan semula. (https://curlec.com/docs/api/orders/create.md L19-21, L359-365 vs razorpay-woocommerce woo-razorpay.php L1188-1210, L1569)
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/curlec/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/curlec/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

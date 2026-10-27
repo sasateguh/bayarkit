@@ -4,81 +4,35 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/)
 (0.x: minor versions may contain breaking changes).
 
-## [Unreleased]
+## [0.1.0] - 2026-10-27
+
+First release: `@bayarkit/core`, `@bayarkit/testing`, fourteen gateway adapters on npm, and `bayarkit/bayarkit`
+(PHP/Laravel: toyyibPay and CHIP).
 
 ### Added
 
-- Every package has a generated README (EN + BM: install, the same quick start, the gateway's sourced traps, a link
-  to its spec) and full npm metadata (repository with directory, homepage, bugs, keywords, provenance), from the root
-  `package.json` and the registry; `rujukan skills --check` keeps all 16 from drifting.
-- `docs/demo/demo.png` + `demo.ms.png` in the READMEs, regenerated from the running demo by `scripts/demo-shot.py`.
-- Issue forms (bug, gateway request; secrets warned against) and a pull-request checklist from CONTRIBUTING.
-- `examples/demo` (`npm run demo`): every adapter against its fake, BM + EN, no browser JavaScript; pay / unpaid
-  signed callback / forged callback, with each `confirmPayment` check shown. Tested for all gateways in vitest and on
-  WebKit iPhone 13 (`scripts/demo-webkit.py`).
-
-### Fixed
-
-- CHIP (both twins): `environment` is required and a purchase that does not state `is_test` is refused, so a test
-  payment can never mark a live order paid. **Breaking:** pass `environment: 'test' | 'live'` (`CHIP_ENV` in PHP).
-- Gkash: references are upper-case only (`[A-Z0-9._-]`); Gkash's signature does not cover letter case.
-  **Breaking** for lower-case references.
-- senangPay: compares `payment.amount` when the retrieve carries it.
-- demo: memory bound holds under parallel load (100 at once), and a failing rotation cools down and answers 503.
-- Billplz: a bill from ANOTHER collection of the same account is refused (`FOREIGN_COLLECTION`; the X Signature
-  key is account-wide), and a paid bill is compared on `paid_amount`, the money received.
-- Bayarcash: a transaction reported for another portal is refused (`FOREIGN_PORTAL`).
-- toyyibPay, Bayarcash: `verifyCallback` no longer throws on a missing body; the conformance suite now feeds every
-  adapter `{}`, nulls and array values.
-- `confirmPayment` (both twins): a `verifyCallback` that throws is a `gateway_error` (a bug or a broken key, not a
-  forgery); unknown errors are named by class, never quoted.
-- TS/PHP parity proven, not claimed: numbers are read as the decimal text JavaScript writes for them (`1.005` → 101 in
-  both, on PHP 8.2/8.3/8.4 alike), ASCII whitespace only, `Text::of` = ECMAScript `Number::toString`. A randomised
-  differential of 20,030 inputs finds 0 differences.
-- From an independent review (no false "paid" path found; every fix has a test from the reviewer's scenario):
-  PHP reads gateway JSON like the TS twin (`true` is not status "1"), never throws from `verifyCallback` or
-  `Confirm::payment`, caps `toSen` at a safe integer (both twins), works on Laravel 11 with any timeout and wraps
-  Guzzle transfer errors; the demo survives malformed requests, caps memory, uses relative redirects and one choice
-  per order; `rujukan` runs through a symlink.
-- `toSen` parses ringgit strings as exact decimals ("10.505" → 1051, not 1050 through a float) and refuses
-  `"1e3"`, `".5"`, `"+10"`; `toRinggit` uses integer arithmetic. The TS and PHP twins now share
-  `packages/core/test/money-vectors.json`.
-- toyyibPay (TS + PHP): `getPayment` sends the owner's `userSecretKey`. toyyibPay's API reference (changed 23 Oct 2026)
-  now empties the fee (`transactionCharge`) and payer fields without it, and returns nothing for another account's key,
-  so a bill code from someone else's account can never read as paid. Not yet measured on the sandbox.
-- `rujukan`: links to a page's own site are made relative before fingerprinting; Curlec and HitPay flipping absolute ↔
-  relative links raised five false "changed" alerts with identical text.
-- `@bayarkit/testing`: the Billplz and Gkash fakes' `tamper()` changed `fields` but left `rawBody` with the original,
-  valid signature — a callback that cannot exist. The conformance suite now requires every fake's form/JSON body to say
-  what its fields say, tampered or not.
-- `php/` — `bayarkit/bayarkit` for PHP 8.2+ and Laravel 11/12: the core interface, `Confirm::payment`, `Checkout`,
-  toyyibPay (measured) and CHIP (docs) adapters, a service provider configured from `.env`, `Callback::from($request)`,
-  `Checkout::response()`, `php artisan bayarkit:chip-public-key`. Tested against the same `bayarkit-fake` gateways as
-  the TypeScript adapters (`scripts/php-gate.sh`, in the gate), plus phpstan level 8. `scripts/php-compat.sh` proves
-  the composer promises: PHP 8.2 with the lowest dependencies (Laravel 11) and PHP 8.4 with the newest (Laravel 12).
+- `@bayarkit/core`: the `Gateway` interface, `confirmPayment` (signature → fresh gateway query → exact reference,
+  amount and currency match), `readCallback` (fields + raw body + headers, so both body-signed and header-signed
+  gateways verify; JSON, url-encoded, multipart), integer-sen money helpers.
 - `@bayarkit/core`: `checkoutResponse(payment, label?)` sends the customer to pay — a 303 redirect, or, for
   gateways that take a POSTed form (`CreatedPayment.form`: iPay88, eGHL, Fiuu), an HTML-escaped self-submitting page
   with a visible button, `no-store`, `noindex` and a hash-pinned CSP. `autoPostHtml` and the `PaymentForm` type are
   exported; iPay88's own `autoPostHtml`/`IPay88Form` now point at them.
+- `@bayarkit/testing`: fake toyyibPay, Bayarcash and CHIP servers, and the conformance suite every adapter runs.
 - `bayarkit-fake` CLI in `@bayarkit/testing`: any fake as a standalone server with an HTTP control API, for tests in
   other languages (no vitest needed; vitest is now an optional peer).
-- `@bayarkit/core`: the `Gateway` interface, `confirmPayment` (signature → fresh gateway query → exact reference,
-  amount and currency match), `readCallback` (fields + raw body + headers, so both body-signed and header-signed
-  gateways verify; JSON, url-encoded, multipart), integer-sen money helpers.
 - `@bayarkit/toyyibpay`: measured on the toyyibPay sandbox (10 October 2026).
 - `@bayarkit/bayarcash`: Bayarcash API v3, from the official docs and PHP SDK (not yet measured).
-- `@bayarkit/testing`: fake toyyibPay and Bayarcash servers, and the conformance suite every adapter runs.
 - `@bayarkit/billplz`: Billplz API V3 Bills with X Signature verification of both the callback and the redirect
   query, from the official docs and WooCommerce plugin (not yet measured); reproduces all three official X Signature
   test vectors. `startFakeBillplz` in `@bayarkit/testing`.
+- `@bayarkit/chip`: CHIP Collect, from the official OpenAPI (not yet measured): RSA `X-Signature` checked over the
+  raw callback body, `fetchPublicKey()` (decodes CHIP's JSON-encoded PEM), callback URLs with a port refused before
+  calling CHIP, a required `environment` that refuses a purchase from the other mode.
 - `@bayarkit/stripe`: Stripe (Malaysia) Checkout Sessions over raw REST, card + FPX in MYR, from the official docs
   (not yet measured): pins `Stripe-Version: 2026-09-30.endive` and sends `allowed_payment_method_types[]` (endive
   rejects `payment_method_types` with 400); webhooks verified like stripe-node (`${t}.${rawBody}`, every `v1`, 300 s
   tolerance). `@bayarkit/testing` gains `startFakeStripe`.
-- `@bayarkit/chip`: CHIP Collect, from the official OpenAPI (not yet measured): RSA `X-Signature` checked over the
-  raw callback body, `fetchPublicKey()` (decodes CHIP's JSON-encoded PEM), callback URLs with a port refused before
-  calling CHIP, optional `environment` guard against test purchases confirming live orders.
-- `@bayarkit/testing`: fake toyyibPay, Bayarcash and CHIP servers, and the conformance suite every adapter runs.
 - `@bayarkit/hitpay`: HitPay Payment Requests, from the official docs, OpenAPI and PHP SDK (not yet measured): sen ↔
   ringgit at the edge; BOTH callback schemes verified as separate paths with separate salts (event webhook
   `Hitpay-Signature` over the RAW body with the webhook salt; legacy per-request `hmac` over sorted key+value fields
@@ -123,3 +77,57 @@ All notable changes to this project are documented here. The format follows
   HashValue2 of the eGHL_HASH class (the official Omnipay vector reproduced; the shorter Magento/OpenCart variants are
   refused), status from a signed QUERY that repeats the original amount, sen ↔ ringgit at the edge.
   `startFakeEghl` in `@bayarkit/testing`.
+- `php/` — `bayarkit/bayarkit` for PHP 8.2+ and Laravel 11/12: the core interface, `Confirm::payment`, `Checkout`,
+  toyyibPay (measured) and CHIP (docs) adapters, a service provider configured from `.env`, `Callback::from($request)`,
+  `Checkout::response()`, `php artisan bayarkit:chip-public-key`. Tested against the same `bayarkit-fake` gateways as
+  the TypeScript adapters (`scripts/php-gate.sh`, in the gate), plus phpstan level 8. `scripts/php-compat.sh` proves
+  the composer promises: PHP 8.2 with the lowest dependencies (Laravel 11) and PHP 8.4 with the newest (Laravel 12).
+- Every package has a generated README (EN + BM: install, the same quick start, the gateway's sourced traps, a link
+  to its spec) and full npm metadata (repository with directory, homepage, bugs, keywords, provenance), from the root
+  `package.json` and the registry; `rujukan skills --check` keeps all 16 from drifting.
+- `docs/demo/demo.png` + `demo.ms.png` in the READMEs, regenerated from the running demo by `scripts/demo-shot.py`.
+- Issue forms (bug, gateway request; secrets warned against) and a pull-request checklist from CONTRIBUTING.
+- `examples/demo` (`npm run demo`): every adapter against its fake, BM + EN, no browser JavaScript; pay / unpaid
+  signed callback / forged callback, with each `confirmPayment` check shown. Tested for all gateways in vitest and on
+  WebKit iPhone 13 (`scripts/demo-webkit.py`).
+- `examples/web-standard`: checkout and callback handlers that take any `Gateway`; its test runs them unchanged against the fake of every gateway. The README testing snippet runs as written in the suite.
+- Release tooling: `.github/workflows/release.yml` publishes every package on a `v*` tag through npm Trusted Publishing with provenance; `scripts/release-check.mjs` (in the gate) keeps all packages on one version with exact internal dependencies.
+
+### Fixed before release
+
+Found by the toyyibPay sandbox measurement, the daily docs check and independent AI review rounds; each fix has a test
+that failed first.
+- CHIP (both twins): `environment` is required and a purchase that does not state `is_test` is refused, so a test
+  payment does not confirm a live order: pass `environment: 'test' | 'live'` (`CHIP_ENV` in PHP).
+- Gkash: references are upper-case only (`[A-Z0-9._-]`); Gkash's signature does not cover letter case, so
+  a lower-case reference is refused.
+- senangPay: compares `payment.amount` when the retrieve carries it.
+- demo: memory bound holds under parallel load (100 at once), and a failing rotation cools down and answers 503.
+- Billplz: a bill from ANOTHER collection of the same account is refused (`FOREIGN_COLLECTION`; the X Signature
+  key is account-wide), and a paid bill is compared on `paid_amount`, the money received.
+- Bayarcash: a transaction reported for another portal is refused (`FOREIGN_PORTAL`).
+- toyyibPay, Bayarcash: `verifyCallback` no longer throws on a missing body; the conformance suite now feeds every
+  adapter `{}`, nulls and array values.
+- `confirmPayment` (both twins): a `verifyCallback` that throws is a `gateway_error` (a bug or a broken key, not a
+  forgery); unknown errors are named by class, never quoted.
+- TS/PHP parity: numbers are read as the decimal text JavaScript writes for them (`1.005` → 101 in
+  both, on PHP 8.2/8.3/8.4 alike), ASCII whitespace only, `Text::of` = ECMAScript `Number::toString`. A randomised
+  differential of 20,030 inputs finds 0 differences.
+- From an independent review (no false "paid" path found; every fix has a test from the reviewer's scenario):
+  PHP reads gateway JSON like the TS twin (`true` is not status "1"), never throws from `verifyCallback` or
+  `Confirm::payment`, caps `toSen` at a safe integer (both twins), works on Laravel 11 with any timeout and wraps
+  Guzzle transfer errors; the demo survives malformed requests, caps memory, uses relative redirects and one choice
+  per order; `rujukan` runs through a symlink.
+- `toSen` parses ringgit strings as exact decimals ("10.505" → 1051, not 1050 through a float) and refuses
+  `"1e3"`, `".5"`, `"+10"`; `toRinggit` uses integer arithmetic. The TS and PHP twins now share
+  `packages/core/test/money-vectors.json`.
+- toyyibPay (TS + PHP): `getPayment` sends the owner's `userSecretKey`. toyyibPay's API reference (changed 23 Oct 2026)
+  now empties the fee (`transactionCharge`) and payer fields without it, and returns nothing for another account's key,
+  so a bill code from someone else's account can never read as paid. Not yet measured on the sandbox.
+- `rujukan`: links to a page's own site are made relative before fingerprinting; Curlec and HitPay flipping absolute ↔
+  relative links raised five false "changed" alerts with identical text.
+- `@bayarkit/testing`: the Billplz and Gkash fakes' `tamper()` changed `fields` but left `rawBody` with the original,
+  valid signature — a callback that cannot exist. The conformance suite now requires every fake's form/JSON body to say
+  what its fields say, tampered or not.
+
+[0.1.0]: https://github.com/sasateguh/bayarkit/releases/tag/v0.1.0

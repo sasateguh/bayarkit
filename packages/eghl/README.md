@@ -54,7 +54,16 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeEghl` daripada `@bayarkit/testing`, atau `npx bayarkit-fake eghl` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/eghl/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/eghl/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- Plugin rasmi bercanggah tentang senarai medan HashValue2: eGHL_HASH dan WHMCS meng-hash ...OrderNumber+Param6+Param7, Magento 2.1.7 meninggalkan Param7, dan OpenCart meninggalkan kedua-dua Param6 dan Param7, jadi callback yang membawa Param7 gagal pengesahan dalam sesetengah plugin. (bitbucket.org/eghl/eghl_hash eGHL_HASH.php line 2 vs bitbucket.org/eghl/adaptis-magento @faacfb1 zip Controller/Index/ResponseHandler.gte_m230.php:623-646 vs bitbucket.org/eghl/adaptis-opencart @38c0db3 zip catalog/controller/payment/ghl.php:206)
+- Tandatangan ialah SHA-256 biasa ke atas MerchantPassword yang disambung dengan nilai medan (tanpa pemisah, bukan HMAC), dan kelas hash rasmi diam-diam memulangkan sha256(password) sahaja apabila medan wajib tiada. (https://bitbucket.org/eghl/eghl_hash/raw/HEAD/eGHL_HASH.php)
+- Callback pelayan mesti menjawab dengan badan biasa 'OK'; URL return pelayar dan callback pelayan menerima medan yang sama, jadi kedua-duanya mesti mengesahkan hash dan idempoten. (https://bitbucket.org/eghl/eghl-omnipay/raw/HEAD/README.md (lines 37-38, 96))
+- Jumlah ialah ringgit sebagai rentetan dengan tepat dua tempat perpuluhan dan tanpa koma ('10.00', bukan sen), dan query mesti mengulang Amount dan CurrencyCode asal dengan tepat atau ia tidak akan menjumpai transaksi itu. (https://bitbucket.org/eghl/paramvalidator/raw/HEAD/src/core/validatorBase.php (isValidAmount) + https://bitbucket.org/eghl/merchantapi/raw/HEAD/README.md)
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/eghl/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/eghl/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

@@ -54,7 +54,16 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeHitPay` daripada `@bayarkit/testing`, atau `npx bayarkit-fake hitpay` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/hitpay/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/hitpay/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- Dua skema tandatangan dengan dua salt berbeza wujud serentak: callback `webhook` lama setiap permintaan dikod borang dengan medan `hmac` = HMAC-SHA256(salt kunci API, sambungan key+value terisih tanpa hmac), manakala webhook acara dashboard ialah JSON dengan pengepala `Hitpay-Signature` = HMAC-SHA256(salt setiap webhook, badan mentah). (https://docs.hitpayapp.com/apis/guide/events.md lines 1490-1534; php-sdk src/Client.php lines 79-88)
+- Sampel Express dalam panduan Online Payments menandatangani JSON.stringify(req.body) dan bukannya badan mentah, yang boleh gagal pada webhook tulen; sahkan ke atas bait permintaan mentah. (https://docs.hitpayapp.com/apis/guide/online-payments.md line 293 vs events.md (express.raw))
+- Parameter create `webhook` disebut sebagai deprecated dalam panduan, namun OpenAPI tidak menandakannya dan plugin WooCommerce rasmi masih bergantung padanya serta hmac v1nya. (online-payments.md lines 311-313; https://raw.githubusercontent.com/hit-pay/woocommerce/HEAD/hitpay-payment-gateway/includes/regular-checkout.php lines 1452, 1683)
+- Akaun sandbox mesti perniagaan Singapura dan tidak menyenaraikan FPX, DuitNow atau Touch 'n Go, jadi kaedah Malaysia tidak boleh diuji hujung ke hujung sebelum produksi. (https://docs.hitpayapp.com/apis/guide/sandbox.md lines 17-21)
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/hitpay/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/hitpay/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

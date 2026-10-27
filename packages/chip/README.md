@@ -53,7 +53,15 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeChip` daripada `@bayarkit/testing`, atau `npx bayarkit-fake chip` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/chip/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/chip/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- Callback ditandatangani dalam pengepala `X-Signature`: RSA PKCS#1 v1.5 SHA-256 base64 ke atas badan MENTAH. `GET /public_key/` memulangkan rentetan PEM berpetik JSON yang mesti dinyahkod JSON dahulu. (CHIP Collect OpenAPI L895–917; docs /overview/callbacks)
+- Skil AI CHIP sendiri menyenaraikan medan dan status yang tidak wujud (`failure_callback`, `cancel_callback`, status `failed`) serta payload berbalut; spesifikasi OpenAPI tiada satu pun daripadanya. Tiada status `failed`: dibayar bermaksud `paid`, `cleared` atau `settled`. (CHIP Collect OpenAPI status enum vs github.com/CHIPAsia/skill SKILL.md)
+- `success_callback` tidak boleh mengandungi port, termasuk `:443`; medan redirect dan callback diletakkan di aras atas badan create (jika bersarang dalam `purchase`, ia diabaikan). (CHIP Collect OpenAPI L2953–2975; docs /overview/callbacks)
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/chip/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/chip/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

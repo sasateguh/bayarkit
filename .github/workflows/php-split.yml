@@ -1,0 +1,44 @@
+name: PHP split
+
+# Packagist reads composer.json at a repository's root, so php/ is mirrored to sasateguh/bayarkit-php (read-only;
+# issues and pull requests belong here) on every change to php/ on main and on every v* tag. `git subtree split` is
+# deterministic, so main on the mirror only ever fast-forwards. Packagist updates from the mirror's GitHub hook.
+# Auth: deploy key with write access on the mirror only (secret PHP_SPLIT_DEPLOY_KEY). Skipped while private (D7).
+on:
+  push:
+    branches: [main]
+    paths: ["php/**"]
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: php-split
+  cancel-in-progress: false
+
+jobs:
+  split:
+    if: ${{ !github.event.repository.private }}
+    name: Mirror php/ to sasateguh/bayarkit-php
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: git subtree split --prefix=php -b php-split
+      - name: Push the split
+        env:
+          DEPLOY_KEY: ${{ secrets.PHP_SPLIT_DEPLOY_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/split && chmod 600 ~/.ssh/split
+          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/split -o IdentitiesOnly=yes"
+          mirror=git@github.com:sasateguh/bayarkit-php.git
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            git push "$mirror" "php-split:refs/heads/main" "php-split:refs/tags/$GITHUB_REF_NAME"
+          else
+            git push "$mirror" "php-split:refs/heads/main"
+          fi

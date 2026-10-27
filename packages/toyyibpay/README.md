@@ -53,7 +53,15 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeToyyibPay` daripada `@bayarkit/testing`, atau `npx bayarkit-fake toyyibpay` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/toyyibpay/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/toyyibpay/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- Bil tanpa transaksi menjawab dengan teks `No data found!`, bukan `[]`: penghurai JSON yang ketat melaporkan setiap bil yang belum dibayar sebagai ralat. (gateways/toyyibpay/spec.md (measured))
+- Callback tiba sebagai `multipart/form-data`; kod yang hanya menghurai badan URL-encoded tidak nampak sebarang medan. (gateways/toyyibpay/spec.md (measured))
+- `billExpiryDate` dibaca dalam waktu Malaysia, dan RM1.00 (100 sen) itu sendiri diterima walaupun dokumen menyatakan "lebih daripada RM1.00". (gateways/toyyibpay/spec.md (measured))
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/toyyibpay/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/toyyibpay/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

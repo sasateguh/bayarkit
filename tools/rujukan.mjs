@@ -159,7 +159,8 @@ function lint() {
         problems.push(`${gw.id}/${s.id}: mustContain is empty (shell pages would pass)`)
     }
     for (const g of gw.gotchas ?? []) {
-      if (!g.text || !g.source) problems.push(`${gw.id}: every gotcha needs text and a source`)
+      if (!g.text || !g.text_ms || !g.source)
+        problems.push(`${gw.id}: every gotcha needs text, text_ms (Bahasa Melayu) and a source`)
     }
     if (gw.adapter) {
       const pkgDir = join(ROOT, 'packages', gw.id)

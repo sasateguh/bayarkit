@@ -68,6 +68,7 @@ function adapterReadme(gw, root) {
   const label = (lang) => gw.adapter.label[lang]
   const summary = (lang) => gw.adapter.summary[lang]
   const gotchas = (gw.gotchas ?? []).map((g) => `- ${g.text} (${g.source})`).join('\n')
+  const gotchasMs = (gw.gotchas ?? []).map((g) => `- ${g.text_ms} (${g.source})`).join('\n')
   const spec = `${repo}/blob/main/gateways/${gw.id}/spec.md`
   return `# ${gw.adapter.package}
 
@@ -103,8 +104,10 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 \`confirmPayment\` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: \`${gw.adapter.fake}\` daripada \`@bayarkit/testing\`, atau \`npx bayarkit-fake ${gw.id}\` sebagai
-pelayan. ${gotchas ? 'Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. ' : ''}Kontrak penuh:
-[gateways/${gw.id}/spec.md](${spec}). Dokumentasi penuh: [README.ms.md](${repo}/blob/main/README.ms.md).
+pelayan.
+
+${gotchasMs ? `## Perangkap\n\n${gotchasMs}\n\n` : ''}Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/${gw.id}/spec.md](${spec}).
+Dokumentasi penuh: [README.ms.md](${repo}/blob/main/README.ms.md).
 
 MIT © ${root.author.replace(/\s*\(.*\)$/, '')}
 `
@@ -140,11 +143,24 @@ Adapters: ${adapters.map((g) => `\`${g.adapter.package}\``).join(', ')}.
 Antara muka yang dilaksanakan oleh setiap adapter [bayarkit](${repo}), dan \`confirmPayment\`: satu-satunya jalan
 untuk menanda pesanan dibayar. Sifar kebergantungan masa jalan.
 
-- \`confirmPayment\` — tandatangan callback mesti sah; gateway ditanya semula; rekod gateway sendiri mesti kata dibayar,
-  untuk rujukan ini, jumlah tepat ini (sen integer) dan mata wang ini. Tidak pernah melempar ralat.
-- \`readCallback(request)\` — callback daripada \`Request\` piawai web, termasuk badan mentah dan pengepala.
-- \`checkoutResponse(payment)\` — redirect 303, atau halaman borang POST yang dihantar sendiri.
+\`\`\`bash
+npm install @bayarkit/core @bayarkit/<gateway>
+\`\`\`
+
+- \`confirmPayment(gateway, callback, { reference, amount })\` — 1. tandatangan callback mesti sah; 2. gateway ditanya
+  semula (tandatangan yang sah boleh diulang main); 3. rekod gateway sendiri mesti kata dibayar, untuk rujukan ini,
+  jumlah tepat ini (sen integer) dan mata wang ini. Memulangkan \`{ ok: true, payment }\` atau
+  \`{ ok: false, reason, detail }\` dengan \`reason\` salah satu daripada \`invalid_signature\`, \`not_paid\`,
+  \`mismatch\`, \`gateway_error\`; ia tidak pernah melempar ralat.
+- \`readCallback(request)\` — callback daripada \`Request\` piawai web: medan (JSON, url-encoded atau multipart) serta
+  badan mentah dan pengepala, supaya gateway yang menandatangani badan dan yang menandatangani pengepala kedua-duanya
+  dapat disahkan. \`callbackFromFields(fields)\` untuk rangka kerja yang sudah menghurai badan.
+- \`checkoutResponse(payment, label?)\` — redirect 303, atau halaman POST yang dihantar sendiri (di-escape) untuk
+  gateway yang menerima borang; \`autoPostHtml\` ialah halaman itu sahaja.
 - \`toSen\` / \`toRinggit\` — penukaran perpuluhan tepat, tidak pernah melalui float.
+- \`GatewayError\` — mesej memetik jawapan gateway sahaja, tidak pernah kunci.
+
+Adapter: ${adapters.map((g) => `\`${g.adapter.package}\``).join(', ')}.
 
 Dokumentasi penuh: [README.ms.md](${repo}/blob/main/README.ms.md).
 

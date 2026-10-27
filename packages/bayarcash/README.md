@@ -52,7 +52,14 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeBayarcash` daripada `@bayarkit/testing`, atau `npx bayarkit-fake bayarcash` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/bayarcash/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/bayarcash/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- Checksum mengisih nilai mengikut NAMA medan dan menyambungnya dengan `|`; senarai `payment_channel` disambung dengan `,` di dalamnya. (official PHP SDK ChecksumGenerator + tests)
+- `amount` ialah ringgit dengan dua tempat perpuluhan ("25.00") dalam badan JSON dan dalam checksum; callback mungkin membawanya sebagai nombor. (official PHP SDK tests)
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/bayarcash/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/bayarcash/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

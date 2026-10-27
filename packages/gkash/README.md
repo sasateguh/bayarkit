@@ -54,7 +54,16 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeGkash` daripada `@bayarkit/testing`, atau `npx bayarkit-fake gkash` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/gkash/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/gkash/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- Jumlah yang ditandatangani ialah rentetan ringgit 2 tempat perpuluhan dengan titik dibuang dan sifar di depan dikekalkan (0.10 menjadi "010", bukan sen integer 10). (https://doc.gkash.my/v2/web-payments#web-payments-create-checkout-session; wc-gkash.php L378-382)
+- Tandatangan callback meliputi teks status penuh huruf besar ("88 - TRANSFERRED") dan jumlah yang dihantar Gkash, jadi sahkan dengan nilai mentah yang di-POST dan bandingkan jumlah/mata wang dengan pesanan secara berasingan. (https://doc.gkash.my/v2/web-payments#web-payments-handle-server-callback; wc-gkash.php L398-412, L517-524)
+- Respons query dan refund tidak membawa tandatangan, jadi query tidak boleh disahkan melebihi TLS dan tiada medan masa dibayar. (https://doc.gkash.my/query-transaction-status#handle-query-response; https://doc.gkash.my/refund#handle-refund-response)
+- Dokumen menyatakan versi "1.5.5" manakala plugin rasmi dan semua SDK menghantar "1.5.0", dan hos produksi api.gkash.my hanya muncul dalam kod plugin/SDK. (https://doc.gkash.my/v2/web-payments#web-payments-create-checkout-session; wc-gkash.php L137-142, L280)
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/gkash/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/gkash/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

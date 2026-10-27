@@ -54,7 +54,16 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeXendit` daripada `@bayarkit/testing`, atau `npx bayarkit-fake xendit` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/xendit/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/xendit/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- Webhook tidak membawa HMAC atau tandatangan: pengesahan ialah token statik setiap persekitaran dalam pengepala x-callback-token yang mesti dibandingkan dengan token dashboard, jadi semak semula juga jumlah dan status dengan rekod anda sendiri atau GET. (https://docs.xendit.co/docs/handling-webhooks.md L30; https://docs.xendit.co/docs/integration-security.md L31-39)
+- Jumlah dalam unit besar (RM 150 = 150, perpuluhan dibenarkan), bukan sen. (https://raw.githubusercontent.com/xendit/xendit-ai/HEAD/skills/xendit-integrate/references/sessions.md L26)
+- Penuhi pesanan pada payment.capture dan bukannya pada status sesi: bayaran masih boleh dikutip selepas sesi dibatalkan atau tamat tempoh, dan status sesi tidak akan berubah. (https://raw.githubusercontent.com/xendit/xendit-ai/HEAD/skills/xendit-integrate/references/sessions.md L82, L103)
+- Ejaan batal berbeza mengikut objek: sesi dan bayaran menggunakan CANCELED manakala refund menggunakan CANCELLED, jadi padanan rentetan tepat terlepas salah satu daripadanya. (https://docs.xendit.co/apidocs/get-session.md #/components/schemas/Payment_Session_SessionStatus; https://docs.xendit.co/apidocs/refund-payment-request.md #/components/schemas/Payments_API_RefundStatus)
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/xendit/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/xendit/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

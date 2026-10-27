@@ -54,7 +54,16 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeIPay88` daripada `@bayarkit/testing`, atau `npx bayarkit-fake ipay88` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/ipay88/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/ipay88/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- Tandatangan ialah HMAC-SHA512 (hex huruf kecil, 128 aksara) berkunci MerchantKey, tetapi MerchantKey JUGA bahagian pertama mesej yang di-hash (key+code+refno+amount+currency), jadi HMAC 'biasa' ke atas medan sahaja tidak akan sepadan. (https://payment.ipay88.com.my/epayment/testing/TestSignatureIpay88.asp lines 35 and 46 (strBeforehash = MerchantKey + ...; GetHmacSHA512(strBeforehash, MerchantKey)))
+- Jumlah dihantar dalam ringgit dengan dua tempat perpuluhan (cth. 1.00) tetapi mesti ditandatangani dengan '.' dan ',' dibuang (100); alat gateway itu sendiri hanya membuang '.' PERTAMA dan ',' PERTAMA (JS String.replace), jadi jumlah dengan dua pemisah ribu (1,000,000.00) memberi rentetan yang berbeza di sana berbanding pembuangan penuh. (https://payment.ipay88.com.my/epayment/testing/TestSignatureIpay88.asp line 31)
+- enquiry.asp menjawab dengan badan text/html biasa, bukan JSON: hanya rentetan tepat '00' bermaksud dibayar; 'Invalid parameters' dan 'Record not found' dipulangkan dengan HTTP 200. (https://payment.ipay88.com.my/epayment/enquiry.asp (live probe 2026-10-23: empty POST -> 'Invalid parameters', unknown RefNo -> 'Record not found', both HTTP 200))
+- Bayaran bermula dengan POST borang pelayar ke entry.asp, bukan redirect: dengan @bayarkit/ipay88, sajikan `payment.html` (atau POST `payment.form`) dan bukannya redirect ke `payment.url`. Halaman BackendURL mesti menjawab tepat `RECEIVEOK` atau iPay88 akan mencuba semula. (gateways/ipay88/spec.md §2 and §4 (iPay88 Technical Specification 1.6.4.4 p.10 and p.14; UNCONFIRMED: not officially hosted))
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/ipay88/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/ipay88/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

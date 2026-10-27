@@ -53,7 +53,15 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeBillplz` daripada `@bayarkit/testing`, atau `npx bayarkit-fake billplz` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/billplz/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/billplz/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- X Signature mengisih rentetan `key+value` yang telah disambung, bukan kunci: perkataan "sort keys" dalam dokumen memberi HMAC yang berbeza daripada plugin rasmi dan vektor ujian. (support.billplz.com/api X Signature steps; official WooCommerce plugin L336–341)
+- Jawab callback dengan HTTP 200 dalam masa 20 s atau Billplz akan mencuba semula (sehingga 5 percubaan dalam ~24 j), dan callback serta redirect tiba tanpa susunan tetap. (support.billplz.com/api callback retry schedule)
+- Bil yang telah dipadam muncul semula jika pelanggan menyelesaikan bayaran yang sedang berjalan, jadi `paid=true` boleh tiba selepas DELETE. (support.billplz.com/api delete bill)
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/billplz/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/billplz/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

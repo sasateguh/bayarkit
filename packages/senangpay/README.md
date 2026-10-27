@@ -54,7 +54,16 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeSenangPay` daripada `@bayarkit/testing`, atau `npx bayarkit-fake senangpay` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/senangpay/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/senangpay/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- Peniaga senangPay telah dipindahkan ke platform DOKU, jadi integrasi baharu menggunakan API JSON DOKU dengan tandatangan pengepala HMACSHA256=; API hash/borang lama di app.senangpay.my/payment/{merchantID} mengalihkan ke doku.com/not-found bagi ID peniaga contoh dalam dokumen. (https://guide.senangpay.com/common-faqs-regarding-senangpay-doku-migration + https://guide.senangpay.com/doku-api-integration-guide + live curl 2026-10-23)
+- Sampel tandatangan Python dan Node.js DOKU sendiri meletakkan awalan 'Digest:' pada baris digest (dan sampel Go menambah digest dua kali), manakala teks dokumen dan sampel Java/Ruby menggunakan digest base64 tanpa awalan: Client-Id\nRequest-Timestamp\nPath\nDigest. (https://doku-developers.apidog.io/sample-code-2466484m0.md vs https://doku-developers.apidog.io/generating-signature-2466482m0.md)
+- Jumlah ialah ringgit berperpuluhan (float DOKU 100.05; lama '25.50' dengan tepat dua tempat perpuluhan yang mesti sama bait demi bait dengan rentetan yang di-hash), bukan sen, kecuali amount_paid tokenisasi lama yang dalam sen (200 = RM2.00); bayaran minimum ialah RM2.00. (https://doku-developers.apidog.io/create-checkout-44767692e0.md + api_catalog swagger spelling checked.yaml l.1389-1392 + https://senangpay.com/doku-migration-faq/#Payments)
+- Jangan tanya status bayaran DOKU sejurus selepas redirect: Retrieve Payment/Checkout mesti dipanggil sekurang-kurangnya 60 s (seminit) selepas bayaran selesai, dan {id} ialah id permintaan anda sendiri, bukan id DOKU. (https://doku-developers.apidog.io/retrieve-payment-status-44767696e0.md)
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/senangpay/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/senangpay/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

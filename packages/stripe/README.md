@@ -53,7 +53,15 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeStripe` daripada `@bayarkit/testing`, atau `npx bayarkit-fake stripe` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/stripe/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/stripe/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- Versi API `2026-09-30.endive` menolak `payment_method_types` pada Checkout Sessions dengan HTTP 400. Gunakan `allowed_payment_method_types[]` (atau kaedah pembayaran Dashboard), dan sentiasa hantar pengepala `Stripe-Version`. (docs.stripe.com/changelog/endive/2026-09-30/remove-payment-method-types-checkout-sessions)
+- Caj minimum dalam MYR ialah RM2.00 (200 sen); FPX memerlukan akaun Stripe Malaysia dengan nombor pendaftaran perniagaan, MYR, dan bayaran sekali sahaja. (docs.stripe.com minimum charge amounts; FPX docs)
+- Tandatangan webhook meliputi `${t}.${rawBody}` dengan rahsia `whsec_…` penuh; beberapa nilai `v1` boleh muncul semasa putaran rahsia. Tanpa badan mentah, pengesahan mustahil. (docs.stripe.com/webhooks/signature; stripe-node webhooks.js)
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/stripe/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/stripe/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

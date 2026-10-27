@@ -54,7 +54,16 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFakeFiuu` daripada `@bayarkit/testing`, atau `npx bayarkit-fake fiuu` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/fiuu/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/fiuu/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- skey callback ialah MD5 berganda ke atas rentetan mentah yang di-POST, berkunci kunci RAHSIA (bukan verify key): md5(paydate.domain.md5(tranID.orderid.status.domain.amount.currency).appcode.secret_key). (API Spec v13.97 PDF p.20 (pdf page 21); WooCommerce class-gateway.php L1060-1077)
+- URL callback mesti ACK dengan teks biasa CBTOKEN:MPSTATOK manakala URL return/notification ACK dengan POST semula semua medan serta treq=1 ke returnipn.php; bilangan cubaan semula ialah 3 dalam spesifikasi tetapi 4 dalam cheatsheet. (API Spec v13.97 PDF p.52-59 (pdf 53-60); Cheatsheet README L38)
+- Apabila 'extended vcode' dihidupkan dalam portal, mata wang mesti ditambah pada hash vcode, tetapi SDK PHP rasmi tidak pernah menambahnya, jadi pautan bayarannya gagal dengan ralat P03. (API Spec v13.97 PDF p.18-19 (pdf 19-20); SDK-Fiuu_PHP src/lib/Payment.php L36)
+- Mata wang callback boleh tiba sebagai 'RM' dan bukannya 'MYR' (plugin rasmi menormalkannya), jadi bandingkan mata wang selepas dinormalkan tetapi hash nilai mentah. (WooCommerce class-gateway.php L977-978)
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/fiuu/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/fiuu/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman

@@ -54,7 +54,16 @@ Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang ber
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
 Uji tanpa wang sebenar: `startFake2C2P` daripada `@bayarkit/testing`, atau `npx bayarkit-fake 2c2p` sebagai
-pelayan. Perangkap gateway ini (dengan sumber) disenaraikan di atas dalam bahasa Inggeris. Kontrak penuh:
-[gateways/2c2p/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/2c2p/spec.md). Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+pelayan.
+
+## Perangkap
+
+- Kunci HMAC JWT ialah rentetan hex secret-key yang digunakan sebagai bait ASCII (bukan dinyahkod hex), dan resipi rasmi menyahkod respons mengesahkan token dengan kunci JT01 walaupun token itu sebenarnya ditandatangani dengan kunci JT04, jadi kod sampel yang disalin bulat-bulat gagal. (https://developer.2c2p.com/docs/json-web-tokens-jwt.md L44-47; https://developer.2c2p.com/recipes/process-response-payload-with-jwt.md L78-91 (verified locally))
+- Hanya notifikasi backend (JSON {payload: JWT HS256}) yang ditandatangani; POST frontendReturnUrl ialah data borang base64 tanpa tandatangan (paymentResponse=...) yang respCode 2000nya hanya bermaksud 'buat payment inquiry', jadi ia tidak boleh sekali-kali menanda pesanan dibayar. (https://developer.2c2p.com/docs/api-payment-response-frontend.md L21-29; https://developer.2c2p.com/docs/response-code-payment-flow.md)
+- Plugin WooCommerce rasmi (binaan 2026 v8.1.0) tidak menggunakan API JWT v4 yang didokumenkan tetapi RedirectV3 lama dengan hash medan bersambung HMAC-SHA256 dan jumlah unit kecil 12 digit berpad sifar, manakala API v4 menjangka unit besar perpuluhan (cth. 2500.90000), jadi jangan pindahkan logik jumlah atau tandatangan daripada plugin itu. (wordpress-2c2p-build20260612.zip: 2c2p_woocommerce_new/2c2p.php L191, Includes/wc-2c2p-hash-helper.php L15-87, Includes/wc-2c2p-validation-helper.php L59-89 vs https://developer.2c2p.com/docs/api-payment-token-request-parameter.md L146)
+- Dokumen bercanggah tentang laluan versi API (4.3 dalam Sandbox Setup dan rujukan OpenAPI, 4.5 pada halaman Payment Token dan Payment Inquiry); kedua-duanya menjawab di sandbox, jadi pin satu versi secara jelas dan simpan dalam config. (https://developer.2c2p.com/docs/sandbox-setup.md L68; https://developer.2c2p.com/docs/api-payment-token.md L18-21)
+
+Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/2c2p/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/2c2p/spec.md).
+Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 
 MIT © Muhammad Aiman
