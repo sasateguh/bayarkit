@@ -3,8 +3,9 @@
  *
  * Written from the official documentation (support.billplz.com/api, read 23 October 2026) and the official WooCommerce
  * plugin's signing code (Billplz/Billplz-for-WooCommerce, includes/helpers/billplz_wpconnect.php). Every fact used here
- * has its source in gateways/billplz/spec.md. NOT yet measured against the sandbox (www.billplz-sandbox.com): where the
- * sandbox differs from the docs, this adapter will be wrong until someone runs the conformance suite with sandbox keys.
+ * has its source in gateways/billplz/spec.md. MEASURED on the sandbox (www.billplz-sandbox.com) 27 Oct 2026: a paid and a
+ * failed payment through the simulator, with the real server-to-server callback and the redirect both verified by this
+ * adapter; a failed payment still sends a callback (`paid=false`, `state=due`). The callback carries no reference_1.
  *
  * - auth = HTTP Basic, API secret key as the username and an EMPTY password (`base64("<key>:")`);
  * - amounts are integer sen everywhere (create, get, callback), so nothing is converted;
@@ -72,9 +73,9 @@ export const info: GatewayInfo = {
   // UNCONFIRMED: the docs give no minimum ("positive integer"); 100 sen until measured, as for the other adapters.
   minimumAmount: 100,
   evidence: {
-    kind: 'docs',
-    date: '2026-10-23',
-    source: 'support.billplz.com/api + official WooCommerce plugin',
+    kind: 'measured',
+    date: '2026-10-27',
+    source: 'sandbox www.billplz-sandbox.com (simulator, real callback) + support.billplz.com/api',
   },
 }
 

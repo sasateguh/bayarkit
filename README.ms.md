@@ -6,7 +6,7 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 
 [English](README.md)
 
-> **Status:** 0.2.0. Empat belas gateway dalam TypeScript: toyyibPay, Bayarcash dan Stripe diukur pada sandbox
+> **Status:** 0.2.0. Empat belas gateway dalam TypeScript: toyyibPay, Billplz, Bayarcash dan Stripe diukur pada sandbox
 > masing-masing; yang lain ditulis daripada sumber rasmi dan belum dijalankan terhadap gateway sebenar (jadual
 > menyatakan sumbernya). PHP/Laravel meliputi toyyibPay dan CHIP.
 
@@ -31,7 +31,7 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 | ---------------------------------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | toyyibPay                                      | `@bayarkit/toyyibpay` | Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian; pertanyaan status dengan dan tanpa `userSecretKey` diukur semula 27 Okt 2026               |
 | Bayarcash (juga di belakang BCL.my)            | `@bayarkit/bayarcash` | Diukur pada sandbox, 27 Okt 2026: satu bayaran FPX berjaya dan satu gagal melalui adapter (URL return, pertanyaan status, portal); callback pelayan-ke-pelayan tidak diperhatikan |
-| Billplz                                        | `@bayarkit/billplz`   | Dokumen rasmi API (V3 Bills, vektor ujian X Signature) dan plugin WooCommerce rasmi; belum diukur pada sandbox                                                                    |
+| Billplz                                        | `@bayarkit/billplz`   | Diukur pada sandbox, 27 Okt 2026: satu bayaran berjaya dan satu gagal, dengan callback sebenar dan ubah hala disahkan oleh adapter                                                |
 | CHIP (CHIP Collect)                            | `@bayarkit/chip`      | OpenAPI rasmi CHIP Collect; belum diukur dalam mod ujian                                                                                                                          |
 | Stripe (Malaysia): kad + FPX                   | `@bayarkit/stripe`    | Diukur dalam mod ujian, 27 Okt 2026: satu bayaran kad dan satu FPX melalui adapter dengan webhook sebenar (API `2026-09-30.endive`), dan satu bayaran FPX yang gagal              |
 | senangPay (di platform DOKU)                   | `@bayarkit/senangpay` | Rujukan API rasmi DOKU Malaysia (Checkout, Signature `HMACSHA256=`) dan Soalan Lazim DOKU senangPay; belum diukur pada sandbox                                                    |

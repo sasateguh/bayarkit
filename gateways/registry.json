@@ -139,7 +139,7 @@
       "adapter": {
         "package": "@bayarkit/billplz",
         "factory": "billplz",
-        "evidence": "docs",
+        "evidence": "measured",
         "configExample": "{ secretKey, xSignatureKey, collectionId, environment: 'sandbox' }",
         "fake": "startFakeBillplz",
         "label": {
@@ -147,12 +147,22 @@
           "ms": "Billplz"
         },
         "summary": {
-          "en": "Official API docs (V3 Bills, X Signature test vectors) and the official WooCommerce plugin; not yet measured on the sandbox",
-          "ms": "Dokumen rasmi API (V3 Bills, vektor ujian X Signature) dan plugin WooCommerce rasmi; belum diukur pada sandbox"
+          "en": "Measured on the sandbox, 27 Oct 2026: a paid and a failed payment, with the real callback and the redirect verified by the adapter",
+          "ms": "Diukur pada sandbox, 27 Okt 2026: satu bayaran berjaya dan satu gagal, dengan callback sebenar dan ubah hala disahkan oleh adapter"
         }
       },
       "spec": true,
       "gotchas": [
+        {
+          "text": "Neither the callback nor the redirect carries your reference (`reference_1`): find the order by the bill id saved at checkout, then let the status query return the reference.",
+          "text_ms": "Callback dan ubah hala tidak membawa rujukan anda (`reference_1`): cari pesanan ikut id bil yang disimpan semasa checkout, kemudian biar pertanyaan status memulangkan rujukan itu.",
+          "source": "gateways/billplz/spec.md (measured)"
+        },
+        {
+          "text": "A failed payment still sends a callback, with `paid=false` and `state=due`: a callback is not proof of payment either way, so read the bill.",
+          "text_ms": "Bayaran yang gagal tetap menghantar callback, dengan `paid=false` dan `state=due`: callback bukan bukti bayaran dalam apa jua keadaan, jadi baca bil itu.",
+          "source": "gateways/billplz/spec.md (measured)"
+        },
         {
           "text": "X Signature sorts the concatenated `key+value` strings, not the keys: the docs' \"sort keys\" wording gives a different HMAC than the official plugin and test vectors.",
           "text_ms": "X Signature mengisih rentetan `key+value` yang telah disambung, bukan kunci: perkataan \"sort keys\" dalam dokumen memberi HMAC yang berbeza daripada plugin rasmi dan vektor ujian.",

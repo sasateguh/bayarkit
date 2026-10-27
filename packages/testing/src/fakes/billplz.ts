@@ -1,7 +1,8 @@
 /**
  * A fake Billplz API (V3 Bills), built from the official documentation (support.billplz.com/api) and the official
- * WooCommerce plugin's signing code — see gateways/billplz/spec.md. NOT yet measured against the sandbox: when someone
- * does, change this file first so it answers like the real thing, then the adapter.
+ * WooCommerce plugin's signing code — see gateways/billplz/spec.md — then MEASURED on the sandbox 27 Oct 2026 (one paid and
+ * one failed payment through the simulator, the real callback captured): callback and redirect fields matched; the name
+ * is upper-cased from creation on, and `paid_at` is present (null until paid) on create and get.
  *
  * Where the docs are silent this fake picks one shape and says so (marked ASSUMED below); the adapter must not depend on
  * those shapes beyond "an error is an error".
@@ -170,17 +171,15 @@ export async function startFakeBillplz(opts: {
           paid_at: null,
         }
         bills.set(id, bill)
-        const { paid_at: _omit, ...created } = bill
-        return send(200, created)
+        return send(200, { ...bill, name: bill.name.toUpperCase() })
       }
       const one = /^\/api\/v3\/bills\/([A-Za-z0-9]+)$/.exec(path)
       if (one) {
         const bill = bills.get(one[1] ?? '')
         if (!bill) return error(404, 'RecordNotFound', 'The requested bill does not exist')
         if (req.method === 'GET') {
-          // Doc examples: the name comes back upper-cased; `paid_at` is absent from Get-a-Bill examples (UNCONFIRMED).
-          const { paid_at: _omit, ...shown } = bill
-          return send(200, { ...shown, name: bill.name.toUpperCase() })
+          // Measured: the name comes back upper-cased; `paid_at` is present (null until paid).
+          return send(200, { ...bill, name: bill.name.toUpperCase() })
         }
         if (req.method === 'DELETE') {
           // Docs: only due bills can be deleted; a paid bill → 422. ASSUMED: deleting a deleted bill is also 422.

@@ -7,7 +7,7 @@ description: Integrate Billplz payments (Malaysia) safely. Use when adding Billp
 
 ## Use the bayarkit adapter
 
-Install `@bayarkit/core` and `@bayarkit/billplz`. Evidence: **written from the official docs, not yet measured on the sandbox**.
+Install `@bayarkit/core` and `@bayarkit/billplz`. Evidence: **measured on the Billplz sandbox**.
 
 ```ts
 import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
@@ -26,6 +26,8 @@ The full contract with a source for every fact: `gateways/billplz/spec.md` in th
 
 ## Billplz traps (each from an official source or a sandbox measurement)
 
+- Neither the callback nor the redirect carries your reference (`reference_1`): find the order by the bill id saved at checkout, then let the status query return the reference. *(gateways/billplz/spec.md (measured))*
+- A failed payment still sends a callback, with `paid=false` and `state=due`: a callback is not proof of payment either way, so read the bill. *(gateways/billplz/spec.md (measured))*
 - X Signature sorts the concatenated `key+value` strings, not the keys: the docs' "sort keys" wording gives a different HMAC than the official plugin and test vectors. *(support.billplz.com/api X Signature steps; official WooCommerce plugin L336–341)*
 - Answer the callback with HTTP 200 within 20 s or Billplz retries (up to 5 attempts over ~24 h), and callback and redirect arrive in no fixed order. *(support.billplz.com/api callback retry schedule)*
 - A deleted bill comes back if the customer completes a payment already in flight, so `paid=true` can arrive after DELETE. *(support.billplz.com/api delete bill)*

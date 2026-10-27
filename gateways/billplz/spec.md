@@ -1,4 +1,4 @@
-# Billplz API contract (V3 Bills, V4 where relevant): extracted from official sources only
+# Billplz API contract (V3 Bills, V4 where relevant): official sources, measured on the sandbox 27 Oct 2026
 
 Fetched 2026-10-23. Abbreviations used for sources:
 - **[API]** = https://support.billplz.com/api (the official API docs; `https://www.billplz.com/api` 302-redirects there). `#anchor` = section id on that page.
@@ -9,6 +9,21 @@ Fetched 2026-10-23. Abbreviations used for sources:
 Note: the docs page hides e-mail addresses behind Cloudflare `data-cfemail`. I decoded them locally, and the HMAC test vectors below only reproduce with the decoded values (`tester@test.com`, `api@billplz.com`).
 
 ---
+
+
+## Measured on the sandbox (27 October 2026)
+
+www.billplz-sandbox.com, through `@bayarkit/billplz`, a collection created by the API, the payment simulator, and the real
+server-to-server callback received on a public HTTPS URL:
+
+| Fact | Result |
+| --- | --- |
+| Collection and payer `name` | upper-cased by Billplz (`BAYARKIT CONFORMANCE`, `UJIAN BAYARKIT`), already in the create response |
+| Create / get a bill | `paid_at` present (`null` until paid); `reference_1` echoed back |
+| Paid (simulator "Successful payment") | redirect `billplz[id]`, `billplz[paid]=true`, `billplz[paid_at]`, `billplz[x_signature]`; callback form-encoded with id, collection_id, paid, state, amount, paid_amount, due_at, email, mobile, name, url, paid_at, x_signature |
+| Failed (simulator "Failed payment") | a callback IS sent: `paid=false`, `state=due`, `paid_at` empty; redirect `billplz[paid]=false` |
+| Reference in callback / redirect | absent: neither carries `reference_1` |
+| X Signature | as documented: both the callback and the redirect verify; changing one field fails |
 
 ## 1. Hosts and authentication
 
