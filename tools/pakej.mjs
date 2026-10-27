@@ -38,7 +38,7 @@ function metadata(dir, pkg, root, extraKeywords) {
     license: root.license,
     author: root.author,
     sideEffects: false,
-    // Trusted publishing from the public repository signs every release (provenance); D7.
+    // Trusted publishing from the public repository signs every release (provenance).
     publishConfig: { access: 'public', provenance: true },
   }
   const ordered = Object.fromEntries(ORDER.filter((k) => k in out).map((k) => [k, out[k]]))

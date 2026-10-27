@@ -2,7 +2,7 @@
 # Publish every package to npm, core first (every other package depends on it), then testing, then the adapters.
 # A version already on npm is skipped, so a re-run after a partial failure publishes only what is missing.
 # --dry-run: npm publish --dry-run for each package (what would go out, nothing is sent).
-# Auth: npm Trusted Publishing from .github/workflows/release.yml only (gilap D22) — never an npm token.
+# Auth: npm Trusted Publishing from .github/workflows/release.yml only, never an npm token.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 dry=()

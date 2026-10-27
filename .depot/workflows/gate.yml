@@ -1,5 +1,5 @@
 name: gate
-# Private-repo CI (D21 gilap): started by ~/bin/gerbang-depot.sh, never by push, so it cannot double-run with Actions.
+# Maintainer-side CI: started by ~/bin/gerbang-depot.sh, never by push, so it cannot double-run with Actions.
 on:
   workflow_dispatch:
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-time setup on release day (D20): give every @bayarkit/* package a Trusted Publisher, so that from then on only
+# One-time setup on release day: give every @bayarkit/* package a Trusted Publisher, so that from then on only
 # .github/workflows/release.yml (environment npm) can publish. Run it yourself in a terminal after `npx npm@11 login`.
 # Every change needs 2FA: npm prints "Authenticate your account at: <link>" and waits — open the link, approve
 # (passkey / Face ID), and the script carries on. It needs a real terminal; without one npm fails with EOTP.

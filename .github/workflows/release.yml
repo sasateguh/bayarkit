@@ -1,12 +1,12 @@
 name: Release
 
 # Publishes every @bayarkit/* package to npm when a v* tag is pushed (e.g. v0.1.0). Pushes to main never publish.
-# Skipped while the repository is private: nothing is published before D7 (repo public, Perisai clean).
+# Skipped while the repository is private.
 #
-# Auth: npm Trusted Publishing (OIDC), gilap D22 — no npm token is created or stored. Configure once per package on
+# Auth: npm Trusted Publishing (OIDC): no npm token is created or stored. Configure once per package on
 # npmjs.com: package → Settings → Trusted Publisher → GitHub Actions, repository sasateguh/bayarkit, workflow
 # release.yml, environment npm. Provenance comes with it (publishConfig.provenance in every package).
-# The PHP package (php/) goes to Packagist through a split repository, after D7 (D14); not this workflow yet.
+# The PHP package (php/) reaches Packagist through the sasateguh/bayarkit-php mirror (php-split.yml).
 on:
   push:
     tags: ["v*"]

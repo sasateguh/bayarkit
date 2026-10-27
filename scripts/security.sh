@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Security checks before a release (D7), using the same scanners and policy as Perisai (~/perisai/config/polisi.yaml):
+# Security checks before a release, using the scanners and policy of our security review:
 # - semgrep p/default + p/owasp-top-ten + p/typescript + p/php over EVERY packages/*/src (a glob: a hand list once left
 #   nine adapters unscanned), php/src, php/config, examples/ and tools/. --no-git-ignore is required
 #   (without it semgrep can scan 0 files and still exit 0), coverage fails on any per-rule timeout;

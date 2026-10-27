@@ -2,7 +2,7 @@
 
 Sources: **[API]** = https://api.webimpian.support/bayarcash; **[SDK]** = official PHP SDK
 https://github.com/webimpian/bayarcash-php-sdk (`src/Actions/ChecksumGenerator.php`, `src/Actions/CallbackVerifications.php`,
-`tests/Unit/*`). Read 23 October 2026 for the Cutt checkout (D30) and carried into `@bayarkit/bayarcash`.
+`tests/Unit/*`). Read 23 October 2026 for a production checkout and carried into `@bayarkit/bayarcash`.
 BCL.my processes payments through Bayarcash.
 
 | Fact                                                                                                                                                                                                                                        | Source                      |

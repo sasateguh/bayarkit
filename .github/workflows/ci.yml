@@ -1,6 +1,6 @@
 name: CI
 
-# While the repository is private, every job is skipped (private Actions minutes are not used, D21 gilap); private CI
+# While the repository is private, every job is skipped (private Actions minutes are not used); private CI
 # runs on Depot (.depot/workflows/gate.yml). Once public, this runs on every push and pull request.
 on:
   push:
