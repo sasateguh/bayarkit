@@ -20,7 +20,8 @@
     "duitnow",
     "webhook",
     "checkout",
-    "typescript"
+    "typescript",
+    "nodejs"
   ],
   "type": "module",
   "workspaces": [

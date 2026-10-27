@@ -4,6 +4,13 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/)
 (0.x: minor versions may contain breaking changes).
 
+## [0.2.2] - 2026-10-27
+
+### Changed
+
+- Package descriptions on npm say what each adapter does for Node.js and TypeScript (create payments, verify callbacks,
+  confirm with a fresh status query), and every package carries the `nodejs` keyword. No code changes.
+
 ## [0.2.1] - 2026-10-27
 
 Billplz measured on its sandbox.
@@ -170,6 +177,7 @@ that failed first.
   valid signature — a callback that cannot exist. The conformance suite now requires every fake's form/JSON body to say
   what its fields say, tampered or not.
 
+[0.2.2]: https://github.com/sasateguh/bayarkit/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/sasateguh/bayarkit/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/sasateguh/bayarkit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sasateguh/bayarkit/releases/tag/v0.1.0

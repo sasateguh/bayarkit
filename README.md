@@ -6,7 +6,7 @@ Your checkout and callback code stay the same when you switch gateways; only the
 
 [Bahasa Melayu](README.ms.md)
 
-> **Status:** 0.2.1. Fourteen gateways in TypeScript: toyyibPay, Billplz, Bayarcash and Stripe are measured on their sandboxes;
+> **Status:** 0.2.2. Fourteen gateways in TypeScript: toyyibPay, Billplz, Bayarcash and Stripe are measured on their sandboxes;
 > the others are written from official sources and have not yet run against a real gateway (the table says which
 > source). PHP/Laravel covers toyyibPay and CHIP.
 

@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/testing",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Fake Malaysian payment gateways and the bayarkit conformance suite, for testing without real money.",
   "keywords": [
     "payment",
@@ -11,6 +11,7 @@
     "webhook",
     "checkout",
     "typescript",
+    "nodejs",
     "testing",
     "fake",
     "mock",
@@ -50,7 +51,7 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.2.1"
+    "@bayarkit/core": "0.2.2"
   },
   "peerDependencies": {
     "vitest": ">=4"

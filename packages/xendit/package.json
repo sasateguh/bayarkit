@@ -1,7 +1,7 @@
 {
   "name": "@bayarkit/xendit",
-  "version": "0.2.1",
-  "description": "Xendit (Malaysia) Payment Sessions adapter for bayarkit: MYR, x-callback-token webhooks, raw REST, zero dependencies.",
+  "version": "0.2.2",
+  "description": "Xendit Malaysia for Node.js and TypeScript: create payments, verify callbacks and confirm each payment with a fresh status query. Zero dependencies, part of bayarkit.",
   "keywords": [
     "payment",
     "payment-gateway",
@@ -11,6 +11,7 @@
     "webhook",
     "checkout",
     "typescript",
+    "nodejs",
     "xendit"
   ],
   "homepage": "https://github.com/sasateguh/bayarkit/tree/main/packages/xendit#readme",
@@ -47,6 +48,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.2.1"
+    "@bayarkit/core": "0.2.2"
   }
 }

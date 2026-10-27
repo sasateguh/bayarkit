@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/core",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "One interface for Malaysian payment gateways, and a checked way to confirm a payment.",
   "keywords": [
     "payment",
@@ -11,6 +11,7 @@
     "webhook",
     "checkout",
     "typescript",
+    "nodejs",
     "confirm-payment"
   ],
   "homepage": "https://github.com/sasateguh/bayarkit/tree/main/packages/core#readme",

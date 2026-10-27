@@ -1,7 +1,7 @@
 {
   "name": "@bayarkit/ipay88",
-  "version": "0.2.1",
-  "description": "iPay88 Malaysia (NTT DATA Payment Services, OPSG, HMAC-SHA512 Signature) adapter for bayarkit.",
+  "version": "0.2.2",
+  "description": "iPay88 for Node.js and TypeScript: create payments, verify callbacks and confirm each payment with a fresh status query. Zero dependencies, part of bayarkit.",
   "keywords": [
     "payment",
     "payment-gateway",
@@ -11,6 +11,7 @@
     "webhook",
     "checkout",
     "typescript",
+    "nodejs",
     "ipay88"
   ],
   "homepage": "https://github.com/sasateguh/bayarkit/tree/main/packages/ipay88#readme",
@@ -47,6 +48,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.2.1"
+    "@bayarkit/core": "0.2.2"
   }
 }

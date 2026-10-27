@@ -1,7 +1,7 @@
 {
   "name": "@bayarkit/gkash",
-  "version": "0.2.1",
-  "description": "Gkash (host-to-host checkout, SHA-512 signature) adapter for bayarkit.",
+  "version": "0.2.2",
+  "description": "Gkash for Node.js and TypeScript: create payments, verify callbacks and confirm each payment with a fresh status query. Zero dependencies, part of bayarkit.",
   "keywords": [
     "payment",
     "payment-gateway",
@@ -11,6 +11,7 @@
     "webhook",
     "checkout",
     "typescript",
+    "nodejs",
     "gkash"
   ],
   "homepage": "https://github.com/sasateguh/bayarkit/tree/main/packages/gkash#readme",
@@ -47,6 +48,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.2.1"
+    "@bayarkit/core": "0.2.2"
   }
 }
