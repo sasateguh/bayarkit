@@ -3,7 +3,7 @@
 toyyibPay for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
-**Evidence:** Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment.
+**Evidence:** Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment; the status query's `userSecretKey` (docs change of 23 Oct 2026) not yet re-measured.
 
 ```bash
 npm install @bayarkit/core @bayarkit/toyyibpay
@@ -42,7 +42,7 @@ The full contract, with a source for every fact: [gateways/toyyibpay/spec.md](ht
 toyyibPay untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
 mengesahkan bayaran.
 
-**Bukti:** Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian.
+**Bukti:** Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian; `userSecretKey` dalam pertanyaan status (perubahan dokumen 23 Okt 2026) belum diukur semula.
 
 ```bash
 npm install @bayarkit/core @bayarkit/toyyibpay

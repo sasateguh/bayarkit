@@ -25,8 +25,8 @@
           "ms": "toyyibPay"
         },
         "summary": {
-          "en": "Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment",
-          "ms": "Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian"
+          "en": "Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment; the status query's `userSecretKey` (docs change of 23 Oct 2026) not yet re-measured",
+          "ms": "Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian; `userSecretKey` dalam pertanyaan status (perubahan dokumen 23 Okt 2026) belum diukur semula"
         }
       },
       "spec": true,

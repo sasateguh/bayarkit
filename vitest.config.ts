@@ -11,7 +11,11 @@ const alias = Object.fromEntries(
 export default defineConfig({
   resolve: { alias },
   test: {
-    include: ['packages/*/test/**/*.test.ts', 'examples/*/test/**/*.test.mjs', 'tools/test/**/*.test.mjs'],
+    include: [
+      'packages/*/test/**/*.test.ts',
+      'examples/*/test/**/*.test.{mjs,ts}',
+      'tools/test/**/*.test.mjs',
+    ],
     testTimeout: 15_000,
   },
 })
