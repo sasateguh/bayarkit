@@ -1,7 +1,7 @@
 {
   "name": "@bayarkit/core",
   "version": "0.1.0",
-  "description": "One interface for Malaysian payment gateways, and the safe way to confirm a payment.",
+  "description": "One interface for Malaysian payment gateways, and a checked way to confirm a payment.",
   "keywords": [
     "payment",
     "payment-gateway",

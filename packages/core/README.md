@@ -1,6 +1,6 @@
 # @bayarkit/core
 
-The interface every [bayarkit](https://github.com/sasateguh/bayarkit) gateway adapter implements, and `confirmPayment`: the only safe way to mark
+The interface every [bayarkit](https://github.com/sasateguh/bayarkit) gateway adapter implements, and `confirmPayment`: the one path to marking
 an order paid. Zero runtime dependencies. [Bahasa Melayu](#bahasa-melayu)
 
 ```bash
@@ -23,8 +23,8 @@ Adapters: `@bayarkit/toyyibpay`, `@bayarkit/bayarcash`, `@bayarkit/billplz`, `@b
 
 ## Bahasa Melayu
 
-Antara muka yang dilaksanakan oleh setiap adapter [bayarkit](https://github.com/sasateguh/bayarkit), dan `confirmPayment`: satu-satunya cara
-selamat untuk menanda pesanan dibayar. Sifar kebergantungan masa jalan.
+Antara muka yang dilaksanakan oleh setiap adapter [bayarkit](https://github.com/sasateguh/bayarkit), dan `confirmPayment`: satu-satunya jalan
+untuk menanda pesanan dibayar. Sifar kebergantungan masa jalan.
 
 - `confirmPayment` — tandatangan callback mesti sah; gateway ditanya semula; rekod gateway sendiri mesti kata dibayar,
   untuk rujukan ini, jumlah tepat ini (sen integer) dan mata wang ini. Tidak pernah melempar ralat.

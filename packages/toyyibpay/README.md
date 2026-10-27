@@ -1,6 +1,6 @@
 # @bayarkit/toyyibpay
 
-toyyibPay for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+toyyibPay for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment; the status query's `userSecretKey` (docs change of 23 Oct 2026) not yet re-measured.
@@ -39,7 +39,7 @@ The full contract, with a source for every fact: [gateways/toyyibpay/spec.md](ht
 
 ## Bahasa Melayu
 
-toyyibPay untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+toyyibPay untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara bersemak untuk
 mengesahkan bayaran.
 
 **Bukti:** Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian; `userSecretKey` dalam pertanyaan status (perubahan dokumen 23 Okt 2026) belum diukur semula.
@@ -48,7 +48,7 @@ mengesahkan bayaran.
 npm install @bayarkit/core @bayarkit/toyyibpay
 ```
 
-Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu baris. Jumlah ialah sen integer
+Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang berubah. Jumlah ialah sen integer
 (RM10.50 = 1050). Jangan tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata;
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 

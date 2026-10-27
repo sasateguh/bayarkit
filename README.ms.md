@@ -1,17 +1,21 @@
 # bayarkit
 
-Satu antara muka untuk gateway pembayaran Malaysia, dalam TypeScript dan PHP/Laravel, dan cara selamat untuk mengesahkan bayaran.
-Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
+Satu antara muka untuk gateway pembayaran Malaysia, dalam TypeScript dan PHP/Laravel, dan cara bersemak untuk mengesahkan
+bayaran: tandatangan callback, pertanyaan baharu kepada gateway, dan padanan tepat rujukan, amaun dan mata wang.
+Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapter dan kuncinya yang berubah.
 
 [English](README.md)
 
-> **Status:** pra-keluaran (0.1.0), belum ada di npm. Empat belas gateway; yang lain dirancang di bawah.
+> **Status:** 0.1.0, keluaran pertama. Empat belas gateway dalam TypeScript: toyyibPay diukur pada sandboxnya; yang
+> lain ditulis daripada sumber rasmi dan belum dijalankan terhadap gateway sebenar (jadual menyatakan
+> sumbernya). PHP/Laravel meliputi toyyibPay dan CHIP.
 
 ## Kenapa
 
 - **Tukar gateway tidak sepatutnya bermakna tulis semula checkout.** Setiap adapter melaksanakan antara muka `Gateway`
   yang sama: `createPayment`, `getPayment`, `verifyCallback`.
-- **Mengesahkan bayaran ialah tempat kedai kehilangan wang.** `confirmPayment` membuat tiga semakan setiap kali:
+- **Callback hanyalah dakwaan.** Ia boleh dipalsukan, dihantar semula daripada bayaran terdahulu, atau benar tetapi
+  untuk pesanan atau amaun lain. `confirmPayment` membuat tiga semakan setiap kali:
   tandatangan callback, pertanyaan baharu kepada gateway (tandatangan yang sah boleh dihantar semula), dan padanan
   tepat rujukan, amaun dan mata wang.
 - **Sandbox tidak semestinya berkelakuan seperti dokumennya.** Adapter toyyibPay dan gateway palsunya mengikut apa yang
@@ -41,12 +45,24 @@ Tulis checkout sekali; tukar gateway dengan mengubah satu baris.
 | eGHL (ADAPTIS e-Commerce)                      | `@bayarkit/eghl`      | Kod awam rasmi eGHL (kelas hash, QUERY merchant-api, vektor ujian HashValue2 Omnipay; tiada panduan API awam); belum diukur pada hos ujian                                         |
 <!-- /gateways:table -->
 
-Seterusnya dirancang: gateway dalam [gateways/README.md](gateways/README.md). Satu adapter disenaraikan sebagai _diukur_ hanya
-selepas set ujian piawai dijalankan terhadap sandbox gateway itu.
+Sudah dikaji tetapi belum ada adapter: Adyen dan Airwallex (spesifikasi dalam [gateways/README.md](gateways/README.md)). Satu
+adapter disenaraikan sebagai _diukur_ hanya selepas set ujian piawai dijalankan terhadap sandbox gateway itu.
 
 Amaun sentiasa dalam **sen** integer (`1050` = RM10.50), jadi tiada ringgit titik terapung dibandingkan.
 
+## Pasang
+
+```bash
+npm install @bayarkit/core @bayarkit/toyyibpay   # teras, dan satu pakej untuk setiap gateway yang anda guna
+```
+
+Node.js 22.12 atau lebih baharu (CI menjalankan 22 dan 24). Adapter menggunakan `node:crypto`, jadi persekitaran tanpanya
+(Cloudflare Workers, Vercel Edge) tidak disokong. PHP/Laravel: `composer require bayarkit/bayarkit`, lihat
+[PHP dan Laravel](#php-dan-laravel).
+
 ## Mula pantas
+
+Dua laluan: satu memulakan bayaran, satu lagi menerima callback daripada gateway.
 
 ```ts
 import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
@@ -54,28 +70,33 @@ import { toyyibpay } from '@bayarkit/toyyibpay'
 
 const gateway = toyyibpay({ secretKey, categoryCode, environment: 'sandbox' })
 
-// 1. Checkout: satu rujukan setiap percubaan, kemudian hantar pelanggan ke gateway.
+// POST /checkout: satu rujukan setiap percubaan, kemudian hantar pelanggan ke gateway.
 const payment = await gateway.createPayment({
   reference: 'ORD1001',
-  amount: 1050,
+  amount: 1050, // sen: RM10.50
   description: 'Order 1001',
   customer: { name: 'Ali', email: 'ali@example.com' },
   returnUrl: 'https://shop.example/thank-you',
   callbackUrl: 'https://shop.example/api/payment/callback',
 })
-// Redirect 303, atau halaman yang menghantar borang POST sendiri untuk gateway yang mahukan borang (iPay88, eGHL, Fiuu).
+// Simpan payment.id bersama pesanan. Kemudian jawab dengan redirect 303, atau halaman yang menghantar borang POST
+// sendiri untuk gateway yang mahukan borang (iPay88, eGHL, Fiuu).
 return checkoutResponse(payment, 'Teruskan ke pembayaran')
 
-// 2. Callback: jangan sesekali tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata.
+// POST /api/payment/callback: jangan sesekali tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata.
 const callback = await readCallback(request) // JSON, url-encoded atau multipart (toyyibPay menghantar multipart)
-const result = await confirmPayment(gateway, callback, { reference: 'ORD1001', amount: 1050 })
+const verified = gateway.verifyCallback(callback) // null bila tandatangan salah
+// Carian anda: ikut verified.reference, atau ikut payment.id yang disimpan bila gateway tidak menghantar rujukan (Billplz).
+const order = await findOrder(verified)
+const result = await confirmPayment(gateway, callback, { reference: order.reference, amount: order.amount })
 if (result.ok) {
   // tanda pesanan dibayar (secara idempoten: gateway menghantar semula callback)
 }
 ```
 
-Contoh lengkap checkout dan callback dengan pengendali piawai web (Next.js, Hono, Bun, Deno) ada dalam
-[examples/web-standard/checkout.ts](examples/web-standard/checkout.ts). Untuk guna Bayarcash, gantikan panggilan
+Kedua-dua laluan, lengkap, sebagai pengendali piawai web `Request` → `Response` (pengendali laluan Next.js, Hono dan
+seumpamanya) ada dalam [examples/web-standard/checkout.ts](examples/web-standard/checkout.ts). Ujiannya menjalankan dua
+pengendali yang sama, tanpa diubah, terhadap gateway palsu setiap gateway. Untuk guna Bayarcash, gantikan panggilan
 `toyyibpay(...)` dengan `bayarcash({ token, secretKey, portalKey, environment: 'sandbox' })`.
 
 Untuk CHIP, guna `chip({ secretKey, brandId, publicKey, environment: 'test' })`. CHIP ada satu hos sahaja: kunci rahsia mod ujian membuat
@@ -84,7 +105,7 @@ pembelian ujian. Callback ditandatangani dengan kunci RSA CHIP atas badan mentah
 `await chip({ secretKey, brandId, environment: 'test' }).fetchPublicKey()` (kunci rahsia yang sama), simpan, dan hantar sebagai `publicKey`;
 tanpanya setiap callback ditolak. CHIP menolak `callbackUrl` yang ada port, walaupun `:443`.
 `environment` wajib (`'test'` dengan kunci ujian, `'live'` dengan kunci hidup): pembelian daripada mod yang satu lagi,
-atau yang tidak menyatakan modnya, ditolak, jadi bayaran ujian tidak boleh menanda pesanan sebenar sebagai dibayar.
+atau yang tidak menyatakan modnya, ditolak, jadi bayaran ujian tidak mengesahkan pesanan sebenar.
 
 ## Apa yang `confirmPayment` semak
 
@@ -109,15 +130,16 @@ Diukur pada `dev.toyyibpay.com`, 10 Oktober 2026:
 | Amaun minimum        | "lebih daripada RM1.00" | RM1.00 sendiri diterima                                                                                     |
 | Badan callback       | borang                  | `multipart/form-data`                                                                                       |
 
-## Pengetahuan gateway yang sentiasa terkini
+## Memantau dokumen gateway
 
 Adapter hanyalah separuh. Separuh lagi ialah mengetahui apa yang dokumen rasmi setiap gateway katakan hari ini:
 - [`gateways/registry.json`](gateways/registry.json) menyenaraikan setiap gateway Malaysia yang bayarkit kenal, dengan
   dokumen rasmi dan kod SDK rasminya sebagai sumber.
 - Setiap gateway yang sudah dikaji mempunyai spesifikasi (`gateways/<id>/spec.md`) dengan sumber rasmi di sebelah
   setiap fakta, dan senarai perangkap: tempat dokumen, SDK rasmi atau skil AI rasmi salah atau sudah lapuk.
-- `node tools/rujukan.mjs check` mengambil cap jari setiap sumber setiap hari dan melaporkan bila ia berubah, supaya
-  spesifikasi, gateway palsu dan adapter dibaca semula berdasarkan dokumen baharu. Setiap sumber mesti mengandungi
+- `node tools/rujukan.mjs check` mengambil cap jari setiap sumber dan melaporkan bila ia berubah; pelayan penyelenggara
+  menjalankannya setiap hari, dan setiap perubahan dibaca dengan tangan sebelum spesifikasi, gateway palsu atau adapter
+  diubah. Setiap sumber mesti mengandungi
   perkataan yang diisytiharkannya (`mustContain`), jadi halaman dokumen yang bertukar menjadi kerangka JavaScript atau
   halaman log masuk gagal dengan jelas, bukan senyap-senyap "dipantau".
 - `skills/<id>/SKILL.md` dijana daripada data yang sama untuk ejen pengekodan AI, dan menunjuk ke kod yang boleh
@@ -129,14 +151,29 @@ setiap gateway.
 ## Menguji kod anda sendiri
 
 ```ts
+import { confirmPayment } from '@bayarkit/core'
 import { startFakeToyyibPay } from '@bayarkit/testing'
+import { toyyibpay } from '@bayarkit/toyyibpay'
 
 const fake = await startFakeToyyibPay({ secretKey: 's', categoryCode: 'c' })
 const gateway = toyyibpay({ secretKey: 's', categoryCode: 'c', environment: 'sandbox', baseUrl: fake.url })
-const payment = await gateway.createPayment(order)
+const order = { reference: 'T1', amount: 1500 }
+const payment = await gateway.createPayment({
+  ...order,
+  description: 'Test order',
+  customer: { name: 'Ali', email: 'ali@example.com' },
+  returnUrl: 'https://shop.example/thank-you',
+  callbackUrl: 'https://shop.example/api/payment/callback',
+})
+// Callback ditandatangani tepat seperti gateway sebenar; fake.tamper(...) memalsukannya.
+const early = await confirmPayment(gateway, fake.callbackFor(payment.id), order) // not_paid
 fake.markPaid(payment.id)
-await yourCallbackHandler(fake.callbackFor(payment.id)) // ditandatangani tepat seperti gateway sebenar
+const forged = await confirmPayment(gateway, fake.tamper(fake.callbackFor(payment.id)), order) // invalid_signature
+const paid = await confirmPayment(gateway, fake.callbackFor(payment.id), order) // ok
+await fake.close()
 ```
+
+Petikan ini dijalankan seperti tertulis dalam set ujian ([examples/web-standard/test/readme.test.ts](examples/web-standard/test/readme.test.ts)).
 
 ### Ujian dalam bahasa lain (PHP/Laravel, Python, Go)
 
@@ -161,7 +198,7 @@ Setiap gateway ialah gateway palsu daripada `@bayarkit/testing`, jadi tiada kunc
 
 [`php/`](php/README.ms.md) ialah kembar PHP untuk projek Laravel: antara muka yang sama dan peraturan `confirmPayment`
 yang sama (`Bayarkit\Confirm::payment`), penyedia servis yang ditetapkan dari `.env`, `Callback::from($request)` dan
-`Checkout::response($payment)`. Ia meliputi toyyibPay dan CHIP, dan setiap adapter PHP diuji terhadap gateway palsu
+`Checkout::response($payment)`. Pasang dengan `composer require bayarkit/bayarkit`. Ia meliputi toyyibPay dan CHIP, dan setiap adapter PHP diuji terhadap gateway palsu
 yang sama dengan kembar TypeScriptnya (`scripts/php-gate.sh`, sebahagian gerbang).
 
 ## Menambah gateway
@@ -177,13 +214,13 @@ Bukti bahawa ia berfungsi boleh disemak:
 - toyyibPay datang daripada checkout ERP pengarang, diuji hujung ke hujung terhadap sandbox toyyibPay (10 Oktober
   2026). Adapter lain ditulis daripada sumber rasmi setiap gateway, yang disenaraikan dengan sumber di sebelah setiap
   fakta dalam `gateways/<id>/spec.md`; `info.evidence` menyatakan jenis setiap adapter.
-- Sumber rasmi dicap jari dan disemak setiap hari (`node tools/rujukan.mjs check`). Pada hari penuh pertama ia
+- Sumber rasmi dicap jari dan disemak setiap hari pada pelayan penyelenggara (`node tools/rujukan.mjs check`). Pada hari penuh pertama ia
   menandakan enam halaman berubah: lima hanya menukar pautan mutlak dan relatif (kini diabaikan), satu ialah perubahan
   sebenar pada API transaksi toyyibPay, yang kini diikut oleh gateway palsu dan kedua-dua adapter.
 - `npm run gate` berjalan tanpa rangkaian terhadap gateway palsu, memasang pakej yang dibungkus ke dalam projek kosong,
   dan menjalankan kembar PHP terhadap gateway palsu yang sama. Ujian yang menjaga wang masing-masing disahkan dengan
   merosakkan kod secara sengaja (ujian mesti gagal) sebelum dipercayai.
-- Penyemak bebas tanpa konteks kerja ini mengaudit kod baharu dan laluan setiap adapter ke "dibayar" (empat pusingan,
+- Ejen semakan AI bebas (sesi baharu tanpa konteks kerja ini) mengaudit kod baharu dan laluan setiap adapter ke "dibayar" (empat pusingan,
   23 Oktober 2026). Tiada yang menemui cara menanda bayaran yang belum dibayar, separa, dipulangkan atau hanya
   dibenarkan sebagai dibayar; laluan sampingan yang mereka temui disenaraikan di bawah "Fixed" dalam
   [CHANGELOG.md](CHANGELOG.md), masing-masing dengan ujian yang gagal dahulu. Kembar TypeScript dan PHP sepakat pada

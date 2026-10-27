@@ -1,7 +1,7 @@
 {
   "name": "bayarkit-monorepo",
   "private": true,
-  "description": "Malaysian payment gateways behind one interface, and the safe way to confirm a payment.",
+  "description": "Malaysian payment gateways behind one interface, and a checked way to confirm a payment.",
   "license": "MIT",
   "author": "Muhammad Aiman (https://github.com/aimanmalib)",
   "repository": {

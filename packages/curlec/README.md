@@ -1,6 +1,6 @@
 # @bayarkit/curlec
 
-Razorpay Curlec for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+Razorpay Curlec for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official docs (Payment Links + Orders, three signatures, all five official test vectors); not yet measured in test mode.
@@ -40,7 +40,7 @@ The full contract, with a source for every fact: [gateways/curlec/spec.md](https
 
 ## Bahasa Melayu
 
-Razorpay Curlec untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+Razorpay Curlec untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara bersemak untuk
 mengesahkan bayaran.
 
 **Bukti:** Dokumen rasmi (Payment Links + Orders, tiga tandatangan, kelima-lima vektor ujian rasmi); belum diukur dalam mod ujian.
@@ -49,7 +49,7 @@ mengesahkan bayaran.
 npm install @bayarkit/core @bayarkit/curlec
 ```
 
-Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu baris. Jumlah ialah sen integer
+Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang berubah. Jumlah ialah sen integer
 (RM10.50 = 1050). Jangan tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata;
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 

@@ -300,7 +300,7 @@ const README_LANG = {
     lang: 'en',
     header: ['Gateway', 'Package', 'Evidence'],
     count: [
-      /(not on npm yet\. )[A-Za-z]+( gateways)/,
+      /(the first release\. )[A-Za-z]+( gateways)/,
       [
         'Zero',
         'One',
@@ -326,7 +326,7 @@ const README_LANG = {
     lang: 'ms',
     header: ['Gateway', 'Pakej', 'Bukti'],
     count: [
-      /(belum ada di npm\. )[A-Za-z ]+?( gateway;)/,
+      /(keluaran pertama\. )[A-Za-z ]+?( gateway dalam)/,
       [
         'Sifar',
         'Satu',

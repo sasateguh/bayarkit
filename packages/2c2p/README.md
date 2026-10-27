@@ -1,6 +1,6 @@
 # @bayarkit/2c2p
 
-2C2P (PGW Payment API v4.x) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and the safe way to confirm a
+2C2P (PGW Payment API v4.x) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official developer docs (Payment Token + HS256 JWT, three official JWT test vectors); not yet measured on the sandbox.
@@ -40,7 +40,7 @@ The full contract, with a source for every fact: [gateways/2c2p/spec.md](https:/
 
 ## Bahasa Melayu
 
-2C2P (PGW Payment API v4.x) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+2C2P (PGW Payment API v4.x) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara bersemak untuk
 mengesahkan bayaran.
 
 **Bukti:** Dokumen pembangun rasmi (Payment Token + JWT HS256, tiga vektor ujian JWT rasmi); belum diukur pada sandbox.
@@ -49,7 +49,7 @@ mengesahkan bayaran.
 npm install @bayarkit/core @bayarkit/2c2p
 ```
 
-Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu baris. Jumlah ialah sen integer
+Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang berubah. Jumlah ialah sen integer
 (RM10.50 = 1050). Jangan tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata;
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 

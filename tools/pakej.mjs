@@ -71,7 +71,7 @@ function adapterReadme(gw, root) {
   const spec = `${repo}/blob/main/gateways/${gw.id}/spec.md`
   return `# ${gw.adapter.package}
 
-${label('en')} for [bayarkit](${repo}): one interface for Malaysian payment gateways, and the safe way to confirm a
+${label('en')} for [bayarkit](${repo}): one interface for Malaysian payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** ${summary('en')}.
@@ -89,7 +89,7 @@ ${gotchas ? `## Traps\n\n${gotchas}\n\n` : ''}The full contract, with a source f
 
 ## Bahasa Melayu
 
-${label('ms')} untuk [bayarkit](${repo}): satu antara muka untuk gateway pembayaran Malaysia, dan cara selamat untuk
+${label('ms')} untuk [bayarkit](${repo}): satu antara muka untuk gateway pembayaran Malaysia, dan cara bersemak untuk
 mengesahkan bayaran.
 
 **Bukti:** ${summary('ms')}.
@@ -98,7 +98,7 @@ mengesahkan bayaran.
 npm install @bayarkit/core ${gw.adapter.package}
 \`\`\`
 
-Contoh kod di atas sama untuk semua gateway: tukar gateway dengan menukar satu baris. Jumlah ialah sen integer
+Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang berubah. Jumlah ialah sen integer
 (RM10.50 = 1050). Jangan tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata;
 \`confirmPayment\` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
 
@@ -114,7 +114,7 @@ function coreReadme(root, adapters) {
   const repo = repoUrl(root)
   return `# @bayarkit/core
 
-The interface every [bayarkit](${repo}) gateway adapter implements, and \`confirmPayment\`: the only safe way to mark
+The interface every [bayarkit](${repo}) gateway adapter implements, and \`confirmPayment\`: the one path to marking
 an order paid. Zero runtime dependencies. [Bahasa Melayu](#bahasa-melayu)
 
 \`\`\`bash
@@ -137,8 +137,8 @@ Adapters: ${adapters.map((g) => `\`${g.adapter.package}\``).join(', ')}.
 
 ## Bahasa Melayu
 
-Antara muka yang dilaksanakan oleh setiap adapter [bayarkit](${repo}), dan \`confirmPayment\`: satu-satunya cara
-selamat untuk menanda pesanan dibayar. Sifar kebergantungan masa jalan.
+Antara muka yang dilaksanakan oleh setiap adapter [bayarkit](${repo}), dan \`confirmPayment\`: satu-satunya jalan
+untuk menanda pesanan dibayar. Sifar kebergantungan masa jalan.
 
 - \`confirmPayment\` — tandatangan callback mesti sah; gateway ditanya semula; rekod gateway sendiri mesti kata dibayar,
   untuk rujukan ini, jumlah tepat ini (sen integer) dan mata wang ini. Tidak pernah melempar ralat.
