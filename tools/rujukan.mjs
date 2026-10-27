@@ -301,7 +301,7 @@ const README_LANG = {
     lang: 'en',
     header: ['Gateway', 'Package', 'Evidence'],
     count: [
-      /(the first release\. )[A-Za-z]+( gateways)/,
+      /(\*\*Status:\*\* [0-9.]+\. )[A-Za-z]+( gateways)/,
       [
         'Zero',
         'One',
@@ -327,7 +327,7 @@ const README_LANG = {
     lang: 'ms',
     header: ['Gateway', 'Pakej', 'Bukti'],
     count: [
-      /(keluaran pertama\. )[A-Za-z ]+?( gateway dalam)/,
+      /(\*\*Status:\*\* [0-9.]+\. )[A-Za-z ]+?( gateway dalam)/,
       [
         'Sifar',
         'Satu',

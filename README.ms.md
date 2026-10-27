@@ -6,9 +6,9 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 
 [English](README.md)
 
-> **Status:** 0.1.0, keluaran pertama. Empat belas gateway dalam TypeScript: toyyibPay diukur pada sandboxnya; yang
-> lain ditulis daripada sumber rasmi dan belum dijalankan terhadap gateway sebenar (jadual menyatakan
-> sumbernya). PHP/Laravel meliputi toyyibPay dan CHIP.
+> **Status:** 0.2.0. Empat belas gateway dalam TypeScript: toyyibPay, Bayarcash dan Stripe diukur pada sandbox
+> masing-masing; yang lain ditulis daripada sumber rasmi dan belum dijalankan terhadap gateway sebenar (jadual
+> menyatakan sumbernya). PHP/Laravel meliputi toyyibPay dan CHIP.
 
 ## Kenapa
 

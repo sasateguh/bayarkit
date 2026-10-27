@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/eghl",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "eGHL (ADAPTIS e-Commerce, NTT DATA Payment Services) adapter for bayarkit: HashValue2 callbacks, QUERY status.",
   "keywords": [
     "payment",
@@ -47,6 +47,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.1.0"
+    "@bayarkit/core": "0.2.0"
   }
 }

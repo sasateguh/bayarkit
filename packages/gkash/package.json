@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/gkash",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Gkash (host-to-host checkout, SHA-512 signature) adapter for bayarkit.",
   "keywords": [
     "payment",
@@ -47,6 +47,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.1.0"
+    "@bayarkit/core": "0.2.0"
   }
 }

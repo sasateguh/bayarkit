@@ -4,6 +4,33 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/)
 (0.x: minor versions may contain breaking changes).
 
+## [0.2.0] - 2026-10-27
+
+Three gateways measured on their sandboxes, and a security fix in `@bayarkit/bayarcash` that the measurement found.
+
+### Security
+
+- `@bayarkit/bayarcash`: the check that a transaction belongs to your portal never ran. The API secret key covers every
+  portal in a Bayarcash account, so a correctly signed return or callback from another portal could confirm your order
+  when the order numbers matched. The adapter looked for `portal_key` on the transaction; the sandbox shows the portal
+  only by name (`portal`). It now compares that name with the name of your configured portal key (`GET /portals`, read
+  once) and refuses anything else with `FOREIGN_PORTAL`. Give each portal in an account a unique name.
+
+### Changed
+
+- `@bayarkit/bayarcash`: `getPayment` also takes the payment intent id that `createPayment` returns (`pi_…`). An unpaid
+  intent reads as `pending`; a paid one is read through its transaction. Before, it answered HTTP 404.
+- Evidence: Bayarcash and Stripe are now `measured`. toyyibPay's status query was measured again with and without
+  `userSecretKey`.
+- `@bayarkit/testing`: the toyyibPay fake empties only the payer fields without `userSecretKey` (the sandbox keeps the
+  fee); the Bayarcash fake answers with the measured shapes (201 for intents, `portal` by name, `GET /payment-intents/{id}`).
+
+### Added
+
+- Gotchas: a wrong toyyibPay secret key looks like an unpaid bill; Bayarcash portals share one secret; a Bayarcash checkout
+  id is an intent, not a transaction; a failed Stripe FPX payment sends no Checkout event; Stripe's error below RM2.00
+  names the payment method types, not the amount.
+
 ## [0.1.0] - 2026-10-27
 
 First release: `@bayarkit/core`, `@bayarkit/testing`, fourteen gateway adapters on npm, and `bayarkit/bayarkit`
@@ -130,4 +157,5 @@ that failed first.
   valid signature — a callback that cannot exist. The conformance suite now requires every fake's form/JSON body to say
   what its fields say, tampered or not.
 
+[0.2.0]: https://github.com/sasateguh/bayarkit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sasateguh/bayarkit/releases/tag/v0.1.0

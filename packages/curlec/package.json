@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/curlec",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Razorpay Curlec (Payment Links + Orders, X-Razorpay-Signature) adapter for bayarkit.",
   "keywords": [
     "payment",
@@ -47,6 +47,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.1.0"
+    "@bayarkit/core": "0.2.0"
   }
 }
