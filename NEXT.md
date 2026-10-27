@@ -11,6 +11,15 @@ Keadaan: tanya sistem (`npm run gate`, `git log`). Fail ini = apa seterusnya.
 - Ubah UI demo: `npm run demo` → `python3 scripts/demo-webkit.py <folder>` + `python3 scripts/demo-shot.py` (gambar README).
 - Ubah registry / `package.json` akar: `node tools/rujukan.mjs skills` (README pakej + metadata npm DIJANA — jangan sunting tangan).
 
+## Sebelum buka awam (D7) — keputusan pemilik 27 Okt: buka dengan label `docs`, tidak tunggu semua sandbox
+
+1. Skop npm `@bayarkit` (pemilik, npmjs.com → Add Organization, pelan percuma, akaun aimendev). Sahkan: `npm view @bayarkit/core`
+   masih 404 dan halaman `npmjs.com/org/bayarkit` wujud.
+2. Perisai: daftar bayarkit dalam `~/perisai/config/targets.yaml` (tiada profil PUSTAKA lagi — tiru `python-alat`: pakej
+   package-lock + composer.lock, gitleaks, semgrep `packages php/src tools scripts`; tiada origin). Tunggu repo perisai lapang
+   (autopilot perisai-* berjalan 27 Okt). Sementara itu `scripts/security.sh` LULUS 27 Okt (semgrep 94 fail 0 dapatan, osv 126 pakej, gitleaks penuh).
+3. Senarai klik hari buka (awam → persekitaran GitHub `npm` → Trusted Publisher 16 pakej → tag v0.1.0 → kad OG → CodeQL/Scorecard/ruleset).
+
 ## Menunggu pemilik (MANUAL — akaun atas nama Aiman / Sasa Teguh)
 
 - Akaun SANDBOX: CHIP, Stripe (mod ujian), Billplz (billplz-sandbox.com), senangPay, Bayarcash. Tanpa akaun, adapter
