@@ -13,8 +13,8 @@ Keadaan: tanya sistem (`npm run gate`, `git log`). Fail ini = apa seterusnya.
 
 ## Sebelum buka awam (D7) — keputusan pemilik 27 Okt: buka dengan label `docs`, tidak tunggu semua sandbox
 
-1. Skop npm `@bayarkit` (pemilik, npmjs.com → Add Organization, pelan percuma, akaun aimendev). Sahkan: `npm view @bayarkit/core`
-   masih 404 dan halaman `npmjs.com/org/bayarkit` wujud.
+1. ~~Skop npm `@bayarkit`~~ SIAP 27 Okt (pemilik, akaun npm aimendev; disahkan `registry.npmjs.org/-/org/bayarkit/user` = 200,
+   skop rekaan = 404). Nama pengguna npm tidak boleh ditukar; ia hanya muncul sebagai penyelenggara — `author` + provenance tunjuk GitHub.
 2. Perisai: daftar bayarkit dalam `~/perisai/config/targets.yaml` (tiada profil PUSTAKA lagi — tiru `python-alat`: pakej
    package-lock + composer.lock, gitleaks, semgrep `packages php/src tools scripts`; tiada origin). Tunggu repo perisai lapang
    (autopilot perisai-* berjalan 27 Okt). Sementara itu `scripts/security.sh` LULUS 27 Okt (semgrep 94 fail 0 dapatan, osv 126 pakej, gitleaks penuh).
