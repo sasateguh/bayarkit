@@ -153,3 +153,13 @@ adapter; versi yang SUDAH di npm dilangkau (larian semula selepas gagal separuh 
 setiap pakej di npmjs.com = kerja pemilik selepas skop `@bayarkit` wujud. Pecahan `php/` → Packagist BELUM (perlu repo
 terbitan + kunci deploy = keputusan bersama D7). Undur: buang `release.yml`, `publish.sh`, `release-check.mjs` + satu
 baris gate.sh.
+
+**D20 — 27 Okt 2026 — Syarat "Perisai lulus" D7 = `scripts/security.sh` (dasar Perisai yang sama); pendaftaran dalam
+`~/perisai/config/targets.yaml` = pemantauan SELEPAS buka, bukan penghalang.** Kenapa: Perisai belum ada profil pustaka
+(tiada origin) dan repo perisai sedang dipakai autopilot; menunggu = tiada maklumat baharu, kerana pengimbas + pek Semgrep
+sama. Lubang ditutup serentak: osv-scanner kini juga membaca `php/composer.lock` (118 pakej; dahulu package-lock sahaja).
+Larian 27 Okt: semgrep 94 fail 0 dapatan, osv 126 + 118 pakej 0 isu, gitleaks sejarah penuh bersih.
+Terbitan pertama: Trusted Publisher npm tidak boleh MENCIPTA pakej baharu (sumber komuniti; dokumen rasmi senyap) →
+hari buka: `npm login` pemilik di hos → cuba `npm trust github` (npm ≥ 11.15) atas pakej belum wujud; jika ditolak,
+terbit placeholder `0.0.0` setiap pakej → `npm trust github <pakej> --file release.yml --repo sasateguh/bayarkit
+--env npm --allow-publish` ×16 → `npm logout` (token dibatalkan) → tag v0.1.0 dalam 2 hari (konfigurasi luput).

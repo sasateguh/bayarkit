@@ -3,7 +3,7 @@
 # - semgrep p/default + p/owasp-top-ten + p/typescript + p/php over EVERY packages/*/src (a glob: a hand list once left
 #   nine adapters unscanned), php/src, php/config, examples/ and tools/. --no-git-ignore is required
 #   (without it semgrep can scan 0 files and still exit 0), coverage fails on any per-rule timeout;
-# - osv-scanner over package-lock.json (runtime AND dev dependencies);
+# - osv-scanner over package-lock.json and php/composer.lock (runtime AND dev dependencies);
 # - gitleaks over the whole git history.
 # A scanner that exits 0 without scanning is a failure here, not a pass.
 set -euo pipefail
@@ -35,7 +35,7 @@ for x in missing:
 sys.exit(1 if scanned == 0 or timeouts or results or missing else 0)
 PY
 
-if osv-scanner scan --lockfile package-lock.json >"$out/osv.txt" 2>&1; then
+if osv-scanner scan --lockfile package-lock.json --lockfile php/composer.lock >"$out/osv.txt" 2>&1; then
   echo "osv-scanner: $(grep -m1 -i 'no issues\|packages' "$out/osv.txt" || echo ok)"
 else
   echo "osv-scanner: vulnerabilities or error"; cat "$out/osv.txt"; fail=1
