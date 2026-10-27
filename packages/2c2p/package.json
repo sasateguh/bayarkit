@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/2c2p",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "2C2P (PGW Payment API v4.x, Payment Token + HS256 JWT) adapter for bayarkit.",
   "keywords": [
     "payment",
@@ -47,6 +47,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.2.0"
+    "@bayarkit/core": "0.2.1"
   }
 }

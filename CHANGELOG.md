@@ -4,6 +4,19 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/)
 (0.x: minor versions may contain breaking changes).
 
+## [0.2.1] - 2026-10-27
+
+Billplz measured on its sandbox.
+
+### Changed
+
+- Evidence: `@bayarkit/billplz` is now `measured` (www.billplz-sandbox.com, 27 Oct 2026): a paid and a failed payment
+  through the simulator, with the real server-to-server callback and the redirect both verified by the adapter. Changing
+  one field fails the X Signature. A failed payment still sends a callback (`paid=false`, `state=due`), and neither the
+  callback nor the redirect carries `reference_1`: find the order by the bill id (see `examples/web-standard`).
+- `@bayarkit/testing`: the Billplz fake upper-cases the collection and payer name from creation on, as the sandbox does,
+  and keeps `paid_at` (`null` until paid) on create and get.
+
 ## [0.2.0] - 2026-10-27
 
 Three gateways measured on their sandboxes, and a security fix in `@bayarkit/bayarcash` that the measurement found.
@@ -157,5 +170,6 @@ that failed first.
   valid signature — a callback that cannot exist. The conformance suite now requires every fake's form/JSON body to say
   what its fields say, tampered or not.
 
+[0.2.1]: https://github.com/sasateguh/bayarkit/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/sasateguh/bayarkit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sasateguh/bayarkit/releases/tag/v0.1.0

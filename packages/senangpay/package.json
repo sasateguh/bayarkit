@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/senangpay",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "senangPay (on the DOKU platform: Checkout API, HMACSHA256 Signature) adapter for bayarkit.",
   "keywords": [
     "payment",
@@ -47,6 +47,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.2.0"
+    "@bayarkit/core": "0.2.1"
   }
 }

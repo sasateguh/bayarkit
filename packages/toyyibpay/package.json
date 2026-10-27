@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/toyyibpay",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "toyyibPay adapter for bayarkit, measured against the real sandbox.",
   "keywords": [
     "payment",
@@ -47,6 +47,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.2.0"
+    "@bayarkit/core": "0.2.1"
   }
 }

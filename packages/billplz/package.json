@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/billplz",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Billplz (API v3 Bills, X Signature) adapter for bayarkit.",
   "keywords": [
     "payment",
@@ -47,6 +47,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.2.0"
+    "@bayarkit/core": "0.2.1"
   }
 }
