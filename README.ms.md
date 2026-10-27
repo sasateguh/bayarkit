@@ -229,3 +229,13 @@ Bukti bahawa ia berfungsi boleh disemak:
 ## Lesen
 
 MIT. Lihat [LICENSE](LICENSE). Isu keselamatan: lihat [SECURITY.md](SECURITY.md).
+
+## Bekerja dengan Sasa Teguh
+
+[![Bekerja dengan Sasa Teguh: tempah panggilan](https://raw.githubusercontent.com/sasateguh/.github/main/assets/work-with-sasa-teguh.png)](https://sasateguh.com/ms/book)
+
+Projek ini dibina dan diselenggara oleh [Sasa Teguh](https://sasateguh.com/ms), studio di Malaysia. Kami membina laman web yang ditemui di Google dan dalam jawapan AI, dan memasang sistem seperti ini untuk perniagaan.
+
+Kenapa bayarkit wujud dan apa yang ditemui semasa sandbox gateway diukur: [kajian kes bayarkit](https://sasateguh.com/ms/work/bayarkit).
+
+[Tempah panggilan](https://sasateguh.com/ms/book) · hello@sasateguh.com · [Lagi daripada Sasa Teguh](https://github.com/sasateguh)
