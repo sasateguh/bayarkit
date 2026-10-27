@@ -20,7 +20,7 @@ security.sh (D20) · penggilapan dari semakan pelawat pertama (README EN/BM, con
 baharu (`~/portal/uploads/bayarkit-kad-og.png`) · topik + deskripsi lulus `gilap semak` (✗0).
 
 Pemilik (urutan):
-1. Org `sasateguh` → Settings → Member privileges → benarkan **Deploy keys** → sesi jalankan `bash scripts/php-split-key.sh`.
+1. ✓ 27 Okt: Deploy keys org dihidupkan melalui API (`gh api -X PATCH orgs/sasateguh -F deploy_keys_enabled_for_repositories=true`; UI pelan Free tidak memaparkannya); kunci deploy + secret `PHP_SPLIT_DEPLOY_KEY` dipasang.
 2. Balas **"buka"**. Sesi kemudian: kedua-dua repo (`bayarkit`, `bayarkit-php`) → awam · persekitaran GitHub `npm` (tag
    `v*` sahaja) · Private vulnerability reporting ON (SECURITY.md menautnya) · CodeQL default setup · ruleset `main`
    (padam + force-push sahaja) · tag `v0.1.0` (release.yml terbit npm; php-split.yml tolak tag ke cermin) · GitHub Release
