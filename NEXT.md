@@ -40,10 +40,9 @@ Keadaan: tanya sistem (`npm run gate`, `git log`). Fail ini = apa seterusnya.
    lain bila projek memerlukannya; memindah projek pemilik = kerja repo masing-masing (bukan dari sini).
 5. ~~Laman demo~~ SIAP dalam repo 23 Okt (D15, `npm run demo`, gateway palsu). Menghos + kajian kes /work = FLAG
    bersama D7 (teks awam atas nama pemilik; repo masih private).
-6. Aliran keluaran (boleh dibina sebelum D7, diuji hanya selepasnya): `.github/workflows/release.yml` pada tag `v*` —
-   npm trusted publishing + provenance (npm ≥11.5.1, Node ≥22.14; konfigurasi luput jika tiada terbitan dalam 48 jam;
-   `publishConfig.provenance` sudah dalam setiap pakej) dan pecahan `php/` ke repo terbitan untuk Packagist (D14).
-   Jangan cipta token npm (gilap D22: Trusted Publishing sahaja). Bila awam: corak crewforge (CodeQL, Scorecard,
-   ruleset `main`) — lihat `~/gilap/NEXT.md`; `gilap semak` bayarkit sudah ✓14 (repo private, CI dari Depot, gilap D28).
+6. ~~Aliran keluaran npm~~ SIAP 27 Okt (D19): `release.yml` (tag `v*`, dilangkau semasa private) + `scripts/publish.sh`
+   (`--dry-run` lulus) + `release-check.mjs` dalam gerbang. Selepas D7 + skop npm: cipta persekitaran GitHub `npm`
+   (tag `v*` sahaja), Trusted Publisher setiap pakej (16) di npmjs.com, kemudian tag `v0.1.0`. Baki: pecahan `php/` ke
+   repo terbitan untuk Packagist (D14) + corak crewforge (CodeQL, Scorecard, ruleset `main`) bila awam.
 7. Adapter Adyen / Airwallex bila ada permintaan (spec + sumber sudah ada); kembar PHP gateway lain bila projek PHP
    pemilik memerlukannya.

@@ -141,3 +141,15 @@ untuk DIUKUR — bukan diubah atas tekaan. Pariti kembar TS/PHP: nombor melalui 
 `Number::toString` ECMAScript, ruang ASCII; pembeza rawak 20,030 input × PHP 8.2/8.3/8.4 = 0 perbezaan. Demo: putaran
 diputuskan SEBELUM set diambil (letusan 100 selari dahulu masuk satu set), tekanan balik, penyejukan 30 s + 503
 selepas putaran gagal (dahulu cuba semula setiap permintaan).
+
+**D19 — 27 Okt 2026 — Keluaran npm dibina sebelum D7: semua pakej SATU versi (lockstep), tag `v*` → `release.yml`,
+Trusted Publishing sahaja.** Kenapa lockstep: 16 pakej bergantung pada `@bayarkit/core` dengan versi TEPAT, jadi pengguna
+tidak boleh mencampur teras dan adapter dari keluaran berbeza; changesets/versi berasingan = kerumitan tanpa pengguna lagi.
+`scripts/release-check.mjs` (dalam gerbang, dan sekali lagi dengan tag dalam workflow): satu versi, kebergantungan dalaman
+dipin tepat, `publishConfig` awam + provenance, tiada `version` dalam `php/composer.json` (Packagist baca tag), tag = versi.
+Sabotaj diukur: `^0.1.0` pada chip → merah; tag v0.2.0 atas 0.1.0 → merah. `scripts/publish.sh`: teras → testing →
+adapter; versi yang SUDAH di npm dilangkau (larian semula selepas gagal separuh hanya menerbit yang tinggal);
+`--dry-run` lulus atas 16 pakej. Workflow dilangkau semasa repo private; persekitaran GitHub `npm` + Trusted Publisher
+setiap pakej di npmjs.com = kerja pemilik selepas skop `@bayarkit` wujud. Pecahan `php/` → Packagist BELUM (perlu repo
+terbitan + kunci deploy = keputusan bersama D7). Undur: buang `release.yml`, `publish.sh`, `release-check.mjs` + satu
+baris gate.sh.

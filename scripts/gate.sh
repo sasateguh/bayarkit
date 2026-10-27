@@ -7,6 +7,7 @@ npx biome check .
 npx vitest run
 node tools/rujukan.mjs lint
 node tools/rujukan.mjs skills --check
+node scripts/release-check.mjs
 rm -rf packages/*/dist
 npm run build >/dev/null
 bash scripts/smoke-pack.sh

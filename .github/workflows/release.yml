@@ -1,0 +1,68 @@
+name: Release
+
+# Publishes every @bayarkit/* package to npm when a v* tag is pushed (e.g. v0.1.0). Pushes to main never publish.
+# Skipped while the repository is private: nothing is published before D7 (repo public, Perisai clean).
+#
+# Auth: npm Trusted Publishing (OIDC), gilap D22 — no npm token is created or stored. Configure once per package on
+# npmjs.com: package → Settings → Trusted Publisher → GitHub Actions, repository sasateguh/bayarkit, workflow
+# release.yml, environment npm. Provenance comes with it (publishConfig.provenance in every package).
+# The PHP package (php/) goes to Packagist through a split repository, after D7 (D14); not this workflow yet.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    if: ${{ !github.event.repository.private }}
+    name: Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+      - run: npm ci
+      - run: node scripts/release-check.mjs "$GITHUB_REF_NAME"
+      - run: bash scripts/gate.sh
+
+  publish:
+    needs: gate
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    # Must match the environment name in each npm Trusted Publisher; the GitHub environment accepts v* tags only.
+    environment:
+      name: npm
+      url: https://www.npmjs.com/org/bayarkit
+    permissions:
+      contents: read
+      id-token: write # npm Trusted Publishing + provenance
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      # Trusted Publishing needs npm >= 11.5.1; Node 22 ships npm 10.
+      - run: npm install -g npm@11
+      - run: npm ci
+      - run: node scripts/release-check.mjs "$GITHUB_REF_NAME"
+      - run: npm run build
+      - run: bash scripts/publish.sh
