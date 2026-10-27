@@ -11,14 +11,23 @@ Keadaan: tanya sistem (`npm run gate`, `git log`). Fail ini = apa seterusnya.
 - Ubah UI demo: `npm run demo` → `python3 scripts/demo-webkit.py <folder>` + `python3 scripts/demo-shot.py` (gambar README).
 - Ubah registry / `package.json` akar: `node tools/rujukan.mjs skills` (README pakej + metadata npm DIJANA — jangan sunting tangan).
 
-## Sebelum buka awam (D7) — keputusan pemilik 27 Okt: buka dengan label `docs`, tidak tunggu semua sandbox
+## Hari buka awam (D7) — keadaan 27 Okt 16:00 UTC; pemilik: "gilap dulu supaya padu, baru buka"
 
-1. ~~Skop npm `@bayarkit`~~ SIAP 27 Okt (pemilik, akaun npm aimendev; disahkan `registry.npmjs.org/-/org/bayarkit/user` = 200,
-   skop rekaan = 404). Nama pengguna npm tidak boleh ditukar; ia hanya muncul sebagai penyelenggara — `author` + provenance tunjuk GitHub.
-2. Perisai: daftar bayarkit dalam `~/perisai/config/targets.yaml` (tiada profil PUSTAKA lagi — tiru `python-alat`: pakej
-   package-lock + composer.lock, gitleaks, semgrep `packages php/src tools scripts`; tiada origin). Tunggu repo perisai lapang
-   (autopilot perisai-* berjalan 27 Okt). Sementara itu `scripts/security.sh` LULUS 27 Okt (semgrep 94 fail 0 dapatan, osv 126 pakej, gitleaks penuh).
-3. Senarai klik hari buka (awam → persekitaran GitHub `npm` → Trusted Publisher 16 pakej → tag v0.1.0 → kad OG → CodeQL/Scorecard/ruleset).
+SIAP: skop npm `@bayarkit` (aimendev) · `npm-trust.sh` dijalankan pemilik 27 Okt 15:23 UTC → 16 penanda `0.0.0` di npm +
+Trusted Publisher setiap pakej (⚠ LUPUT 29 Okt ~15:23 UTC jika tiada terbitan — selepas itu jalankan semula skrip) ·
+security.sh (D20) · penggilapan dari semakan pelawat pertama (README EN/BM, contoh diuji atas 14 gateway palsu, CHANGELOG
+0.1.0, perangkap BM, README PHP) · cermin Packagist `sasateguh/bayarkit-php` (PRIVATE, sudah ditolak tangan) · kad OG
+baharu (`~/portal/uploads/bayarkit-kad-og.png`) · topik + deskripsi lulus `gilap semak` (✗0).
+
+Pemilik (urutan):
+1. Org `sasateguh` → Settings → Member privileges → benarkan **Deploy keys** → sesi jalankan `bash scripts/php-split-key.sh`.
+2. Balas **"buka"**. Sesi kemudian: kedua-dua repo (`bayarkit`, `bayarkit-php`) → awam · persekitaran GitHub `npm` (tag
+   `v*` sahaja) · Private vulnerability reporting ON (SECURITY.md menautnya) · CodeQL default setup · ruleset `main`
+   (padam + force-push sahaja) · tag `v0.1.0` (release.yml terbit npm; php-split.yml tolak tag ke cermin) · GitHub Release
+   dari CHANGELOG · sahkan `npm view @bayarkit/core` = 0.1.0 + provenance.
+3. packagist.org → log masuk GitHub → Submit `https://github.com/sasateguh/bayarkit-php` (nama `bayarkit/bayarkit`).
+4. Muat naik kad OG di Settings → Social preview (tiada API).
+   Selepas buka: daftar bayarkit dalam Perisai (profil pustaka, D20) · `gilap semak` · README profil/org dikemas sendiri.
 
 ## Menunggu pemilik (MANUAL — akaun atas nama Aiman / Sasa Teguh)
 
