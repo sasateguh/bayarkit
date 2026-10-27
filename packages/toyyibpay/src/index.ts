@@ -17,10 +17,10 @@
  * | Callback body                  | form post                    | `multipart/form-data`; the documented hash formula holds |
  * | `billPaymentDate`              | `dd-mm-yyyy HH:MM:SS`        | confirmed, Malaysia time                                |
  *
- * Docs changed 23 Oct 2026 (seen by `rujukan check`, NOT yet measured): `getBillTransactions` empties the payer, split,
- * settlement and fee fields (`transactionCharge`, `chargeOn`) unless the request carries the bill owner's
- * `userSecretKey`, and returns no transactions for another account's key. On 10 Oct the sandbox returned the fee
- * without the key; the adapter now sends it either way (fee kept, foreign bills never read as paid).
+ * `getBillTransactions` and `userSecretKey` (docs changed 23 Oct 2026; measured on the sandbox 27 Oct 2026): without the
+ * key the payer fields come back empty (the docs also say the fee; the sandbox kept it). With a key that is not the bill
+ * owner's, the answer is `No data found!`, exactly what an unpaid bill returns. The adapter always sends the configured
+ * key: a foreign bill never reads as paid, and a wrong key shows up as payments that never confirm, not as an error.
  */
 import { createHash } from 'node:crypto'
 import {

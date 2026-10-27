@@ -3,7 +3,7 @@
 toyyibPay for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
-**Evidence:** Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment; the status query's `userSecretKey` (docs change of 23 Oct 2026) not yet re-measured.
+**Evidence:** Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment; the status query with and without `userSecretKey` re-measured 27 Oct 2026.
 
 ```bash
 npm install @bayarkit/core @bayarkit/toyyibpay
@@ -31,6 +31,7 @@ included), and `npx bayarkit-fake toyyibpay` runs it as a server for tests in ot
 
 ## Traps
 
+- A secret key from another account (or a typo) makes `getBillTransactions` answer `No data found!`, the same text as an unpaid bill: a wrong key shows up as payments that never confirm, not as an error. (gateways/toyyibpay/spec.md (measured))
 - A bill with no transactions answers the text `No data found!`, not `[]`: a strict JSON parser reports every unpaid bill as an error. (gateways/toyyibpay/spec.md (measured))
 - Callbacks arrive as `multipart/form-data`; code that only parses URL-encoded bodies sees no fields. (gateways/toyyibpay/spec.md (measured))
 - `billExpiryDate` is read in Malaysia time, and RM1.00 (100 sen) itself is accepted although the docs say "more than RM1.00". (gateways/toyyibpay/spec.md (measured))
@@ -42,7 +43,7 @@ The full contract, with a source for every fact: [gateways/toyyibpay/spec.md](ht
 toyyibPay untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara bersemak untuk
 mengesahkan bayaran.
 
-**Bukti:** Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian; `userSecretKey` dalam pertanyaan status (perubahan dokumen 23 Okt 2026) belum diukur semula.
+**Bukti:** Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian; pertanyaan status dengan dan tanpa `userSecretKey` diukur semula 27 Okt 2026.
 
 ```bash
 npm install @bayarkit/core @bayarkit/toyyibpay
@@ -57,6 +58,7 @@ pelayan.
 
 ## Perangkap
 
+- Kunci rahsia akaun lain (atau tersalah taip) membuat `getBillTransactions` menjawab `No data found!`, teks yang sama dengan bil belum dibayar: kunci salah kelihatan sebagai bayaran yang tidak pernah disahkan, bukan sebagai ralat. (gateways/toyyibpay/spec.md (measured))
 - Bil tanpa transaksi menjawab dengan teks `No data found!`, bukan `[]`: penghurai JSON yang ketat melaporkan setiap bil yang belum dibayar sebagai ralat. (gateways/toyyibpay/spec.md (measured))
 - Callback tiba sebagai `multipart/form-data`; kod yang hanya menghurai badan URL-encoded tidak nampak sebarang medan. (gateways/toyyibpay/spec.md (measured))
 - `billExpiryDate` dibaca dalam waktu Malaysia, dan RM1.00 (100 sen) itu sendiri diterima walaupun dokumen menyatakan "lebih daripada RM1.00". (gateways/toyyibpay/spec.md (measured))

@@ -8,19 +8,11 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import type { AddressInfo } from 'node:net'
 import { type FakeGateway, flip } from './types.js'
 
-/** Fields getBillTransactions empties unless the request carries the bill owner's userSecretKey (API reference). */
-const OWNER_ONLY = [
-  'billTo',
-  'billEmail',
-  'billPhone',
-  'billSplitPayment',
-  'billSplitPaymentArgs',
-  'billpaymentSettlement',
-  'billpaymentSettlementDate',
-  'SettlementReferenceNo',
-  'transactionCharge',
-  'chargeOn',
-]
+/**
+ * Fields getBillTransactions empties without the bill owner's userSecretKey. Measured on the sandbox 27 Oct 2026: the
+ * payer fields only. The API reference (23 Oct) also lists split, settlement and fee fields; the sandbox kept those.
+ */
+const OWNER_ONLY = ['billTo', 'billEmail', 'billPhone']
 
 export interface FakeToyyibPay extends FakeGateway {
   /** Every request received, for assertions (fields as posted). */
@@ -67,9 +59,9 @@ export async function startFakeToyyibPay(opts: {
         return json([{ BillCode: code }])
       }
       if (path === 'getBillTransactions') {
-        // API reference (read 23 Oct 2026; NOT yet measured): a bill code is public, so without the owner's
-        // userSecretKey the payer, split, settlement and charge fields come back EMPTY, and with another account's key
-        // no transactions are returned (shape unconfirmed; the measured empty answer is used).
+        // Measured on the sandbox 27 Oct 2026 (one paid bill, three requests): without userSecretKey the payer fields
+        // come back empty; with a key that is not the owner's the answer is `No data found!`, the same text as a bill
+        // with no transactions.
         const bill = bills.get(fields.billCode ?? '')
         if (fields.userSecretKey !== undefined && fields.userSecretKey !== opts.secretKey)
           return text('No data found!')

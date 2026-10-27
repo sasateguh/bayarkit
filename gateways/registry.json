@@ -25,12 +25,17 @@
           "ms": "toyyibPay"
         },
         "summary": {
-          "en": "Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment; the status query's `userSecretKey` (docs change of 23 Oct 2026) not yet re-measured",
-          "ms": "Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian; `userSecretKey` dalam pertanyaan status (perubahan dokumen 23 Okt 2026) belum diukur semula"
+          "en": "Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment; the status query with and without `userSecretKey` re-measured 27 Oct 2026",
+          "ms": "Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian; pertanyaan status dengan dan tanpa `userSecretKey` diukur semula 27 Okt 2026"
         }
       },
       "spec": true,
       "gotchas": [
+        {
+          "text": "A secret key from another account (or a typo) makes `getBillTransactions` answer `No data found!`, the same text as an unpaid bill: a wrong key shows up as payments that never confirm, not as an error.",
+          "text_ms": "Kunci rahsia akaun lain (atau tersalah taip) membuat `getBillTransactions` menjawab `No data found!`, teks yang sama dengan bil belum dibayar: kunci salah kelihatan sebagai bayaran yang tidak pernah disahkan, bukan sebagai ralat.",
+          "source": "gateways/toyyibpay/spec.md (measured)"
+        },
         {
           "text": "A bill with no transactions answers the text `No data found!`, not `[]`: a strict JSON parser reports every unpaid bill as an error.",
           "text_ms": "Bil tanpa transaksi menjawab dengan teks `No data found!`, bukan `[]`: penghurai JSON yang ketat melaporkan setiap bil yang belum dibayar sebagai ralat.",

@@ -26,6 +26,7 @@ The full contract with a source for every fact: `gateways/toyyibpay/spec.md` in 
 
 ## toyyibPay traps (each from an official source or a sandbox measurement)
 
+- A secret key from another account (or a typo) makes `getBillTransactions` answer `No data found!`, the same text as an unpaid bill: a wrong key shows up as payments that never confirm, not as an error. *(gateways/toyyibpay/spec.md (measured))*
 - A bill with no transactions answers the text `No data found!`, not `[]`: a strict JSON parser reports every unpaid bill as an error. *(gateways/toyyibpay/spec.md (measured))*
 - Callbacks arrive as `multipart/form-data`; code that only parses URL-encoded bodies sees no fields. *(gateways/toyyibpay/spec.md (measured))*
 - `billExpiryDate` is read in Malaysia time, and RM1.00 (100 sen) itself is accepted although the docs say "more than RM1.00". *(gateways/toyyibpay/spec.md (measured))*
