@@ -228,6 +228,4 @@ MIT. See [LICENSE](LICENSE). Security issues: see [SECURITY.md](SECURITY.md).
 
 This project is built and maintained by [Sasa Teguh](https://sasateguh.com), a studio in Malaysia. We build websites that are found on Google and in AI answers, and we set up systems like this one for businesses.
 
-Why bayarkit exists and what measuring the gateway sandboxes found: [the bayarkit case study](https://sasateguh.com/work/bayarkit).
-
 [Book a call](https://sasateguh.com/book) · hello@sasateguh.com · [More from Sasa Teguh](https://github.com/sasateguh)
