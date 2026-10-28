@@ -39,6 +39,17 @@ const CUSTOMER = { name: 'Pelanggan Demo', email: 'demo@example.com', phone: '01
 const CHOICES = ['pay', 'decline', 'forge', 'swap']
 // Served with every response. `no-transform`: behind Cloudflare, without it CF injects its analytics beacon into HTML.
 const NO_CACHE = 'no-store, no-transform'
+// Sent with every page and the stylesheet. Nothing is embedded, framed or loaded from elsewhere, so all of it is the strictest value.
+const SECURITY = {
+  'x-content-type-options': 'nosniff',
+  'x-frame-options': 'DENY',
+  'referrer-policy': 'same-origin',
+  'cross-origin-opener-policy': 'same-origin',
+  'cross-origin-resource-policy': 'same-origin',
+  'cross-origin-embedder-policy': 'require-corp',
+  'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()',
+  'x-permitted-cross-domain-policies': 'none',
+}
 
 /** Display name without the parenthesised company ("iPay88 (NTT DATA …)" → "iPay88"); the registry keeps the full one. */
 const shortName = (g, lang) => String(g.label[lang] ?? g.label.en).replace(/\s*\(.*\)\s*$/, '')
@@ -186,8 +197,7 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
         'x-robots-tag': 'noindex',
         'content-security-policy':
           "default-src 'none'; style-src 'self'; img-src 'self' data:; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
-        'x-content-type-options': 'nosniff',
-        'referrer-policy': 'same-origin',
+        ...SECURITY,
       },
     })
   }
@@ -410,7 +420,7 @@ ${r && !r.ok ? `<details><summary>${t('order.detail')}</summary><p><code>${esc(r
     const t = translator(lang)
     if (request.method === 'GET' && url.pathname === '/demo.css')
       return new Response(CSS, {
-        headers: { 'content-type': 'text/css; charset=utf-8', 'cache-control': NO_CACHE },
+        headers: { 'content-type': 'text/css; charset=utf-8', 'cache-control': NO_CACHE, ...SECURITY },
       })
     if (request.method === 'GET' && url.pathname === '/healthz')
       return new Response('ok', { headers: { 'content-type': 'text/plain', 'cache-control': NO_CACHE } })

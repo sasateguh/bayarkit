@@ -86,6 +86,8 @@ describe('demo', () => {
     expect(res.headers.get('content-security-policy')).not.toContain('script-src')
     expect(res.headers.get('x-robots-tag')).toBe('noindex')
     expect(res.headers.get('cache-control')).toBe('no-store, no-transform')
+    for (const h of ['x-frame-options', 'cross-origin-opener-policy', 'permissions-policy'])
+      expect(res.headers.get(h), h).toBeTruthy()
     expect(await (await get('/healthz')).text()).toBe('ok')
     expect((await get('/order/NOPE')).status).toBe(404)
   })
