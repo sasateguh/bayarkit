@@ -10,8 +10,8 @@ RUN npm ci --ignore-scripts --no-audit --no-fund
 RUN npm run build && npm prune --omit=dev --ignore-scripts
 
 FROM node:22.23.4-alpine
-# npm, npx and corepack are never run here (CMD is node): removed so their bundled dependencies are not shipped.
-RUN rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
+# npm, npx, corepack and yarn are never run here (CMD is node): removed so their bundled dependencies are not shipped.
+RUN rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=4317
 WORKDIR /app
 COPY --from=build /app/package.json ./
