@@ -4,6 +4,19 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/)
 (0.x: minor versions may contain breaking changes).
 
+## [Unreleased]
+
+### Added
+
+- The demo is hosted at https://bayarkit.sasateguh.com, built from `examples/demo/Dockerfile` (non-root, read-only
+  file system). A fourth scenario sends the genuine paid callback of another, cheaper order: only the match on
+  reference and amount refuses it.
+
+### Fixed
+
+- Demo memory: each rotated set of fakes now uses its own HTTP agent, closed with the set. Global `fetch` kept a
+  connection pool for every port it had seen (~1.7 MB per 1 000 checkouts). Smoke setups accept an optional `fetch`.
+
 ## [0.2.2] - 2026-10-27
 
 ### Changed

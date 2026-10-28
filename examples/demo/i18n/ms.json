@@ -46,7 +46,7 @@
         "hint": "Seseorang mengubah tandatangan callback dalam perjalanan."
       },
       "swap": {
-        "label": "Jangan bayar, tetapi hantar callback pesanan lain yang sudah dibayar",
+        "label": "Tidak bayar, tetapi callback pesanan lain yang sudah dibayar dihantar",
         "hint": "Pesanan lain yang lebih murah di kedai yang sama memang dibayar. Callback sahnya dihantar ke pesanan ini."
       }
     }

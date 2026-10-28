@@ -4,7 +4,7 @@ One interface for Malaysian payment gateways, in TypeScript and PHP/Laravel, and
 the callback signature, a fresh query to the gateway, and an exact match on reference, amount and currency.
 Your checkout and callback code stay the same when you switch gateways; only the adapter and its keys change.
 
-[Bahasa Melayu](README.ms.md)
+[Bahasa Melayu](README.ms.md) · **[Try the demo](https://bayarkit.sasateguh.com/en)** (fake gateways, no money)
 
 > **Status:** 0.2.2. Fourteen gateways in TypeScript: toyyibPay, Billplz, Bayarcash and Stripe are measured on their sandboxes;
 > the others are written from official sources and have not yet run against a real gateway (the table says which
@@ -178,9 +178,10 @@ your callback route. It does not need vitest.
 
 ## Demo
 
-`npm run build && npm run demo` opens http://127.0.0.1:4317/ (BM at `/`, English at `/en`): pick any gateway, then
-choose what happens on a simulated payment page (pay, a correctly signed callback for an unpaid payment, or a forged
-callback) and see each check `confirmPayment` makes. Every gateway is a fake from `@bayarkit/testing`, so no keys and
+Hosted at **https://bayarkit.sasateguh.com** (English at `/en`), or run it yourself: `npm run build && npm run demo`
+opens http://127.0.0.1:4317/. Pick any gateway, then choose what happens on a simulated payment page (pay; a correctly
+signed callback for an unpaid payment; a forged callback; or the paid callback of another, cheaper order) and see each
+check `confirmPayment` makes. Every gateway is a fake from `@bayarkit/testing`, so no keys and
 no money are involved. Source: [examples/demo](examples/demo/app.mjs).
 
 ![The demo on an iPhone: a simulated toyyibPay payment page; a forged callback refused at the signature check, so the gateway is never asked; a real payment confirmed after the gateway itself says paid](docs/demo/demo.png)

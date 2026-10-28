@@ -4,7 +4,7 @@ Satu antara muka untuk gateway pembayaran Malaysia, dalam TypeScript dan PHP/Lar
 bayaran: tandatangan callback, pertanyaan baharu kepada gateway, dan padanan tepat rujukan, amaun dan mata wang.
 Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapter dan kuncinya yang berubah.
 
-[English](README.md)
+[English](README.md) · **[Cuba demo](https://bayarkit.sasateguh.com/)** (gateway palsu, tiada wang)
 
 > **Status:** 0.2.2. Empat belas gateway dalam TypeScript: toyyibPay, Billplz, Bayarcash dan Stripe diukur pada sandbox
 > masing-masing; yang lain ditulis daripada sumber rasmi dan belum dijalankan terhadap gateway sebenar (jadual
@@ -184,9 +184,10 @@ yang tepat (`/tampered` untuk callback palsu) untuk dihantar ke laluan callback 
 
 ## Demo
 
-`npm run build && npm run demo` membuka http://127.0.0.1:4317/ (BM di `/`, Inggeris di `/en`): pilih mana-mana
-gateway, kemudian pilih apa yang berlaku pada halaman bayaran simulasi (bayar, callback bertandatangan betul untuk
-bayaran yang belum dibayar, atau callback yang dipalsukan) dan lihat setiap semakan yang dibuat `confirmPayment`.
+Dihos di **https://bayarkit.sasateguh.com** (Inggeris di `/en`), atau jalankan sendiri: `npm run build && npm run demo`
+membuka http://127.0.0.1:4317/. Pilih mana-mana gateway, kemudian pilih apa yang berlaku pada halaman bayaran simulasi
+(bayar; callback bertandatangan betul untuk bayaran yang belum dibayar; callback yang dipalsukan; atau callback sah
+daripada pesanan lain yang lebih murah) dan lihat setiap semakan yang dibuat `confirmPayment`.
 Setiap gateway ialah gateway palsu daripada `@bayarkit/testing`, jadi tiada kunci dan tiada wang terlibat. Sumber:
 [examples/demo](examples/demo/app.mjs).
 

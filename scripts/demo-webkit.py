@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # The demo on WebKit iPhone 13, light + dark, BM + EN: no horizontal scroll, tap targets >= 24 px, no console errors,
-# and the forged / paid flows end in the right state. Needs `npm run demo` running and Python Playwright with WebKit.
+# and the forged / paid / another-order flows end in the right state. Needs `npm run demo` running and Python Playwright with WebKit.
 # Not part of the gate (CI runners have no WebKit); run it after any change to examples/demo.
 #   python3 scripts/demo-webkit.py <screenshot dir> [base url]
 import sys
@@ -40,6 +40,16 @@ with sync_playwright() as p:
             pg.wait_for_url('**/order/**')
             assert pg.locator('.status.paid').count() == 1
             check('order-paid')
+            # another order's paid callback: refused at the third check (reference + amount)
+            pg.click('a.button')
+            pg.select_option('#gateway', 'billplz')
+            pg.click('form button[type=submit]')
+            pg.wait_for_url('**/pay/**')
+            check('pay-four-choices')
+            pg.click('button.choice.swap')
+            pg.wait_for_url('**/order/**')
+            assert pg.locator('.status.notPaid').count() == 1 and pg.locator('.step.fail').count() == 1
+            check('order-swapped')
             # tap targets
             small = pg.evaluate("[...document.querySelectorAll('a,button,select,input')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height<24}).map(e=>e.outerHTML.slice(0,60))")
             if small: problems.append(f'{scheme}{prefix} small targets: {small}')
