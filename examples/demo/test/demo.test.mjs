@@ -1,4 +1,5 @@
-// The demo end to end, for EVERY gateway: pay → paid; signed callback without payment → not paid; forged → refused.
+// The demo end to end, for EVERY gateway: pay → paid; signed callback without payment → not paid; forged → refused;
+// another order's paid callback → mismatch.
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { startDemo } from '../app.mjs'
 
@@ -37,7 +38,7 @@ describe('demo', () => {
     for (const id of demo.gateways.keys()) expect(html).toContain(`value="${id}"`)
   })
 
-  it('runs all three scenarios on every gateway and only "pay" ends paid', async () => {
+  it('runs all four scenarios on every gateway and only "pay" ends paid', async () => {
     for (const id of demo.gateways.keys()) {
       const paid = await order(id, 'pay')
       expect(paid, `${id} pay`).toContain('class="status paid"')
@@ -47,6 +48,10 @@ describe('demo', () => {
       const forged = await order(id, 'forge')
       expect(forged, `${id} forge`).toContain('class="status notPaid"')
       expect(forged).toContain('tandatangan tidak sah')
+      const swapped = await order(id, 'swap')
+      expect(swapped, `${id} swap`).toContain('class="status notPaid"')
+      expect(swapped, `${id} swap`).toContain('rujukan atau jumlahnya tidak sama')
+      expect(swapped, `${id} swap`).toContain('class="step fail"')
     }
   }, 120_000)
 
@@ -80,6 +85,8 @@ describe('demo', () => {
     expect(res.headers.get('content-security-policy')).toContain("default-src 'none'")
     expect(res.headers.get('content-security-policy')).not.toContain('script-src')
     expect(res.headers.get('x-robots-tag')).toBe('noindex')
+    expect(res.headers.get('cache-control')).toBe('no-store, no-transform')
+    expect(await (await get('/healthz')).text()).toBe('ok')
     expect((await get('/order/NOPE')).status).toBe(404)
   })
 

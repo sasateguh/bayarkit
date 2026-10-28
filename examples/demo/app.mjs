@@ -11,6 +11,7 @@
  */
 import { randomBytes } from 'node:crypto'
 import { readFileSync } from 'node:fs'
+import { Agent, request as httpRequest } from 'node:http'
 import {
   checkoutResponse,
   confirmPayment,
@@ -34,6 +35,10 @@ const PER_GENERATION = 250
 // Not called: the demo delivers callbacks itself. Gateways still validate them, so they must look real.
 const ORIGIN = 'https://demo.bayarkit.invalid'
 const CUSTOMER = { name: 'Pelanggan Demo', email: 'demo@example.com', phone: '0123456789' }
+// The scenarios on the simulated payment page, in the order shown.
+const CHOICES = ['pay', 'decline', 'forge', 'swap']
+// Served with every response. `no-transform`: behind Cloudflare, without it CF injects its analytics beacon into HTML.
+const NO_CACHE = 'no-store, no-transform'
 
 /** Display name without the parenthesised company ("iPay88 (NTT DATA …)" → "iPay88"); the registry keeps the full one. */
 const shortName = (g, lang) => String(g.label[lang] ?? g.label.en).replace(/\s*\(.*\)\s*$/, '')
@@ -53,30 +58,74 @@ function translator(lang) {
   }
 }
 
+/**
+ * `fetch` over one http.Agent, for one set of fakes. Global fetch keeps a connection pool for every origin it has seen
+ * and never drops it; each set of fakes listens on new ports, so a long-running demo grew by ~1.7 MB per 1 000
+ * checkouts (heap measured after GC, 28 Oct 2026). Destroying the agent with its set frees everything.
+ */
+function agentFetch(agent) {
+  return async (input, init) => {
+    const req = new Request(input, init) // normalises every body type and its content-type
+    const body = req.body ? Buffer.from(await req.arrayBuffer()) : undefined
+    const url = new URL(req.url)
+    return new Promise((resolve, reject) => {
+      const out = httpRequest(
+        url,
+        { method: req.method, headers: Object.fromEntries(req.headers), agent, signal: req.signal },
+        (res) => {
+          const chunks = []
+          res.on('data', (c) => chunks.push(c))
+          res.on('error', reject)
+          res.on('end', () => {
+            const headers = new Headers()
+            for (const [k, v] of Object.entries(res.headers)) {
+              for (const one of [v].flat()) if (one !== undefined) headers.append(k, one)
+            }
+            const status = res.statusCode ?? 502
+            const nullBody = status === 204 || status === 304 || req.method === 'HEAD'
+            resolve(new Response(nullBody ? null : Buffer.concat(chunks), { status, headers }))
+          })
+        },
+      )
+      out.on('error', reject)
+      out.end(body)
+    })
+  }
+}
+
 /** Start every fake + adapter listed in the registry. */
 export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
   const registry = JSON.parse(readFileSync(new URL('gateways/registry.json', root), 'utf8'))
   async function startGeneration() {
     const set = new Map()
+    const agent = new Agent({ keepAlive: true })
+    const fetch = agentFetch(agent)
     try {
       for (const entry of registry.gateways) {
         if (!entry.adapter) continue
         const { default: setup } = await import(new URL(`scripts/smoke/${entry.id}.mjs`, root).href)
-        const { fake, gateway } = await setup(testing)
+        const { fake, gateway } = await setup(testing, { fetch })
         set.set(entry.id, {
           id: entry.id,
           label: entry.adapter.label,
           evidence: entry.adapter.evidence,
           fake,
           gateway,
+          agent,
         })
       }
     } catch (e) {
       // Half-started: close what did start, so a failed rotation leaks no servers.
+      agent.destroy()
       for (const g of set.values()) await g.fake.close().catch(() => {})
       throw e
     }
     return set
+  }
+  /** Connections first (an open keep-alive socket would hold a fake's close), then the fakes. */
+  async function closeSet(set) {
+    for (const g of set.values()) g.agent.destroy()
+    for (const g of set.values()) await g.fake.close()
   }
   let gateways = await startGeneration()
   const generations = [gateways]
@@ -111,7 +160,7 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
       const old = generations.shift()
       for (const [ref, order] of orders) if (order.generation === old) orders.delete(ref)
       started.delete(old)
-      for (const g of old.values()) await g.fake.close()
+      await closeSet(old)
     }
   }
 
@@ -124,14 +173,16 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
     const other = LANGS[lang].otherLang
     const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>${title} · ${t('title')}</title><link rel="stylesheet" href="/demo.css"></head><body>
+<title>${title} · ${t('title')}</title><meta name="description" content="${t('tagline')}">
+<meta property="og:title" content="${t('title')}"><meta property="og:description" content="${t('tagline')}"><link rel="stylesheet" href="/demo.css"></head><body>
 <header class="top"><a class="brand" href="${prefix}/">bayarkit</a><a class="lang" href="${other.prefix}/" hreflang="${lang === 'en' ? 'ms' : 'en'}">${esc(other.label)}</a></header>
-<main>${body}</main><footer class="foot">${t('footer')}</footer></body></html>`
+<main>${body}</main><footer class="foot"><p>${t('footer')}</p><p class="links"><a href="https://github.com/sasateguh/bayarkit">GitHub</a>
+<a href="${t('links.caseStudyUrl')}">${t('links.caseStudy')}</a><a href="https://www.npmjs.com/package/@bayarkit/core">npm</a></p></footer></body></html>`
     return new Response(html, {
       status,
       headers: {
         'content-type': 'text/html; charset=utf-8',
-        'cache-control': 'no-store',
+        'cache-control': NO_CACHE,
         'x-robots-tag': 'noindex',
         'content-security-policy':
           "default-src 'none'; style-src 'self'; img-src 'self' data:; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
@@ -243,7 +294,7 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
 <dt>${t('pay.paymentId')}</dt><dd><code>${esc(order.payment.id)}</code></dd>
 <dt>${t('pay.method')}</dt><dd>${method}</dd></dl>
 <form method="post" action="${prefix}/pay/${esc(order.reference)}"><p class="choose">${t('pay.choose')}</p>
-<div class="choices">${action('pay')}${action('decline')}${action('forge')}</div></form></section>`,
+<div class="choices">${CHOICES.map(action).join('')}</div></form></section>`,
     )
   }
 
@@ -255,12 +306,35 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
     // One choice per order: "forge" marks the fake paid, so a later "decline" would (correctly) confirm as paid and
     // show a scenario the visitor did not pick. Another scenario = another order.
     if (order.choice) return seeOther(orderPath)
-    if (!['pay', 'decline', 'forge'].includes(choice)) return payPage(lang, order)
+    if (!CHOICES.includes(choice)) return payPage(lang, order)
     order.choice = choice
-    const { fake } = order.gateway
-    if (choice !== 'decline') fake.markPaid(order.payment.id)
-    let cb = fake.callbackFor(order.payment.id)
-    if (choice === 'forge') cb = fake.tamper(cb)
+    const { fake, gateway } = order.gateway
+    let cb
+    if (choice === 'swap') {
+      // Another order at the same shop, cheaper and really paid: its genuine, correctly signed callback is replayed
+      // against this order. Only the third check (reference + amount) can catch it.
+      const other = await gateway
+        .createPayment({
+          reference: `DEMO${randomBytes(8).toString('hex').toUpperCase()}`,
+          amount: gateway.info.minimumAmount,
+          description: 'Demo other order',
+          customer: CUSTOMER,
+          returnUrl: `${ORIGIN}/order/other`,
+          callbackUrl: `${ORIGIN}/callback/other`,
+        })
+        .catch(() => null)
+      if (!other) {
+        order.choice = null
+        return payPage(lang, order)
+      }
+      started.set(order.generation, (started.get(order.generation) ?? 0) + 1)
+      fake.markPaid(other.id)
+      cb = fake.callbackFor(other.id)
+    } else {
+      if (choice !== 'decline') fake.markPaid(order.payment.id)
+      cb = fake.callbackFor(order.payment.id)
+      if (choice === 'forge') cb = fake.tamper(cb)
+    }
     const delivery = cb.rawBody
       ? new Request(`${ORIGIN}/callback/${order.reference}`, {
           method: 'POST',
@@ -336,8 +410,10 @@ ${r && !r.ok ? `<details><summary>${t('order.detail')}</summary><p><code>${esc(r
     const t = translator(lang)
     if (request.method === 'GET' && url.pathname === '/demo.css')
       return new Response(CSS, {
-        headers: { 'content-type': 'text/css; charset=utf-8', 'cache-control': 'no-store' },
+        headers: { 'content-type': 'text/css; charset=utf-8', 'cache-control': NO_CACHE },
       })
+    if (request.method === 'GET' && url.pathname === '/healthz')
+      return new Response('ok', { headers: { 'content-type': 'text/plain', 'cache-control': NO_CACHE } })
     if (request.method === 'GET' && path === '/') return home(lang)
     if (request.method === 'POST' && path === '/checkout') return checkout(lang, request)
     const m = /^\/(pay|order|callback)\/([A-Za-z0-9]{1,40})$/.exec(path)
@@ -367,7 +443,7 @@ ${r && !r.ok ? `<details><summary>${t('order.detail')}</summary><p><code>${esc(r
     },
     async close() {
       await rotating
-      for (const set of generations) for (const g of set.values()) await g.fake.close()
+      for (const set of generations) await closeSet(set)
     },
   }
 }

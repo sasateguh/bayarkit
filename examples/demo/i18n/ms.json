@@ -44,6 +44,10 @@
       "forge": {
         "label": "Bayar, tetapi callback dipalsukan",
         "hint": "Seseorang mengubah tandatangan callback dalam perjalanan."
+      },
+      "swap": {
+        "label": "Jangan bayar, tetapi hantar callback pesanan lain yang sudah dibayar",
+        "hint": "Pesanan lain yang lebih murah di kedai yang sama memang dibayar. Callback sahnya dihantar ke pesanan ini."
       }
     }
   },
@@ -83,5 +87,9 @@
       "unknown": "tidak diketahui"
     }
   },
-  "footer": "bayarkit · demo dengan gateway palsu daripada @bayarkit/testing"
+  "footer": "bayarkit · demo dengan gateway palsu daripada @bayarkit/testing",
+  "links": {
+    "caseStudy": "Kajian kes",
+    "caseStudyUrl": "https://sasateguh.com/ms/work/bayarkit"
+  }
 }

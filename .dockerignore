@@ -1,0 +1,14 @@
+# Only what examples/demo/Dockerfile copies goes to the builder.
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+.git
+.env
+**/.env
+php
+docs
+skills
+coverage
+.claude
+*.md
+!packages/*/README.md

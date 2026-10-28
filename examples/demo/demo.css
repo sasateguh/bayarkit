@@ -366,3 +366,16 @@ details {
   font-size: 0.85rem;
   padding-bottom: 32px;
 }
+.foot p {
+  margin: 0 0 6px;
+}
+.foot .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+}
+.foot .links a {
+  display: inline-block;
+  padding: 6px 0;
+  color: inherit;
+}

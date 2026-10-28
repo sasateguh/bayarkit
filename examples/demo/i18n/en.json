@@ -44,6 +44,10 @@
       "forge": {
         "label": "Pay, but the callback is forged",
         "hint": "Someone altered the callback's signature on the way."
+      },
+      "swap": {
+        "label": "Don't pay, but send another order's paid callback",
+        "hint": "A cheaper order at the same shop was really paid. Its genuine, signed callback is sent to this order instead."
       }
     }
   },
@@ -83,5 +87,9 @@
       "unknown": "unknown"
     }
   },
-  "footer": "bayarkit · demo with fake gateways from @bayarkit/testing"
+  "footer": "bayarkit · demo with fake gateways from @bayarkit/testing",
+  "links": {
+    "caseStudy": "Case study",
+    "caseStudyUrl": "https://sasateguh.com/work/bayarkit"
+  }
 }
