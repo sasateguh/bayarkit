@@ -8,12 +8,14 @@ import {
   confirmPayment,
   type Gateway,
   GatewayError,
+  type VerifyResult,
 } from '@bayarkit/core'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import type { FakeGateway } from './fakes/types.js'
 
 export interface ConformanceSetup {
-  gateway: Gateway
+  /** Any adapter: one whose `verifyCallback` answers with a Promise runs the same cases. */
+  gateway: Gateway<VerifyResult>
   fake: FakeGateway
 }
 
@@ -33,7 +35,7 @@ export function sampleInput(overrides: Partial<CreatePaymentInput> = {}): Create
 
 export function gatewayConformance(name: string, setup: () => Promise<ConformanceSetup>): void {
   describe(`${name}: bayarkit conformance`, () => {
-    let gateway: Gateway
+    let gateway: Gateway<VerifyResult>
     let fake: FakeGateway
 
     beforeAll(async () => {
@@ -75,7 +77,7 @@ export function gatewayConformance(name: string, setup: () => Promise<Conformanc
     it('reports an unpaid payment as not paid', async () => {
       const input = sampleInput()
       const created = await gateway.createPayment(input)
-      const cb = gateway.verifyCallback(fake.callbackFor(created.id))
+      const cb = await gateway.verifyCallback(fake.callbackFor(created.id))
       expect(cb).not.toBeNull()
       const record = await gateway.getPayment(cb?.id ?? '')
       expect(record.status).not.toBe('paid')
@@ -153,7 +155,7 @@ export function gatewayConformance(name: string, setup: () => Promise<Conformanc
       expect(fake.tamper(cb)).not.toEqual(cb)
     })
 
-    it('never throws on a malformed callback body', () => {
+    it('never throws on a malformed callback body', async () => {
       const junk: CallbackInput[] = [
         { fields: {}, rawBody: '', headers: {} },
         { fields: { hash: 'x' }, rawBody: '{', headers: { 'content-type': 'application/json' } },
@@ -172,8 +174,12 @@ export function gatewayConformance(name: string, setup: () => Promise<Conformanc
         { fields: {}, rawBody: '{}', headers: { 'content-type': 'application/json', 'x-signature': '' } },
       ] as unknown as CallbackInput[]
       for (const cb of [...junk, ...broken]) {
-        expect(() => gateway.verifyCallback(cb)).not.toThrow()
-        expect(gateway.verifyCallback(cb)).toBeNull()
+        let answer: VerifyResult = null
+        expect(() => {
+          answer = gateway.verifyCallback(cb)
+        }).not.toThrow()
+        // An adapter that verifies through its API answers with a Promise; a bad body must not reject it either.
+        expect(await answer).toBeNull()
       }
     })
 
@@ -185,6 +191,70 @@ export function gatewayConformance(name: string, setup: () => Promise<Conformanc
       const first = await confirmPayment(gateway, body, input)
       const second = await confirmPayment(gateway, body, input)
       expect(second).toEqual(first)
+    })
+
+    // Refunds are optional: these cases run only for adapters that implement `refundPayment`.
+    const paidPayment = async () => {
+      const input = sampleInput()
+      const created = await gateway.createPayment(input)
+      fake.markPaid(created.id)
+      return { input, created }
+    }
+
+    it('refunds a paid payment in full', async (ctx) => {
+      if (!gateway.refundPayment) return ctx.skip()
+      const { input, created } = await paidPayment()
+      const record = await gateway.getPayment(created.id)
+      const refund = await gateway.refundPayment({
+        paymentId: created.id,
+        amount: input.amount,
+        reason: 'conformance',
+      })
+      expect(refund.id).not.toBe('')
+      expect(refund.paymentId).toBe(created.id)
+      expect(refund.amount).toBe(input.amount)
+      expect(refund.currency).toBe(record.currency)
+      // Some gateways approve refunds before paying them out, so `pending` is a correct first answer.
+      expect(['pending', 'succeeded']).toContain(refund.status)
+    })
+
+    it('refunds part of a paid payment', async (ctx) => {
+      if (!gateway.refundPayment) return ctx.skip()
+      const { input, created } = await paidPayment()
+      const amount = Math.floor(input.amount / 2)
+      const refund = await gateway.refundPayment({ paymentId: created.id, amount })
+      expect(refund.amount).toBe(amount)
+      expect(['pending', 'succeeded']).toContain(refund.status)
+    })
+
+    it('refuses to refund more than was paid, and refunds nothing when it does', async (ctx) => {
+      if (!gateway.refundPayment) return ctx.skip()
+      const { input, created } = await paidPayment()
+      await expect(
+        gateway.refundPayment({ paymentId: created.id, amount: input.amount + 1 }),
+      ).rejects.toBeInstanceOf(GatewayError)
+      // The refused call took nothing: the full amount is still refundable.
+      const refund = await gateway.refundPayment({ paymentId: created.id, amount: input.amount })
+      expect(refund.amount).toBe(input.amount)
+    })
+
+    it('refuses a refund of zero, negative or fractional sen', async (ctx) => {
+      if (!gateway.refundPayment) return ctx.skip()
+      const { created } = await paidPayment()
+      for (const amount of [0, -100, 10.5]) {
+        await expect(
+          gateway.refundPayment({ paymentId: created.id, amount }),
+          String(amount),
+        ).rejects.toBeInstanceOf(GatewayError)
+      }
+    })
+
+    it('refuses to refund a payment that was never paid', async (ctx) => {
+      if (!gateway.refundPayment) return ctx.skip()
+      const created = await gateway.createPayment(sampleInput())
+      await expect(gateway.refundPayment({ paymentId: created.id, amount: 100 })).rejects.toBeInstanceOf(
+        GatewayError,
+      )
     })
   })
 }

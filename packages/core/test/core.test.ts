@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { confirmPayment, type Gateway, GatewayError, toRinggit, toSen } from '../src/index.js'
+import {
+  checkRefundAmount,
+  confirmPayment,
+  type Gateway,
+  GatewayError,
+  toRinggit,
+  toSen,
+  type VerifyResult,
+} from '../src/index.js'
 import vectors from './money-vectors.json' with { type: 'json' }
 import numberText from './number-text-vectors.json' with { type: 'json' }
 
@@ -29,7 +37,10 @@ describe('money', () => {
 
 describe('confirmPayment', () => {
   const cb = { fields: {}, rawBody: '', headers: {} }
-  const gateway = (record: Partial<Awaited<ReturnType<Gateway['getPayment']>>>, valid = true): Gateway => ({
+  const gateway = (
+    record: Partial<Awaited<ReturnType<Gateway['getPayment']>>>,
+    valid = true,
+  ): Gateway<VerifyResult> => ({
     info: {
       name: 'stub',
       minimumAmount: 100,
@@ -97,6 +108,75 @@ describe('confirmPayment', () => {
       reason: 'gateway_error',
       detail: 'stub: verifyCallback threw TypeError',
     })
+  })
+
+  it('awaits a verifyCallback that answers with a Promise (gateways that verify through their API)', async () => {
+    const gw = gateway({})
+    gw.verifyCallback = async () => ({ id: 'x', reference: 'R1', claimedStatus: 'paid', raw: {} })
+    expect(await confirmPayment(gw, cb, expected)).toMatchObject({ ok: true })
+    gw.verifyCallback = async () => ({ id: 'x', reference: 'R2', claimedStatus: 'paid', raw: {} })
+    expect(await confirmPayment(gw, cb, expected)).toMatchObject({ ok: false, reason: 'mismatch' })
+  })
+
+  it('a Promise that resolves to null is a forgery', async () => {
+    const gw = gateway({})
+    let asked = false
+    gw.verifyCallback = async () => null
+    gw.getPayment = async () => {
+      asked = true
+      throw new Error('must not be called')
+    }
+    expect(await confirmPayment(gw, cb, expected)).toMatchObject({
+      ok: false,
+      reason: 'invalid_signature',
+      detail: 'stub: callback signature did not verify',
+    })
+    expect(asked).toBe(false)
+  })
+
+  it('a Promise that rejects is a gateway error (the verify call failed), not a forgery', async () => {
+    const gw = gateway({})
+    gw.verifyCallback = async () => {
+      throw new TypeError('token=abc in a message')
+    }
+    expect(await confirmPayment(gw, cb, expected)).toEqual({
+      ok: false,
+      reason: 'gateway_error',
+      detail: 'stub: verifyCallback threw TypeError',
+    })
+    // A GatewayError quotes the gateway's answer only, so it is passed on (as for getPayment).
+    gw.verifyCallback = async () => {
+      throw new GatewayError('unreachable (TimeoutError)', 'stub', 0)
+    }
+    expect(await confirmPayment(gw, cb, expected)).toEqual({
+      ok: false,
+      reason: 'gateway_error',
+      detail: 'stub: unreachable (TimeoutError)',
+    })
+  })
+})
+
+describe('checkRefundAmount (shared by every adapter that refunds)', () => {
+  it('accepts a full or partial refund in whole sen', () => {
+    expect(() => checkRefundAmount('stub', { paymentId: 'p', amount: 500 }, 500)).not.toThrow()
+    expect(() => checkRefundAmount('stub', { paymentId: 'p', amount: 1 }, 500)).not.toThrow()
+  })
+
+  it('refuses more than was paid, zero, negative or fractional sen, before any request', () => {
+    for (const amount of [501, 0, -1, 10.5, Number.NaN, Number.POSITIVE_INFINITY]) {
+      expect(() => checkRefundAmount('stub', { paymentId: 'p', amount }, 500), String(amount)).toThrow(
+        GatewayError,
+      )
+    }
+    try {
+      checkRefundAmount('stub', { paymentId: 'p', amount: 501 }, 500)
+    } catch (e) {
+      expect(e).toMatchObject({ status: 0, message: 'stub: refund of 501 sen exceeds the 500 sen paid' })
+    }
+  })
+
+  it('refuses an empty payment id', () => {
+    expect(() => checkRefundAmount('stub', { paymentId: '', amount: 1 }, 500)).toThrow(GatewayError)
   })
 })
 

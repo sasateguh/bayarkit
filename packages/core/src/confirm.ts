@@ -1,5 +1,12 @@
 import { GatewayError } from './errors.js'
-import type { CallbackInput, Currency, Gateway, PaymentRecord } from './types.js'
+import type {
+  CallbackInput,
+  Currency,
+  Gateway,
+  PaymentRecord,
+  VerifiedCallback,
+  VerifyResult,
+} from './types.js'
 
 const errorName = (e: unknown): string => (e instanceof Error ? e.constructor.name : typeof e)
 
@@ -22,28 +29,27 @@ export type ConfirmResult =
 /**
  * The only safe way to mark an order paid from a callback:
  *
- * 1. the callback signature must verify (cheap filter, rejects forgeries);
+ * 1. the callback signature must verify (cheap filter, rejects forgeries; awaited, as some gateways verify via their API);
  * 2. the gateway is asked again with `getPayment` (a valid signature can still be replayed or describe another order);
  * 3. the gateway's own record must say `paid`, for this reference, this exact amount and currency.
  *
  * Callers should make step "mark order paid" idempotent: gateways retry callbacks.
  */
 export async function confirmPayment(
-  gateway: Gateway,
+  gateway: Gateway<VerifyResult>,
   callback: CallbackInput,
   expected: Expected,
 ): Promise<ConfirmResult> {
-  let cb: ReturnType<Gateway['verifyCallback']>
+  let cb: VerifiedCallback | null
   try {
-    cb = gateway.verifyCallback(callback)
+    cb = await gateway.verifyCallback(callback)
   } catch (e) {
-    // The contract says it never throws; when an adapter does, that is a bug or a misconfiguration (a broken key),
-    // not a forgery, so it is reported as such. The class name only: messages of unknown errors may carry details.
-    return {
-      ok: false,
-      reason: 'gateway_error',
-      detail: `${gateway.info.name}: verifyCallback threw ${errorName(e)}`,
-    }
+    // The contract says it never throws on bad input; when an adapter does, that is a bug, a misconfiguration (a broken
+    // key) or a failed verify call to the gateway, not a forgery, so it is reported as such. A GatewayError quotes the
+    // gateway's answer only; anything else is named by class: messages of unknown errors may carry details.
+    const detail =
+      e instanceof GatewayError ? e.message : `${gateway.info.name}: verifyCallback threw ${errorName(e)}`
+    return { ok: false, reason: 'gateway_error', detail }
   }
   if (!cb)
     return {

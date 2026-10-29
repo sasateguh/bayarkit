@@ -97,11 +97,52 @@ export interface CallbackInput {
   headers: Record<string, string>
 }
 
-export interface Gateway {
+/** What `verifyCallback` may answer: most adapters check a signature locally; some must ask the gateway's API. */
+export type VerifyResult = VerifiedCallback | null | Promise<VerifiedCallback | null>
+
+/**
+ * `Gateway` alone is an adapter that verifies callbacks synchronously (every adapter before refunds and PayPal), so
+ * code typed against it keeps compiling. `Gateway<VerifyResult>` is any adapter; `confirmPayment` and the conformance
+ * suite take that and `await` the answer.
+ */
+export interface Gateway<Verify extends VerifyResult = VerifiedCallback | null> {
   readonly info: GatewayInfo
   createPayment(input: CreatePaymentInput): Promise<CreatedPayment>
   /** Ask the gateway for the current state. This, not the callback body, is the source of truth. */
   getPayment(id: string): Promise<PaymentRecord>
-  /** Check a callback's signature. Returns `null` when it is not authentic; never throws on bad input. */
-  verifyCallback(callback: CallbackInput): VerifiedCallback | null
+  /**
+   * Check a callback's signature. Returns `null` when it is not authentic; never throws on bad input. Gateways that
+   * verify through their own API answer with a Promise, which rejects only when that call fails (`confirmPayment`
+   * reports it as `gateway_error`, never as a forgery).
+   */
+  verifyCallback(callback: CallbackInput): Verify
+  /** Present on adapters that can refund. See `RefundInput`. */
+  refundPayment?(input: RefundInput): Promise<RefundRecord>
+}
+
+export interface RefundInput {
+  /** The id `createPayment` returned (the same id `getPayment` takes). */
+  paymentId: string
+  /** Amount in sen, a whole number, at most what was paid. Partial refunds are allowed where the gateway allows them. */
+  amount: number
+  /** Shown to the gateway (and sometimes to the customer); adapters trim it to the gateway's limits. */
+  reason?: string
+  /** Lets a retried call return the same refund instead of a second one (where the gateway supports it). */
+  idempotencyKey?: string
+}
+
+/**
+ * `pending` = asked for but not final (some gateways approve refunds first); `succeeded` = the gateway reports the money
+ * returned; `unknown` = a state this adapter has not seen.
+ */
+export type RefundStatus = 'pending' | 'succeeded' | 'failed' | 'unknown'
+
+export interface RefundRecord {
+  id: string
+  paymentId: string
+  status: RefundStatus
+  /** Amount in sen. */
+  amount: number
+  currency: Currency | string
+  raw: unknown
 }

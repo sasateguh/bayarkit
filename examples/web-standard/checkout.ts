@@ -45,7 +45,7 @@ export function paymentRoutes(gateway: Gateway, orders: Map<string, Order>) {
       const cb = await readCallback(request)
       // Find the order from a callback whose signature checks out: by your reference, which most gateways send
       // back, else by the payment id saved at checkout (Billplz sends no reference; its id stays the same).
-      const verified = gateway.verifyCallback(cb)
+      const verified = await gateway.verifyCallback(cb)
       const order = !verified
         ? undefined
         : verified.reference
