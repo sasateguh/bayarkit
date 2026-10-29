@@ -1151,6 +1151,106 @@
           "source": "developer.paddle.com/api-reference/adjustments/create-adjustment"
         }
       ]
+    },
+    {
+      "id": "paypal",
+      "name": "PayPal Orders v2",
+      "site": "https://www.paypal.com",
+      "sandbox": "host api-m.sandbox.paypal.com, HTTPS (separate sandbox app: client id + secret from the developer dashboard)",
+      "sources": [
+        {
+          "id": "orders-guide",
+          "title": "Orders API integration",
+          "url": "https://developer.paypal.com/whats-an-order.md",
+          "mustContain": ["PAYER_ACTION_REQUIRED", "payer-action", "3 hours"]
+        },
+        {
+          "id": "orders-openapi",
+          "title": "Orders v2 OpenAPI",
+          "url": "https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/HEAD/openapi/checkout_orders_v2.json",
+          "mustContain": ["custom_id", "PayPal-Request-Id", "PAYER_ACTION_REQUIRED"]
+        },
+        {
+          "id": "payments-openapi",
+          "title": "Payments v2 OpenAPI (captures, refunds)",
+          "url": "https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/HEAD/openapi/payments_payment_v2.json",
+          "mustContain": ["REFUND_AMOUNT_EXCEEDED", "related_ids"]
+        },
+        {
+          "id": "webhooks-integrate",
+          "title": "Integrate webhooks",
+          "url": "https://developer.paypal.com/api/rest/webhooks/rest.md",
+          "mustContain": ["verify-webhook-signature", "WEBHOOK_ID"]
+        },
+        {
+          "id": "webhooks-openapi",
+          "title": "Webhooks Management OpenAPI",
+          "url": "https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/HEAD/openapi/notifications_webhooks_v1.json",
+          "mustContain": ["verification_status", "transmission_sig"]
+        },
+        {
+          "id": "authentication",
+          "title": "Authentication",
+          "url": "https://developer.paypal.com/api/rest/authentication.md",
+          "mustContain": ["client_credentials", "expires_in"]
+        },
+        {
+          "id": "idempotency",
+          "title": "Idempotency",
+          "url": "https://developer.paypal.com/reference/guidelines/idempotency.md",
+          "mustContain": ["PayPal-Request-Id"]
+        },
+        {
+          "id": "currencies",
+          "title": "Currency codes",
+          "url": "https://developer.paypal.com/reference/currency-codes.md",
+          "mustContain": ["MYR", "in-country"]
+        },
+        {
+          "id": "card-testing",
+          "title": "Card testing",
+          "url": "https://developer.paypal.com/sandbox-testing/card-testing.md",
+          "mustContain": ["CCREJECT-REFUSED", "DECLINED"]
+        }
+      ],
+      "spec": true,
+      "gotchas": [
+        {
+          "text": "An order can be `COMPLETED` while its capture is `DECLINED` or `PENDING`, and `APPROVED` only means the buyer agreed. Count a payment as paid only when `purchase_units[0].payments.captures[0].status` is `COMPLETED`, and take the amount from that capture.",
+          "text_ms": "Pesanan boleh berstatus `COMPLETED` sedangkan tangkapannya `DECLINED` atau `PENDING`, dan `APPROVED` hanya bermaksud pembeli bersetuju. Kira bayaran sebagai dibayar hanya bila `purchase_units[0].payments.captures[0].status` ialah `COMPLETED`, dan ambil amaun daripada tangkapan itu.",
+          "source": "developer.paypal.com/sandbox-testing/card-testing; Orders v2 OpenAPI capture_status"
+        },
+        {
+          "text": "Put your reference in `purchase_units[0].custom_id` (up to 255 characters, hidden from the buyer, copied onto each capture). `invoice_id` is shown to the buyer and must be unique per account by default, so a second order for the same reference is refused.",
+          "text_ms": "Letak rujukan anda dalam `purchase_units[0].custom_id` (hingga 255 aksara, tidak dilihat pembeli, disalin ke setiap tangkapan). `invoice_id` dipapar kepada pembeli dan mesti unik bagi setiap akaun secara lalai, jadi pesanan kedua untuk rujukan yang sama ditolak.",
+          "source": "Orders v2 OpenAPI purchase_unit_request"
+        },
+        {
+          "text": "MYR works only for a PayPal account based in Malaysia; elsewhere PayPal converts it with a fee. HUF, JPY and TWD take no decimals in PayPal (HUF and TWD do in ISO 4217). A currency the account does not hold leaves the payment pending until the merchant accepts it.",
+          "text_ms": "MYR hanya berfungsi untuk akaun PayPal yang berpangkalan di Malaysia; di tempat lain PayPal menukarnya dengan caj. HUF, JPY dan TWD tiada perpuluhan dalam PayPal (HUF dan TWD ada perpuluhan dalam ISO 4217). Mata wang yang tidak dipegang akaun membiarkan bayaran tertunda sehingga peniaga menerimanya.",
+          "source": "developer.paypal.com/reference/currency-codes"
+        },
+        {
+          "text": "Verify webhooks by posting the headers, your webhook id and the raw body to `/v1/notifications/verify-webhook-signature` and requiring `verification_status: SUCCESS`. Send the body exactly as received: parsing and re-serialising it can fail verification. Events from the dashboard simulator cannot be verified this way; test with real sandbox events.",
+          "text_ms": "Sahkan webhook dengan menghantar pengepala, id webhook anda dan badan mentah ke `/v1/notifications/verify-webhook-signature`, dan wajibkan `verification_status: SUCCESS`. Hantar badan tepat seperti diterima: menghurai dan mensiri semula boleh menggagalkan pengesahan. Acara daripada simulator dashboard tidak boleh disahkan dengan cara ini; uji dengan acara sandbox sebenar.",
+          "source": "developer.paypal.com/api/rest/webhooks/rest"
+        },
+        {
+          "text": "`PayPal-Request-Id` makes create, capture and refund safe to retry: PayPal keeps it 6 hours on orders and 45 days on refunds. Use a new value per call type (never reuse the create id for capture); without the header a retry captures or refunds again.",
+          "text_ms": "`PayPal-Request-Id` menjadikan cipta, tangkap dan bayaran balik selamat diulang: PayPal menyimpannya 6 jam untuk pesanan dan 45 hari untuk bayaran balik. Guna nilai baharu bagi setiap jenis panggilan (jangan guna semula id cipta untuk tangkap); tanpa pengepala itu, ulangan menangkap atau memulangkan sekali lagi.",
+          "source": "developer.paypal.com/reference/guidelines/idempotency; /api/rest/requests"
+        },
+        {
+          "text": "With `payment_source.paypal.experience_context` the new order is `PAYER_ACTION_REQUIRED` and the buyer link is `rel: payer-action`; the older flow returns `CREATED` with `rel: approve`. An uncaptured order expires: the guide says 3 hours, the API reference 6 hours.",
+          "text_ms": "Dengan `payment_source.paypal.experience_context`, pesanan baharu berstatus `PAYER_ACTION_REQUIRED` dan pautan pembeli ialah `rel: payer-action`; aliran lama memulangkan `CREATED` dengan `rel: approve`. Pesanan yang tidak ditangkap akan luput: panduan menyebut 3 jam, rujukan API 6 jam.",
+          "source": "developer.paypal.com/whats-an-order; Orders v2 OpenAPI order.links"
+        },
+        {
+          "text": "Refunds take the capture id, not the order id: `POST /v2/payments/captures/{id}/refund` with an empty body refunds what is left, with `amount` refunds part. Over-refunding fails with `REFUND_AMOUNT_EXCEEDED`.",
+          "text_ms": "Bayaran balik mengambil id tangkapan, bukan id pesanan: `POST /v2/payments/captures/{id}/refund` dengan badan kosong memulangkan baki, dengan `amount` memulangkan sebahagian. Pulangan melebihi baki gagal dengan `REFUND_AMOUNT_EXCEEDED`.",
+          "source": "Payments v2 OpenAPI captures.refund"
+        }
+      ]
     }
   ]
 }

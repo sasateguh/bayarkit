@@ -299,6 +299,60 @@
     "chars": 33482,
     "since": "2026-10-29"
   },
+  "paypal/authentication": {
+    "url": "https://developer.paypal.com/api/rest/authentication.md",
+    "sha256": "9984ba76e9435ad77983054ac85e03af818c534acd86fa417418b06751f4fd43",
+    "chars": 3068,
+    "since": "2026-10-29"
+  },
+  "paypal/card-testing": {
+    "url": "https://developer.paypal.com/sandbox-testing/card-testing.md",
+    "sha256": "975f2c3f6bf1ed0a4d8793a86ed63cdbc497ce9088e82245ac8354331495cdc7",
+    "chars": 12330,
+    "since": "2026-10-29"
+  },
+  "paypal/currencies": {
+    "url": "https://developer.paypal.com/reference/currency-codes.md",
+    "sha256": "516c43f366781b3d2c44b4cb7645eb121b7e5d325a5b26faced225d2a60f8ff2",
+    "chars": 3107,
+    "since": "2026-10-29"
+  },
+  "paypal/idempotency": {
+    "url": "https://developer.paypal.com/reference/guidelines/idempotency.md",
+    "sha256": "56c6f6706aa689d903410fd874bdde3708c89f3c9bd722eb00d18a6914c74794",
+    "chars": 3844,
+    "since": "2026-10-29"
+  },
+  "paypal/orders-guide": {
+    "url": "https://developer.paypal.com/whats-an-order.md",
+    "sha256": "926303e76398933e5d119c1acdb82e86d6812d20c5de0add2d0a35f50d7891a4",
+    "chars": 41231,
+    "since": "2026-10-29"
+  },
+  "paypal/orders-openapi": {
+    "url": "https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/HEAD/openapi/checkout_orders_v2.json",
+    "sha256": "2fcf75a067d242ff9fa7a0fae8de21fa5596072f5b883e6163e228d0fbdbb0f0",
+    "chars": 446376,
+    "since": "2026-10-29"
+  },
+  "paypal/payments-openapi": {
+    "url": "https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/HEAD/openapi/payments_payment_v2.json",
+    "sha256": "a7fe2780d705b9d3fe5758c89865f3c381f5fb295d9df6843348a7c21fe3e58f",
+    "chars": 218814,
+    "since": "2026-10-29"
+  },
+  "paypal/webhooks-integrate": {
+    "url": "https://developer.paypal.com/api/rest/webhooks/rest.md",
+    "sha256": "84188c1d161dc636fc2720ee3ada293b36c18daf7bd7aadbaec9c2b2d45bf860",
+    "chars": 10990,
+    "since": "2026-10-29"
+  },
+  "paypal/webhooks-openapi": {
+    "url": "https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/HEAD/openapi/notifications_webhooks_v1.json",
+    "sha256": "fb299f6456a57060c525c52374614d75900e07d0e1f5a6ead566c3489daf89c2",
+    "chars": 50107,
+    "since": "2026-10-29"
+  },
   "senangpay/doku-notification-global": {
     "url": "https://doku-developers.apidog.io/sample-notification-global-44767704e0.md",
     "sha256": "e09476b3601b16addb01ae8195687935d09b13d0ce5daa5e20c884133de9aeec",
