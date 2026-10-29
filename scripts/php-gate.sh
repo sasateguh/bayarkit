@@ -10,7 +10,7 @@ work="$(mktemp -d)"
 pids=()
 trap 'kill "${pids[@]}" 2>/dev/null || true; rm -rf "$work"' EXIT
 fakes='{}'
-for g in toyyibpay chip paddle; do
+for g in toyyibpay chip paddle paypal; do
   node "$cli" "$g" > "$work/$g.json" &
   pids+=($!)
   for _ in $(seq 1 100); do [ -s "$work/$g.json" ] && break; sleep 0.1; done

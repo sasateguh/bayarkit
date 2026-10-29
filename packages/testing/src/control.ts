@@ -4,6 +4,7 @@
  *
  *   GET  /health                   → { ok, gateway, url }
  *   POST /paid/<id>                → 204 (markPaid)
+ *   POST /approve/<id>             → 204 (the buyer approves, nothing captured; PayPal only, 404 elsewhere)
  *   GET  /callback/<id>            → CallbackInput JSON { fields, rawBody, headers }
  *   GET  /callback/<id>/tampered   → the same callback with its signature altered
  *
@@ -30,6 +31,12 @@ export async function startControlServer(
       const paid = /^\/paid\/([^/]+)$/.exec(path)
       if (req.method === 'POST' && paid?.[1]) {
         fake.markPaid(paid[1])
+        return send(204)
+      }
+      const approve = /^\/approve\/([^/]+)$/.exec(path)
+      const approver = (fake as { approve?: unknown }).approve
+      if (req.method === 'POST' && approve?.[1] && typeof approver === 'function') {
+        approver.call(fake, approve[1])
         return send(204)
       }
       const cb = /^\/callback\/([^/]+)(\/tampered)?$/.exec(path)
