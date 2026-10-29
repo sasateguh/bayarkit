@@ -159,24 +159,26 @@ const MESSAGES: Record<string, string> = {
  * postback without re-serialising it.
  */
 function rawMember(json: string, key: string): string | undefined {
-  const at = json.indexOf(`"${key}"`)
-  if (at < 0) return undefined
-  let i = json.indexOf(':', at + key.length + 2) + 1
-  if (i <= 0) return undefined
-  while (/\s/.test(json[i] ?? '')) i++
-  const start = i
+  // Walks the top-level object only: a key is a string at depth 1 followed by ':'.
   let depth = 0
-  let inString = false
-  for (; i < json.length; i++) {
+  let valueStart = -1
+  for (let i = 0; i < json.length; i++) {
     const c = json[i]
-    if (inString) {
-      if (c === '\\') i++
-      else if (c === '"') inString = false
-    } else if (c === '"') inString = true
-    else if (c === '{' || c === '[') depth++
+    if (c === '"') {
+      const from = i
+      for (i++; i < json.length && json[i] !== '"'; i++) if (json[i] === '\\') i++
+      if (depth !== 1 || valueStart >= 0) continue
+      let k = i + 1
+      while (/\s/.test(json[k] ?? '')) k++
+      if (json[k] !== ':' || json.slice(from, i + 1) !== `"${key}"`) continue
+      k++
+      while (/\s/.test(json[k] ?? '')) k++
+      valueStart = k
+      i = k - 1
+    } else if (c === '{' || c === '[') depth++
     else if (c === '}' || c === ']') {
       depth--
-      if (depth === 0) return json.slice(start, i + 1)
+      if (valueStart >= 0 && depth === 1) return json.slice(valueStart, i + 1)
     }
   }
   return undefined

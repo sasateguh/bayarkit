@@ -332,6 +332,16 @@ describe('fake PayPal (OAuth, Orders v2, refunds, webhook postback)', () => {
       const missing = await verify(cb, { webhook_id: '' })
       expect(missing).toMatchObject({ name: 'INVALID_REQUEST' })
     })
+
+    it('verify-webhook-signature reads the top-level webhook_event, not the same text inside another value', async () => {
+      const cb = fake.callbackFor((await create()).id)
+      // A string value placed before the event whose JSON text ends in `"webhook_event"`.
+      const decoy = { cert_url: `${cb.headers['paypal-cert-url']}#"webhook_event` }
+      expect((await verify(cb, decoy)).verification_status).toBe('SUCCESS')
+      // A nested object carrying its own webhook_event is not the signed event either.
+      const nested = { extra: { webhook_event: {} } }
+      expect((await verify(cb, nested)).verification_status).toBe('SUCCESS')
+    })
   })
 })
 
