@@ -257,6 +257,48 @@
     "chars": 463,
     "since": "2026-10-23"
   },
+  "paddle/adjustment-create": {
+    "url": "https://developer.paddle.com/api-reference/adjustments/create-adjustment.md",
+    "sha256": "44330f37e6797427bd39ee60dd3530f947f5c56b24316eaf7bbc23a366466da3",
+    "chars": 16834,
+    "since": "2026-10-29"
+  },
+  "paddle/currencies": {
+    "url": "https://developer.paddle.com/concepts/sell/supported-currencies.md",
+    "sha256": "36851d1d10cf2256f35dd8ea34fe2bdfbcdae9ac0353866595830097cc6d4aab",
+    "chars": 4316,
+    "since": "2026-10-29"
+  },
+  "paddle/node-sdk-webhooks": {
+    "url": "https://raw.githubusercontent.com/PaddleHQ/paddle-node-sdk/HEAD/src/notifications/helpers/webhooks-validator.ts",
+    "sha256": "86337c7641fca9c0d9b9a9be8d8dbde416703a2fdde11819c736893d0ded1e64",
+    "chars": 1280,
+    "since": "2026-10-29"
+  },
+  "paddle/sandbox": {
+    "url": "https://developer.paddle.com/sdks/sandbox.md",
+    "sha256": "d14a2eb616ff9f78ed8159a8315a669d6fd2d68a2f9a429695f6b4b94f024923",
+    "chars": 7202,
+    "since": "2026-10-29"
+  },
+  "paddle/transaction-create": {
+    "url": "https://developer.paddle.com/api-reference/transactions/create-transaction.md",
+    "sha256": "08fc72c8f1be9d9606328529d42b466d6ec14b225d79df2413ca000a2ba72d91",
+    "chars": 152031,
+    "since": "2026-10-29"
+  },
+  "paddle/transaction-get": {
+    "url": "https://developer.paddle.com/api-reference/transactions/get-transaction.md",
+    "sha256": "712b737fb2a1183d183589f79b79f4f960dd86c82a2c8590a06e7abdfc8e844d",
+    "chars": 100579,
+    "since": "2026-10-29"
+  },
+  "paddle/webhook-signature": {
+    "url": "https://developer.paddle.com/webhooks/about/signature-verification.md",
+    "sha256": "9de4ea90f61870b17ef13bf060a80069d7e03c6c14cca5b84f36f8811f4777d3",
+    "chars": 33482,
+    "since": "2026-10-29"
+  },
   "senangpay/doku-notification-global": {
     "url": "https://doku-developers.apidog.io/sample-notification-global-44767704e0.md",
     "sha256": "e09476b3601b16addb01ae8195687935d09b13d0ce5daa5e20c884133de9aeec",
