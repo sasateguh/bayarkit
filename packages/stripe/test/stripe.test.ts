@@ -223,8 +223,10 @@ describe('stripe: Checkout Session requests (create doc + endive changelog)', ()
     await expect(gw.createPayment(sampleInput({ expiresAt: at(29 * 60) }))).rejects.toThrow(/30 minutes/)
     await expect(gw.createPayment(sampleInput({ expiresAt: at(24 * 3600 + 60) }))).rejects.toThrow(/24 hours/)
     expect(fake.requests.length).toBe(before)
-    const ok = await gw.createPayment(sampleInput({ expiresAt: at(3600) }))
-    expect(fake.session(ok.id)?.expires_at).toBe(Math.floor(at(3600).getTime() / 1000))
+    // One instant for both sides: calling at() twice can straddle a second boundary.
+    const hour = at(3600)
+    const ok = await gw.createPayment(sampleInput({ expiresAt: hour }))
+    expect(fake.session(ok.id)?.expires_at).toBe(Math.floor(hour.getTime() / 1000))
   })
 
   it('maps expired sessions and refuses to confirm them', async () => {
