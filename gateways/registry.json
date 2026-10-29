@@ -1074,6 +1074,21 @@
       "name": "Paddle Billing",
       "site": "https://www.paddle.com",
       "sandbox": "host sandbox-api.paddle.com, HTTPS (pdl_sdbx_ API keys, separate sandbox account)",
+      "adapter": {
+        "package": "@bayarkit/paddle",
+        "factory": "paddle",
+        "evidence": "docs",
+        "configExample": "{ apiKey, webhookSecret, currency: 'USD' }",
+        "fake": "startFakePaddle",
+        "label": {
+          "en": "Paddle Billing (merchant of record, no MYR)",
+          "ms": "Paddle Billing (penjual rasmi, tiada MYR)"
+        },
+        "summary": {
+          "en": "Official Paddle Billing docs and paddle-node-sdk (webhook test vector); charges in USD or another Paddle currency, never MYR; not yet measured on the sandbox",
+          "ms": "Dokumen rasmi Paddle Billing dan paddle-node-sdk (vektor ujian webhook); caj dalam USD atau mata wang Paddle lain, bukan MYR; belum diukur pada sandbox"
+        }
+      },
       "sources": [
         {
           "id": "transaction-create",

@@ -19,7 +19,7 @@ npm install @bayarkit/core @bayarkit/<gateway>
 - `toSen` / `toRinggit` — exact decimal conversion, never through a float.
 - `GatewayError` — messages quote the gateway's answer only, never a key.
 
-Adapters: `@bayarkit/toyyibpay`, `@bayarkit/bayarcash`, `@bayarkit/billplz`, `@bayarkit/chip`, `@bayarkit/stripe`, `@bayarkit/senangpay`, `@bayarkit/ipay88`, `@bayarkit/fiuu`, `@bayarkit/2c2p`, `@bayarkit/curlec`, `@bayarkit/hitpay`, `@bayarkit/gkash`, `@bayarkit/xendit`, `@bayarkit/eghl`.
+Adapters: `@bayarkit/toyyibpay`, `@bayarkit/bayarcash`, `@bayarkit/billplz`, `@bayarkit/chip`, `@bayarkit/stripe`, `@bayarkit/senangpay`, `@bayarkit/ipay88`, `@bayarkit/fiuu`, `@bayarkit/2c2p`, `@bayarkit/curlec`, `@bayarkit/hitpay`, `@bayarkit/gkash`, `@bayarkit/xendit`, `@bayarkit/eghl`, `@bayarkit/paddle`.
 
 ## Bahasa Melayu
 
@@ -43,7 +43,7 @@ npm install @bayarkit/core @bayarkit/<gateway>
 - `toSen` / `toRinggit` — penukaran perpuluhan tepat, tidak pernah melalui float.
 - `GatewayError` — mesej memetik jawapan gateway sahaja, tidak pernah kunci.
 
-Adapter: `@bayarkit/toyyibpay`, `@bayarkit/bayarcash`, `@bayarkit/billplz`, `@bayarkit/chip`, `@bayarkit/stripe`, `@bayarkit/senangpay`, `@bayarkit/ipay88`, `@bayarkit/fiuu`, `@bayarkit/2c2p`, `@bayarkit/curlec`, `@bayarkit/hitpay`, `@bayarkit/gkash`, `@bayarkit/xendit`, `@bayarkit/eghl`.
+Adapter: `@bayarkit/toyyibpay`, `@bayarkit/bayarcash`, `@bayarkit/billplz`, `@bayarkit/chip`, `@bayarkit/stripe`, `@bayarkit/senangpay`, `@bayarkit/ipay88`, `@bayarkit/fiuu`, `@bayarkit/2c2p`, `@bayarkit/curlec`, `@bayarkit/hitpay`, `@bayarkit/gkash`, `@bayarkit/xendit`, `@bayarkit/eghl`, `@bayarkit/paddle`.
 
 Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 

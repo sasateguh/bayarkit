@@ -77,6 +77,29 @@ describe('confirmPayment', () => {
     })
   })
 
+  it("compares against the gateway's own currency when the order does not name one", async () => {
+    // An adapter for a gateway that cannot charge MYR (Paddle) declares the currency it charges in.
+    const usd = (record: Parameters<typeof gateway>[0]): Gateway<VerifyResult> => {
+      const g = gateway({ currency: 'USD', ...record })
+      return { ...g, info: { ...g.info, currency: 'USD' } }
+    }
+    expect(await confirmPayment(usd({}), cb, expected)).toMatchObject({ ok: true })
+    expect(await confirmPayment(usd({ currency: 'MYR' }), cb, expected)).toMatchObject({ reason: 'mismatch' })
+    // What the order says always wins over the adapter's default.
+    expect(await confirmPayment(usd({}), cb, { ...expected, currency: 'EUR' })).toMatchObject({
+      reason: 'mismatch',
+    })
+    expect(
+      await confirmPayment(usd({ currency: 'EUR' }), cb, { ...expected, currency: 'EUR' }),
+    ).toMatchObject({
+      ok: true,
+    })
+    // No declared currency = MYR, as before.
+    expect(await confirmPayment(gateway({ currency: 'USD' }), cb, expected)).toMatchObject({
+      reason: 'mismatch',
+    })
+  })
+
   it('reports a gateway outage instead of throwing', async () => {
     const gw = gateway({})
     gw.getPayment = async () => {

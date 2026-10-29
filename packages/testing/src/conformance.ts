@@ -92,7 +92,7 @@ export function gatewayConformance(name: string, setup: () => Promise<Conformanc
       if (result.ok) {
         expect(result.payment.reference).toBe(input.reference)
         expect(result.payment.amount).toBe(input.amount)
-        expect(result.payment.currency).toBe('MYR')
+        expect(result.payment.currency).toBe(gateway.info.currency ?? 'MYR')
       }
     })
 

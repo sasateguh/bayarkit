@@ -3,7 +3,11 @@
  * ever compares floating-point ringgit.
  */
 
-export type Currency = 'MYR'
+/**
+ * An ISO 4217 code. Malaysian gateways charge `MYR` only (and refuse anything else before calling the gateway);
+ * gateways that cannot charge MYR (Paddle) declare their currency in `GatewayInfo.currency`.
+ */
+export type Currency = 'MYR' | (string & {})
 
 /** Normalised payment states. `unknown` means the gateway answered with something this adapter has not seen. */
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'cancelled' | 'expired' | 'unknown'
@@ -75,8 +79,13 @@ export interface VerifiedCallback {
 /** What an adapter declares about itself; the conformance suite and docs read this. */
 export interface GatewayInfo {
   name: string
-  /** Smallest amount the gateway accepts, in sen. */
+  /** Smallest amount the gateway accepts, in sen (the currency's minor unit). */
   minimumAmount: number
+  /**
+   * The currency this adapter charges in, and the one `confirmPayment` expects when the order names none. Absent =
+   * `MYR`.
+   */
+  currency?: Currency
   /**
    * Where the adapter's behaviour comes from. `measured` = checked against the gateway's sandbox on `date`;
    * `docs` = written from official documentation only.

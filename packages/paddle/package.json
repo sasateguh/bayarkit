@@ -1,0 +1,53 @@
+{
+  "name": "@bayarkit/paddle",
+  "version": "0.2.2",
+  "description": "Paddle Billing (merchant of record) for Node.js and TypeScript: create one-time transactions, verify Paddle-Signature webhooks, confirm each payment with a fresh status query, and refund. Zero dependencies, part of bayarkit.",
+  "keywords": [
+    "payment",
+    "payment-gateway",
+    "malaysia",
+    "fpx",
+    "duitnow",
+    "webhook",
+    "checkout",
+    "typescript",
+    "nodejs",
+    "paddle"
+  ],
+  "homepage": "https://github.com/sasateguh/bayarkit/tree/main/packages/paddle#readme",
+  "bugs": {
+    "url": "https://github.com/sasateguh/bayarkit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sasateguh/bayarkit.git",
+    "directory": "packages/paddle"
+  },
+  "license": "MIT",
+  "author": "Muhammad Aiman (https://github.com/aimanmalib)",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@bayarkit/core": "0.2.2"
+  }
+}

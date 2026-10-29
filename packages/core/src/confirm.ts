@@ -14,6 +14,7 @@ export interface Expected {
   reference: string
   /** Amount in sen that you charged for this order. */
   amount: number
+  /** Default: the adapter's `info.currency`, else `MYR`. */
   currency?: Currency
 }
 
@@ -76,7 +77,7 @@ export async function confirmPayment(
   if (payment.status !== 'paid') {
     return { ok: false, reason: 'not_paid', detail: `gateway reports ${payment.status}`, payment }
   }
-  const currency = expected.currency ?? 'MYR'
+  const currency = expected.currency ?? gateway.info.currency ?? 'MYR'
   const problems = [
     payment.reference !== expected.reference && `reference ${payment.reference} ≠ ${expected.reference}`,
     payment.amount !== expected.amount && `amount ${payment.amount} sen ≠ ${expected.amount} sen`,

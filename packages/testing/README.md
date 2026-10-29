@@ -8,7 +8,7 @@ npm install --save-dev @bayarkit/testing
 ```
 
 Each fake answers like its gateway's API (in the shapes measured on the sandbox where one was measured) and signs
-callbacks exactly as the gateway does: `startFakeToyyibPay`, `startFakeBayarcash`, `startFakeBillplz`, `startFakeChip`, `startFakeStripe`, `startFakeSenangPay`, `startFakeIPay88`, `startFakeFiuu`, `startFake2C2P`, `startFakeCurlec`, `startFakeHitPay`, `startFakeGkash`, `startFakeXendit`, `startFakeEghl`.
+callbacks exactly as the gateway does: `startFakeToyyibPay`, `startFakeBayarcash`, `startFakeBillplz`, `startFakeChip`, `startFakeStripe`, `startFakeSenangPay`, `startFakeIPay88`, `startFakeFiuu`, `startFake2C2P`, `startFakeCurlec`, `startFakeHitPay`, `startFakeGkash`, `startFakeXendit`, `startFakeEghl`, `startFakePaddle`.
 Every fake has `markPaid(id)`, `callbackFor(id)` (a correctly signed callback) and `tamper(callback)`.
 
 - `gatewayConformance(name, setup)` — the suite every adapter must pass (vitest, optional peer).
