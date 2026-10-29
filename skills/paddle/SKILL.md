@@ -1,6 +1,6 @@
 ---
 name: bayarkit-paddle
-description: Integrate Paddle Billing payments (Malaysia) safely. Use when adding Paddle Billing checkout, callbacks or payment status checks to an app.
+description: Integrate Paddle Billing payments (from Malaysia) safely. Use when adding Paddle Billing checkout, callbacks or payment status checks to an app.
 ---
 
 # Paddle Billing
@@ -14,11 +14,13 @@ import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { paddle } from '@bayarkit/paddle'
 
 const gateway = paddle({ apiKey, webhookSecret, currency: 'USD' })
-const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
+const payment = await gateway.createPayment({ reference, amount /* USD smallest unit */, description, customer, returnUrl, callbackUrl })
 return checkoutResponse(payment) // a 303 redirect, or a self-submitting page when the gateway wants a POST form
 // then, in the callback route:
-const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
+const result = await confirmPayment(gateway, await readCallback(request), { reference, amount, currency: 'USD' })
 ```
+
+Paddle has no per-payment return or callback URL: `returnUrl` and `callbackUrl` are not sent. Set a default payment link in Paddle > Checkout (a page of yours that loads Paddle.js) before the first payment, and add a notification destination for `transaction.*` events that points at your callback route. For an overlay checkout, pass `payment.id` to `Paddle.Checkout.open({ transactionId })`.
 
 Test without real money: `startFakePaddle` from `@bayarkit/testing`.
 
@@ -33,9 +35,9 @@ The full contract with a source for every fact: `gateways/paddle/spec.md` in the
 - A declined card does not change a one-time transaction's status: it adds an `error` entry to `payments[]` and sends `transaction.payment_failed`. Both `paid` and `completed` mean the payment was captured. *(developer.paddle.com transaction.payment_failed, transaction.paid)*
 - Refunds are adjustments on `completed` transactions only, and most live refunds wait in `pending_approval` (sandbox approves every ten minutes). The transaction stays `completed` after a refund; read `details.adjusted_totals`. There is no idempotency key: a second refund while one is pending is refused (`adjustment_pending_refund_request`). *(developer.paddle.com/api-reference/adjustments/create-adjustment)*
 
-## Rules that apply to every Malaysian gateway
+## Rules that apply to every gateway
 
-1. Amounts are integer sen. Never compare floating-point ringgit.
+1. Amounts are integers in the currency's smallest unit (cents). Never compare floating-point amounts.
 2. Never mark an order paid from the return URL or the callback body alone: verify the signature, ask the gateway again,
    then match reference, amount and currency exactly (`confirmPayment` does all three).
 3. Gateways retry callbacks: marking an order paid must be idempotent.

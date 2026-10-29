@@ -1,6 +1,6 @@
 # @bayarkit/testing
 
-Fake Malaysian payment gateways and the [bayarkit](https://github.com/sasateguh/bayarkit) conformance suite: test checkout and callbacks without real
+Fake payment gateways (Malaysian and global) and the [bayarkit](https://github.com/sasateguh/bayarkit) conformance suite: test checkout and callbacks without real
 money, in JavaScript or in any other language. [Bahasa Melayu](#bahasa-melayu)
 
 ```bash
@@ -14,14 +14,16 @@ Every fake has `markPaid(id)`, `callbackFor(id)` (a correctly signed callback) a
 - `gatewayConformance(name, setup)` — the suite every adapter must pass (vitest, optional peer).
 - `npx bayarkit-fake <gateway>` — one fake as a server for PHP, Python or Go tests. It prints one JSON line
   (`url`, `control`) and serves a control API: `POST /paid/<id>`, `GET /callback/<id>`,
-  `GET /callback/<id>/tampered`. vitest is not needed for this.
+  `GET /callback/<id>/tampered`, and for PayPal `POST /approve/<id>` (the buyer approves, nothing captured yet).
+  vitest is not needed for this.
 
 ## Bahasa Melayu
 
-Gateway pembayaran Malaysia palsu dan set ujian keakuran [bayarkit](https://github.com/sasateguh/bayarkit): uji checkout dan callback tanpa wang
+Gateway pembayaran palsu (Malaysia dan global) dan set ujian keakuran [bayarkit](https://github.com/sasateguh/bayarkit): uji checkout dan callback tanpa wang
 sebenar, dalam JavaScript atau bahasa lain. Setiap fake menjawab seperti API gatewaynya dan menandatangani callback
 sama seperti gateway itu. `npx bayarkit-fake <gateway>` menjalankan satu fake sebagai pelayan dengan API kawalan
-(`POST /paid/<id>`, `GET /callback/<id>`, `GET /callback/<id>/tampered`) untuk ujian PHP, Python atau Go.
+(`POST /paid/<id>`, `GET /callback/<id>`, `GET /callback/<id>/tampered`, dan untuk PayPal `POST /approve/<id>`:
+pembeli meluluskan, belum ditangkap) untuk ujian PHP, Python atau Go.
 
 Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
 

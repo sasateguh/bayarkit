@@ -1,6 +1,6 @@
 # @bayarkit/paypal
 
-PayPal Orders v2 (approve, then capture) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and a checked way to confirm a
+PayPal Orders v2 (approve, then capture) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian and global payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official PayPal REST docs and OpenAPI files; paid only when the capture is COMPLETED, webhooks verified by PayPal's postback; not yet measured on the sandbox.
@@ -15,16 +15,22 @@ import { paypal } from '@bayarkit/paypal'
 
 const gateway = paypal({ clientId, clientSecret, webhookId, currency: 'USD' })
 
-// Checkout: one reference per attempt; amounts are integer sen (RM10.50 = 1050).
+// Checkout: one reference per attempt; amounts are integers in the currency's smallest unit (USD 10.50 = 1050).
 const payment = await gateway.createPayment({ reference, amount, description, customer, returnUrl, callbackUrl })
 return checkoutResponse(payment) // a 303 redirect, or a self-submitting form when the gateway wants a POST
 
+// Return route: the buyer approved on PayPal, and nothing has moved yet. Capture it (safe to retry)
+// with the payment.id you saved at checkout: what PayPal appends to the return URL is not documented.
+await gateway.capturePayment(order.paymentId)
+
 // Callback route: never mark an order paid from the callback body or the return URL alone.
-const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
+const result = await confirmPayment(gateway, await readCallback(request), { reference, amount, currency: 'USD' })
 if (result.ok) {
   // mark the order paid (idempotently: gateways retry callbacks)
 }
 ```
+
+PayPal takes two steps. The buyer approves on PayPal (order `APPROVED`: not paid), then your return route, or a `CHECKOUT.ORDER.APPROVED` webhook, calls `capturePayment(orderId)`. `getPayment` only reads and never captures. Mark the order paid with `confirmPayment` on the `PAYMENT.CAPTURE.COMPLETED` webhook. PayPal has no per-order callback URL: add a webhook to your REST app and pass its id as `webhookId`.
 
 Test without real money: `startFakePayPal` from `@bayarkit/testing` answers like this gateway (signed callbacks
 included), and `npx bayarkit-fake paypal` runs it as a server for tests in other languages.
@@ -43,7 +49,7 @@ The full contract, with a source for every fact: [gateways/paypal/spec.md](https
 
 ## Bahasa Melayu
 
-PayPal Orders v2 (lulus, kemudian tangkap) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara bersemak untuk
+PayPal Orders v2 (lulus, kemudian tangkap) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia dan global, dan cara bersemak untuk
 mengesahkan bayaran.
 
 **Bukti:** Dokumen rasmi PayPal REST dan fail OpenAPI; dibayar hanya bila tangkapan COMPLETED, webhook disahkan melalui postback PayPal; belum diukur pada sandbox.
@@ -52,9 +58,11 @@ mengesahkan bayaran.
 npm install @bayarkit/core @bayarkit/paypal
 ```
 
-Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang berubah. Jumlah ialah sen integer
-(RM10.50 = 1050). Jangan tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata;
+Contoh kod di atas sama untuk semua gateway, kecuali langkah tangkap di laluan kembali (di bawah). Jumlah ialah integer dalam unit terkecil
+mata wang (USD 10.50 = 1050), dan `currency` dinyatakan dalam setiap semakan. Jangan tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata;
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
+
+PayPal ada dua langkah. Pembeli meluluskan di PayPal (pesanan `APPROVED`: belum dibayar), kemudian laluan kembali anda, atau webhook `CHECKOUT.ORDER.APPROVED`, memanggil `capturePayment(orderId)`. `getPayment` hanya membaca dan tidak pernah menangkap. Tanda pesanan dibayar dengan `confirmPayment` pada webhook `PAYMENT.CAPTURE.COMPLETED`. PayPal tiada URL callback bagi setiap pesanan: tambah webhook pada aplikasi REST anda dan hantar idnya sebagai `webhookId`.
 
 Uji tanpa wang sebenar: `startFakePayPal` daripada `@bayarkit/testing`, atau `npx bayarkit-fake paypal` sebagai
 pelayan.

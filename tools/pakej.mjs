@@ -46,18 +46,26 @@ function metadata(dir, pkg, root, extraKeywords) {
   return `${JSON.stringify(ordered, null, 2)}\n`
 }
 
+/** The currency an adapter charges in by default: `adapter.currency` in the registry, MYR when absent. */
+const currencyOf = (gw) => gw.adapter.currency ?? 'MYR'
+
+const unitNote = (gw) =>
+  currencyOf(gw) === 'MYR'
+    ? 'amounts are integer sen (RM10.50 = 1050)'
+    : `amounts are integers in the currency's smallest unit (${currencyOf(gw)} 10.50 = 1050)`
+
 const usage = (gw) => `\`\`\`ts
 import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { ${gw.adapter.factory} } from '${gw.adapter.package}'
 
 const gateway = ${gw.adapter.factory}(${gw.adapter.configExample})
 
-// Checkout: one reference per attempt; amounts are integer sen (RM10.50 = 1050).
+// Checkout: one reference per attempt; ${unitNote(gw)}.
 const payment = await gateway.createPayment({ reference, amount, description, customer, returnUrl, callbackUrl })
 return checkoutResponse(payment) // a 303 redirect, or a self-submitting form when the gateway wants a POST
-
+${gw.adapter.flow?.code ? `\n${gw.adapter.flow.code}\n` : ''}
 // Callback route: never mark an order paid from the callback body or the return URL alone.
-const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
+const result = await confirmPayment(gateway, await readCallback(request), { reference, amount${currencyOf(gw) === 'MYR' ? '' : `, currency: '${currencyOf(gw)}'`} })
 if (result.ok) {
   // mark the order paid (idempotently: gateways retry callbacks)
 }
@@ -70,9 +78,10 @@ function adapterReadme(gw, root) {
   const gotchas = (gw.gotchas ?? []).map((g) => `- ${g.text} (${g.source})`).join('\n')
   const gotchasMs = (gw.gotchas ?? []).map((g) => `- ${g.text_ms} (${g.source})`).join('\n')
   const spec = `${repo}/blob/main/gateways/${gw.id}/spec.md`
+  const myr = currencyOf(gw) === 'MYR'
   return `# ${gw.adapter.package}
 
-${label('en')} for [bayarkit](${repo}): one interface for Malaysian payment gateways, and a checked way to confirm a
+${label('en')} for [bayarkit](${repo}): one interface for ${myr ? 'Malaysian' : 'Malaysian and global'} payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** ${summary('en')}.
@@ -82,7 +91,7 @@ npm install @bayarkit/core ${gw.adapter.package}
 \`\`\`
 
 ${usage(gw)}
-
+${gw.adapter.flow ? `\n${gw.adapter.flow.en}\n` : ''}
 Test without real money: \`${gw.adapter.fake}\` from \`@bayarkit/testing\` answers like this gateway (signed callbacks
 included), and \`npx bayarkit-fake ${gw.id}\` runs it as a server for tests in other languages.
 
@@ -90,7 +99,7 @@ ${gotchas ? `## Traps\n\n${gotchas}\n\n` : ''}The full contract, with a source f
 
 ## Bahasa Melayu
 
-${label('ms')} untuk [bayarkit](${repo}): satu antara muka untuk gateway pembayaran Malaysia, dan cara bersemak untuk
+${label('ms')} untuk [bayarkit](${repo}): satu antara muka untuk gateway pembayaran ${myr ? 'Malaysia' : 'Malaysia dan global'}, dan cara bersemak untuk
 mengesahkan bayaran.
 
 **Bukti:** ${summary('ms')}.
@@ -99,10 +108,17 @@ mengesahkan bayaran.
 npm install @bayarkit/core ${gw.adapter.package}
 \`\`\`
 
-Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang berubah. Jumlah ialah sen integer
-(RM10.50 = 1050). Jangan tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata;
+${
+  gw.adapter.flow?.code
+    ? 'Contoh kod di atas sama untuk semua gateway, kecuali langkah tangkap di laluan kembali (di bawah).'
+    : 'Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang berubah.'
+} ${
+    myr
+      ? 'Jumlah ialah sen integer\n(RM10.50 = 1050).'
+      : `Jumlah ialah integer dalam unit terkecil\nmata wang (${currencyOf(gw)} 10.50 = 1050), dan \`currency\` dinyatakan dalam setiap semakan.`
+  } Jangan tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata;
 \`confirmPayment\` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
-
+${gw.adapter.flow ? `\n${gw.adapter.flow.ms}\n` : ''}
 Uji tanpa wang sebenar: \`${gw.adapter.fake}\` daripada \`@bayarkit/testing\`, atau \`npx bayarkit-fake ${gw.id}\` sebagai
 pelayan.
 
@@ -172,7 +188,7 @@ function testingReadme(root, adapters) {
   const repo = repoUrl(root)
   return `# @bayarkit/testing
 
-Fake Malaysian payment gateways and the [bayarkit](${repo}) conformance suite: test checkout and callbacks without real
+Fake payment gateways (Malaysian and global) and the [bayarkit](${repo}) conformance suite: test checkout and callbacks without real
 money, in JavaScript or in any other language. [Bahasa Melayu](#bahasa-melayu)
 
 \`\`\`bash
@@ -186,14 +202,16 @@ Every fake has \`markPaid(id)\`, \`callbackFor(id)\` (a correctly signed callbac
 - \`gatewayConformance(name, setup)\` — the suite every adapter must pass (vitest, optional peer).
 - \`npx bayarkit-fake <gateway>\` — one fake as a server for PHP, Python or Go tests. It prints one JSON line
   (\`url\`, \`control\`) and serves a control API: \`POST /paid/<id>\`, \`GET /callback/<id>\`,
-  \`GET /callback/<id>/tampered\`. vitest is not needed for this.
+  \`GET /callback/<id>/tampered\`, and for PayPal \`POST /approve/<id>\` (the buyer approves, nothing captured yet).
+  vitest is not needed for this.
 
 ## Bahasa Melayu
 
-Gateway pembayaran Malaysia palsu dan set ujian keakuran [bayarkit](${repo}): uji checkout dan callback tanpa wang
+Gateway pembayaran palsu (Malaysia dan global) dan set ujian keakuran [bayarkit](${repo}): uji checkout dan callback tanpa wang
 sebenar, dalam JavaScript atau bahasa lain. Setiap fake menjawab seperti API gatewaynya dan menandatangani callback
 sama seperti gateway itu. \`npx bayarkit-fake <gateway>\` menjalankan satu fake sebagai pelayan dengan API kawalan
-(\`POST /paid/<id>\`, \`GET /callback/<id>\`, \`GET /callback/<id>/tampered\`) untuk ujian PHP, Python atau Go.
+(\`POST /paid/<id>\`, \`GET /callback/<id>\`, \`GET /callback/<id>/tampered\`, dan untuk PayPal \`POST /approve/<id>\`:
+pembeli meluluskan, belum ditangkap) untuk ujian PHP, Python atau Go.
 
 Dokumentasi penuh: [README.ms.md](${repo}/blob/main/README.ms.md).
 

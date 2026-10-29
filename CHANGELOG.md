@@ -11,6 +11,24 @@ All notable changes to this project are documented here. The format follows
 - The demo is hosted at https://bayarkit.sasateguh.com, built from `examples/demo/Dockerfile` (non-root, read-only
   file system). A fourth scenario sends the genuine paid callback of another, cheaper order: only the match on
   reference and amount refuses it.
+- `@bayarkit/paddle` and `Bayarkit\Gateways\Paddle`: Paddle Billing, for selling abroad with Paddle as merchant of
+  record. One-time transactions sent tax-inclusive, `Paddle-Signature` webhooks, refunds. Paddle has no MYR: the
+  adapter charges in one configured currency (USD by default). Written from the official docs; not yet measured on
+  the sandbox.
+- `@bayarkit/paypal` and `Bayarkit\Gateways\PayPal`: PayPal Orders v2. `capturePayment` captures an approved order
+  (safe to retry); `getPayment` only reads, and an order is paid only when its capture is `COMPLETED`. Webhooks are
+  verified by PayPal's `verify-webhook-signature`. Refunds. Written from the official docs; not yet measured on the
+  sandbox.
+- Refunds, an optional capability: `refundPayment({ paymentId, amount })` returns a `RefundRecord` (`pending`,
+  `succeeded`, `failed`, `unknown`); an amount above what is left is refused before any request
+  (`checkRefundAmount`). PHP: `Bayarkit\Refunds`, `RefundInput`, `RefundRecord`. The conformance suite runs its refund
+  cases only for adapters that implement it. No existing adapter changes.
+- `verifyCallback` may return a Promise (a gateway that verifies by an API call); `confirmPayment` awaits it, and a
+  rejected Promise is `gateway_error`, not `invalid_signature`. Synchronous adapters are unchanged.
+- `GatewayInfo.currency`: the currency an adapter charges in, which `confirmPayment` expects when the order names
+  none (MYR when absent).
+- `@bayarkit/testing`: `startFakePaddle` and `startFakePayPal`, and `bayarkit-fake paddle` / `bayarkit-fake paypal`.
+  The control API gains `POST /approve/<id>` (PayPal: the buyer approves, nothing captured).
 
 ### Fixed
 

@@ -1,6 +1,6 @@
 ---
 name: bayarkit-paypal
-description: Integrate PayPal Orders v2 payments (Malaysia) safely. Use when adding PayPal Orders v2 checkout, callbacks or payment status checks to an app.
+description: Integrate PayPal Orders v2 payments (from Malaysia) safely. Use when adding PayPal Orders v2 checkout, callbacks or payment status checks to an app.
 ---
 
 # PayPal Orders v2
@@ -14,11 +14,16 @@ import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { paypal } from '@bayarkit/paypal'
 
 const gateway = paypal({ clientId, clientSecret, webhookId, currency: 'USD' })
-const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
+const payment = await gateway.createPayment({ reference, amount /* USD smallest unit */, description, customer, returnUrl, callbackUrl })
 return checkoutResponse(payment) // a 303 redirect, or a self-submitting page when the gateway wants a POST form
+// Return route: the buyer approved on PayPal, and nothing has moved yet. Capture it (safe to retry)
+// with the payment.id you saved at checkout: what PayPal appends to the return URL is not documented.
+await gateway.capturePayment(order.paymentId)
 // then, in the callback route:
-const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
+const result = await confirmPayment(gateway, await readCallback(request), { reference, amount, currency: 'USD' })
 ```
+
+PayPal takes two steps. The buyer approves on PayPal (order `APPROVED`: not paid), then your return route, or a `CHECKOUT.ORDER.APPROVED` webhook, calls `capturePayment(orderId)`. `getPayment` only reads and never captures. Mark the order paid with `confirmPayment` on the `PAYMENT.CAPTURE.COMPLETED` webhook. PayPal has no per-order callback URL: add a webhook to your REST app and pass its id as `webhookId`.
 
 Test without real money: `startFakePayPal` from `@bayarkit/testing`.
 
@@ -34,9 +39,9 @@ The full contract with a source for every fact: `gateways/paypal/spec.md` in the
 - With `payment_source.paypal.experience_context` the new order is `PAYER_ACTION_REQUIRED` and the buyer link is `rel: payer-action`; the older flow returns `CREATED` with `rel: approve`. An uncaptured order expires: the guide says 3 hours, the API reference 6 hours. *(developer.paypal.com/whats-an-order; Orders v2 OpenAPI order.links)*
 - Refunds take the capture id, not the order id: `POST /v2/payments/captures/{id}/refund` with an empty body refunds what is left, with `amount` refunds part. Over-refunding fails with `REFUND_AMOUNT_EXCEEDED`. *(Payments v2 OpenAPI captures.refund)*
 
-## Rules that apply to every Malaysian gateway
+## Rules that apply to every gateway
 
-1. Amounts are integer sen. Never compare floating-point ringgit.
+1. Amounts are integers in the currency's smallest unit (cents). Never compare floating-point amounts.
 2. Never mark an order paid from the return URL or the callback body alone: verify the signature, ask the gateway again,
    then match reference, amount and currency exactly (`confirmPayment` does all three).
 3. Gateways retry callbacks: marking an order paid must be idempotent.

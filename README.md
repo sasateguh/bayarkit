@@ -1,14 +1,16 @@
 # bayarkit
 
-One interface for Malaysian payment gateways, in TypeScript and PHP/Laravel, and a checked way to confirm a payment:
+One interface for Malaysian payment gateways (plus Paddle and PayPal for selling abroad), in TypeScript and PHP/Laravel,
+and a checked way to confirm a payment:
 the callback signature, a fresh query to the gateway, and an exact match on reference, amount and currency.
 Your checkout and callback code stay the same when you switch gateways; only the adapter and its keys change.
 
 [Bahasa Melayu](README.ms.md) · **[Try the demo](https://bayarkit.sasateguh.com/en)** (fake gateways, no money)
 
-> **Status:** 0.2.2. Sixteen gateways in TypeScript: toyyibPay, Billplz, Bayarcash and Stripe are measured on their sandboxes;
-> the others are written from official sources and have not yet run against a real gateway (the table says which
-> source). PHP/Laravel covers toyyibPay and CHIP.
+> **Status:** 0.2.2. Sixteen gateways in TypeScript; Paddle and PayPal are in this repository but not on npm yet.
+> toyyibPay, Billplz, Bayarcash and Stripe are measured on their sandboxes; the others are written from official
+> sources and have not yet run against a real gateway (the table says which source). PHP/Laravel covers toyyibPay,
+> CHIP, Paddle and PayPal.
 
 ## Why
 
@@ -48,7 +50,9 @@ Your checkout and callback code stay the same when you switch gateways; only the
 Researched but without an adapter yet: Adyen and Airwallex (specs in [gateways/README.md](gateways/README.md)). An adapter is
 listed as _measured_ only after the conformance suite has run against that gateway's sandbox.
 
-Amounts are always integer **sen** (`1050` = RM10.50), so nothing compares floating-point ringgit.
+Amounts are always integer **sen** (`1050` = RM10.50), so nothing compares floating-point ringgit. Paddle and PayPal
+charge in other currencies (USD by default): there an amount is an integer in that currency's smallest unit (`1050` =
+USD 10.50), and every check names the `currency`.
 
 ## Install
 
@@ -105,6 +109,75 @@ body). Get the public key once with `await chip({ secretKey, brandId, environmen
 and pass it as `publicKey`; without it every callback is refused. CHIP rejects a `callbackUrl` with a port, even `:443`.
 `environment` is required (`'test'` with a test key, `'live'` with a live key): a purchase from the other mode, or one
 that does not say which it is, is refused, so a test payment does not confirm a live order.
+
+### Paddle and PayPal (selling abroad)
+
+Neither charges ringgit by default, so set `currency` on the adapter and pass the same `currency` to
+`createPayment` and `confirmPayment`. Both send their notifications to one webhook URL set in their dashboards, not to
+a `callbackUrl` per payment.
+
+**Paddle** (merchant of record: Paddle sells to the buyer and handles tax). Paddle has no MYR.
+
+```ts
+const gateway = paddle({ apiKey, webhookSecret, currency: 'USD' })
+const payment = await gateway.createPayment({
+  reference,
+  amount,
+  currency: 'USD',
+  description,
+  customer,
+  returnUrl,
+  callbackUrl,
+})
+// payment.url = your default payment link + ?_ptxn=<id>; or open an overlay: Paddle.Checkout.open({ transactionId: payment.id })
+const result = await confirmPayment(gateway, await readCallback(request), {
+  reference,
+  amount,
+  currency: 'USD',
+})
+```
+
+- Set a default payment link in Paddle > Checkout first (a page of yours that loads Paddle.js); until then Paddle
+  refuses every new transaction. `returnUrl` and `callbackUrl` are not sent: add a notification destination for
+  `transaction.*` events that points at your callback route.
+- The price is sent tax-inclusive, so the buyer pays exactly `amount` and `confirmPayment` compares that total.
+- Refunds (`gateway.refundPayment`) wait for Paddle's approval: the result is `pending` first.
+
+**PayPal** (Orders v2). Paying takes two steps, and approving is not paying.
+
+```ts
+const gateway = paypal({ clientId, clientSecret, webhookId, currency: 'USD' })
+const payment = await gateway.createPayment({
+  reference,
+  amount,
+  currency: 'USD',
+  description,
+  customer,
+  returnUrl,
+  callbackUrl,
+})
+// Save payment.id with the order and send the buyer to payment.url (PayPal's approval page).
+
+// GET /thank-you (returnUrl): the buyer approved; nothing has moved yet. Capture with the saved id.
+await gateway.capturePayment(order.paymentId) // safe to retry: PayPal returns the first capture again
+
+// POST /api/payment/callback (your PayPal webhook): mark paid on PAYMENT.CAPTURE.COMPLETED.
+const result = await confirmPayment(gateway, await readCallback(request), {
+  reference,
+  amount,
+  currency: 'USD',
+})
+```
+
+- `getPayment` only reads; an approved but uncaptured order is `pending`. Paid means the capture is `COMPLETED`.
+- `webhookId` is the id of the webhook you add to your PayPal REST app. `verifyCallback` asks PayPal to verify each
+  event (`verify-webhook-signature`), so it is async; if PayPal cannot be reached, `confirmPayment` answers
+  `gateway_error` (retry), not `invalid_signature`.
+- MYR works only for a Malaysian PayPal account.
+
+Both adapters can refund: `await gateway.refundPayment({ paymentId, amount })` with an amount up to what is left
+(checked before calling the gateway). It returns `pending`, `succeeded`, `failed` or `unknown`. Other adapters do not
+implement refunds yet.
 
 ## What `confirmPayment` checks
 
@@ -176,7 +249,8 @@ This snippet runs as written in the test suite ([examples/web-standard/test/read
 `npx bayarkit-fake <gateway>` runs one fake gateway as a server and prints one JSON line
 with its `url` and a `control` URL. Point your app at `url`, then drive it over HTTP: `POST <control>/paid/<id>` marks a
 payment paid, `GET <control>/callback/<id>` returns the exact signed callback (`/tampered` for a forged one) to post to
-your callback route. It does not need vitest.
+your callback route. For PayPal, `POST <control>/approve/<id>` is the buyer approving without a capture, so you can test
+your capture step. It does not need vitest.
 
 ## Demo
 
@@ -194,7 +268,7 @@ no money are involved. Source: [examples/demo](examples/demo/app.mjs).
 
 [`php/`](php/README.md) is the PHP twin for Laravel projects: the same interface and the same `confirmPayment` rule
 (`Bayarkit\Confirm::payment`), a service provider configured from `.env`, `Callback::from($request)` and
-`Checkout::response($payment)`. Install with `composer require bayarkit/bayarkit`. It covers toyyibPay and CHIP, and every PHP adapter is tested against the same fake
+`Checkout::response($payment)`. Install with `composer require bayarkit/bayarkit`. It covers toyyibPay, CHIP, Paddle and PayPal, and every PHP adapter is tested against the same fake
 gateways as its TypeScript twin (`scripts/php-gate.sh`, part of the gate).
 
 ## Adding a gateway

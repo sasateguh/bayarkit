@@ -1079,6 +1079,11 @@
         "factory": "paddle",
         "evidence": "docs",
         "configExample": "{ apiKey, webhookSecret, currency: 'USD' }",
+        "currency": "USD",
+        "flow": {
+          "en": "Paddle has no per-payment return or callback URL: `returnUrl` and `callbackUrl` are not sent. Set a default payment link in Paddle > Checkout (a page of yours that loads Paddle.js) before the first payment, and add a notification destination for `transaction.*` events that points at your callback route. For an overlay checkout, pass `payment.id` to `Paddle.Checkout.open({ transactionId })`.",
+          "ms": "Paddle tiada URL kembali atau callback bagi setiap bayaran: `returnUrl` dan `callbackUrl` tidak dihantar. Tetapkan pautan pembayaran lalai dalam Paddle > Checkout (halaman anda sendiri yang memuatkan Paddle.js) sebelum bayaran pertama, dan tambah destinasi notifikasi untuk acara `transaction.*` yang menghala ke laluan callback anda. Untuk checkout overlay, hantar `payment.id` kepada `Paddle.Checkout.open({ transactionId })`."
+        },
         "fake": "startFakePaddle",
         "label": {
           "en": "Paddle Billing (merchant of record, no MYR)",
@@ -1177,6 +1182,12 @@
         "factory": "paypal",
         "evidence": "docs",
         "configExample": "{ clientId, clientSecret, webhookId, currency: 'USD' }",
+        "currency": "USD",
+        "flow": {
+          "code": "// Return route: the buyer approved on PayPal, and nothing has moved yet. Capture it (safe to retry)\n// with the payment.id you saved at checkout: what PayPal appends to the return URL is not documented.\nawait gateway.capturePayment(order.paymentId)",
+          "en": "PayPal takes two steps. The buyer approves on PayPal (order `APPROVED`: not paid), then your return route, or a `CHECKOUT.ORDER.APPROVED` webhook, calls `capturePayment(orderId)`. `getPayment` only reads and never captures. Mark the order paid with `confirmPayment` on the `PAYMENT.CAPTURE.COMPLETED` webhook. PayPal has no per-order callback URL: add a webhook to your REST app and pass its id as `webhookId`.",
+          "ms": "PayPal ada dua langkah. Pembeli meluluskan di PayPal (pesanan `APPROVED`: belum dibayar), kemudian laluan kembali anda, atau webhook `CHECKOUT.ORDER.APPROVED`, memanggil `capturePayment(orderId)`. `getPayment` hanya membaca dan tidak pernah menangkap. Tanda pesanan dibayar dengan `confirmPayment` pada webhook `PAYMENT.CAPTURE.COMPLETED`. PayPal tiada URL callback bagi setiap pesanan: tambah webhook pada aplikasi REST anda dan hantar idnya sebagai `webhookId`."
+        },
         "fake": "startFakePayPal",
         "label": {
           "en": "PayPal Orders v2 (approve, then capture)",

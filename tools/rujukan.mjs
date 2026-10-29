@@ -201,6 +201,9 @@ function lint() {
 
 function skillFor(gw, lock) {
   const name = gw.name
+  // Adapters that cannot charge ringgit (Paddle) or default to another currency (PayPal) say so in the registry.
+  const currency = gw.adapter?.currency ?? 'MYR'
+  const myr = currency === 'MYR'
   const sources = (gw.sources ?? [])
     .map((s) => {
       const l = lock[`${gw.id}/${s.id}`]
@@ -218,12 +221,12 @@ import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
 import { ${gw.adapter.factory} } from '${gw.adapter.package}'
 
 const gateway = ${gw.adapter.factory}(${gw.adapter.configExample})
-const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
+const payment = await gateway.createPayment({ reference, amount /* ${myr ? 'sen' : `${currency} smallest unit`} */, description, customer, returnUrl, callbackUrl })
 return checkoutResponse(payment) // a 303 redirect, or a self-submitting page when the gateway wants a POST form
-// then, in the callback route:
-const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
+${gw.adapter.flow?.code ? `${gw.adapter.flow.code}\n` : ''}// then, in the callback route:
+const result = await confirmPayment(gateway, await readCallback(request), { reference, amount${myr ? '' : `, currency: '${currency}'`} })
 \`\`\`
-
+${gw.adapter.flow ? `\n${gw.adapter.flow.en}\n` : ''}
 Test without real money: \`${gw.adapter.fake}\` from \`@bayarkit/testing\`.`
     : `## No bayarkit adapter yet
 
@@ -237,16 +240,16 @@ CONTRIBUTING.md in https://github.com/sasateguh/bayarkit.`
     : ''
   return `---
 name: bayarkit-${gw.id}
-description: Integrate ${name} payments (Malaysia) safely. Use when adding ${name} checkout, callbacks or payment status checks to an app.
+description: Integrate ${name} payments (${myr ? 'Malaysia' : 'from Malaysia'}) safely. Use when adding ${name} checkout, callbacks or payment status checks to an app.
 ---
 
 # ${name}
 
 ${adapter}
 ${spec}${gotchas}
-## Rules that apply to every Malaysian gateway
+## Rules that apply to every ${myr ? 'Malaysian gateway' : 'gateway'}
 
-1. Amounts are integer sen. Never compare floating-point ringgit.
+1. ${myr ? 'Amounts are integer sen. Never compare floating-point ringgit.' : "Amounts are integers in the currency's smallest unit (cents). Never compare floating-point amounts."}
 2. Never mark an order paid from the return URL or the callback body alone: verify the signature, ask the gateway again,
    then match reference, amount and currency exactly (\`confirmPayment\` does all three).
 3. Gateways retry callbacks: marking an order paid must be idempotent.

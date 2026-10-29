@@ -1,6 +1,6 @@
 # @bayarkit/paddle
 
-Paddle Billing (merchant of record, no MYR) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian payment gateways, and a checked way to confirm a
+Paddle Billing (merchant of record, no MYR) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian and global payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
 **Evidence:** Official Paddle Billing docs and paddle-node-sdk (webhook test vector); charges in USD or another Paddle currency, never MYR; not yet measured on the sandbox.
@@ -15,16 +15,18 @@ import { paddle } from '@bayarkit/paddle'
 
 const gateway = paddle({ apiKey, webhookSecret, currency: 'USD' })
 
-// Checkout: one reference per attempt; amounts are integer sen (RM10.50 = 1050).
+// Checkout: one reference per attempt; amounts are integers in the currency's smallest unit (USD 10.50 = 1050).
 const payment = await gateway.createPayment({ reference, amount, description, customer, returnUrl, callbackUrl })
 return checkoutResponse(payment) // a 303 redirect, or a self-submitting form when the gateway wants a POST
 
 // Callback route: never mark an order paid from the callback body or the return URL alone.
-const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
+const result = await confirmPayment(gateway, await readCallback(request), { reference, amount, currency: 'USD' })
 if (result.ok) {
   // mark the order paid (idempotently: gateways retry callbacks)
 }
 ```
+
+Paddle has no per-payment return or callback URL: `returnUrl` and `callbackUrl` are not sent. Set a default payment link in Paddle > Checkout (a page of yours that loads Paddle.js) before the first payment, and add a notification destination for `transaction.*` events that points at your callback route. For an overlay checkout, pass `payment.id` to `Paddle.Checkout.open({ transactionId })`.
 
 Test without real money: `startFakePaddle` from `@bayarkit/testing` answers like this gateway (signed callbacks
 included), and `npx bayarkit-fake paddle` runs it as a server for tests in other languages.
@@ -42,7 +44,7 @@ The full contract, with a source for every fact: [gateways/paddle/spec.md](https
 
 ## Bahasa Melayu
 
-Paddle Billing (penjual rasmi, tiada MYR) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara bersemak untuk
+Paddle Billing (penjual rasmi, tiada MYR) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia dan global, dan cara bersemak untuk
 mengesahkan bayaran.
 
 **Bukti:** Dokumen rasmi Paddle Billing dan paddle-node-sdk (vektor ujian webhook); caj dalam USD atau mata wang Paddle lain, bukan MYR; belum diukur pada sandbox.
@@ -51,9 +53,11 @@ mengesahkan bayaran.
 npm install @bayarkit/core @bayarkit/paddle
 ```
 
-Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang berubah. Jumlah ialah sen integer
-(RM10.50 = 1050). Jangan tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata;
+Contoh kod di atas sama untuk semua gateway: hanya adapter dan kuncinya yang berubah. Jumlah ialah integer dalam unit terkecil
+mata wang (USD 10.50 = 1050), dan `currency` dinyatakan dalam setiap semakan. Jangan tanda pesanan dibayar daripada badan callback atau pautan kembali semata-mata;
 `confirmPayment` menyemak tandatangan, bertanya gateway semula, dan memadankan rujukan, jumlah dan mata wang.
+
+Paddle tiada URL kembali atau callback bagi setiap bayaran: `returnUrl` dan `callbackUrl` tidak dihantar. Tetapkan pautan pembayaran lalai dalam Paddle > Checkout (halaman anda sendiri yang memuatkan Paddle.js) sebelum bayaran pertama, dan tambah destinasi notifikasi untuk acara `transaction.*` yang menghala ke laluan callback anda. Untuk checkout overlay, hantar `payment.id` kepada `Paddle.Checkout.open({ transactionId })`.
 
 Uji tanpa wang sebenar: `startFakePaddle` daripada `@bayarkit/testing`, atau `npx bayarkit-fake paddle` sebagai
 pelayan.

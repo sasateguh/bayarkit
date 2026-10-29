@@ -1,14 +1,15 @@
 # bayarkit
 
-Satu antara muka untuk gateway pembayaran Malaysia, dalam TypeScript dan PHP/Laravel, dan cara bersemak untuk mengesahkan
-bayaran: tandatangan callback, pertanyaan baharu kepada gateway, dan padanan tepat rujukan, amaun dan mata wang.
+Satu antara muka untuk gateway pembayaran Malaysia (serta Paddle dan PayPal untuk menjual ke luar negara), dalam TypeScript
+dan PHP/Laravel, dan cara bersemak untuk mengesahkan bayaran: tandatangan callback, pertanyaan baharu kepada gateway, dan padanan tepat rujukan, amaun dan mata wang.
 Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapter dan kuncinya yang berubah.
 
 [English](README.md) · **[Cuba demo](https://bayarkit.sasateguh.com/)** (gateway palsu, tiada wang)
 
-> **Status:** 0.2.2. Enam belas gateway dalam TypeScript: toyyibPay, Billplz, Bayarcash dan Stripe diukur pada sandbox
-> masing-masing; yang lain ditulis daripada sumber rasmi dan belum dijalankan terhadap gateway sebenar (jadual
-> menyatakan sumbernya). PHP/Laravel meliputi toyyibPay dan CHIP.
+> **Status:** 0.2.2. Enam belas gateway dalam TypeScript; Paddle dan PayPal ada dalam repositori ini tetapi belum di npm.
+> toyyibPay, Billplz, Bayarcash dan Stripe diukur pada sandbox masing-masing; yang lain ditulis daripada sumber rasmi
+> dan belum dijalankan terhadap gateway sebenar (jadual menyatakan sumbernya). PHP/Laravel meliputi toyyibPay, CHIP,
+> Paddle dan PayPal.
 
 ## Kenapa
 
@@ -50,7 +51,9 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 Sudah dikaji tetapi belum ada adapter: Adyen dan Airwallex (spesifikasi dalam [gateways/README.md](gateways/README.md)). Satu
 adapter disenaraikan sebagai _diukur_ hanya selepas set ujian piawai dijalankan terhadap sandbox gateway itu.
 
-Amaun sentiasa dalam **sen** integer (`1050` = RM10.50), jadi tiada ringgit titik terapung dibandingkan.
+Amaun sentiasa dalam **sen** integer (`1050` = RM10.50), jadi tiada ringgit titik terapung dibandingkan. Paddle dan
+PayPal mengecaj dalam mata wang lain (USD secara lalai): di situ amaun ialah integer dalam unit terkecil mata wang itu
+(`1050` = USD 10.50), dan setiap semakan menyatakan `currency`.
 
 ## Pasang
 
@@ -108,6 +111,76 @@ pembelian ujian. Callback ditandatangani dengan kunci RSA CHIP atas badan mentah
 tanpanya setiap callback ditolak. CHIP menolak `callbackUrl` yang ada port, walaupun `:443`.
 `environment` wajib (`'test'` dengan kunci ujian, `'live'` dengan kunci hidup): pembelian daripada mod yang satu lagi,
 atau yang tidak menyatakan modnya, ditolak, jadi bayaran ujian tidak mengesahkan pesanan sebenar.
+
+### Paddle dan PayPal (menjual ke luar negara)
+
+Kedua-duanya tidak mengecaj ringgit secara lalai, jadi tetapkan `currency` pada adapter dan hantar `currency` yang sama
+kepada `createPayment` dan `confirmPayment`. Kedua-duanya menghantar notifikasi ke satu URL webhook yang ditetapkan
+dalam papan pemuka masing-masing, bukan ke `callbackUrl` bagi setiap bayaran.
+
+**Paddle** (penjual rasmi: Paddle menjual kepada pembeli dan menguruskan cukai). Paddle tiada MYR.
+
+```ts
+const gateway = paddle({ apiKey, webhookSecret, currency: 'USD' })
+const payment = await gateway.createPayment({
+  reference,
+  amount,
+  currency: 'USD',
+  description,
+  customer,
+  returnUrl,
+  callbackUrl,
+})
+// payment.url = pautan pembayaran lalai anda + ?_ptxn=<id>; atau buka overlay: Paddle.Checkout.open({ transactionId: payment.id })
+const result = await confirmPayment(gateway, await readCallback(request), {
+  reference,
+  amount,
+  currency: 'USD',
+})
+```
+
+- Tetapkan pautan pembayaran lalai dalam Paddle > Checkout dahulu (halaman anda sendiri yang memuatkan Paddle.js);
+  sebelum itu Paddle menolak setiap transaksi baharu. `returnUrl` dan `callbackUrl` tidak dihantar: tambah destinasi
+  notifikasi untuk acara `transaction.*` yang menghala ke laluan callback anda.
+- Harga dihantar termasuk cukai, jadi pembeli membayar tepat `amount` dan `confirmPayment` membandingkan jumlah itu.
+- Bayaran balik (`gateway.refundPayment`) menunggu kelulusan Paddle: hasilnya `pending` dahulu.
+
+**PayPal** (Orders v2). Bayaran ada dua langkah, dan meluluskan bukan membayar.
+
+```ts
+const gateway = paypal({ clientId, clientSecret, webhookId, currency: 'USD' })
+const payment = await gateway.createPayment({
+  reference,
+  amount,
+  currency: 'USD',
+  description,
+  customer,
+  returnUrl,
+  callbackUrl,
+})
+// Simpan payment.id bersama pesanan dan hantar pembeli ke payment.url (halaman kelulusan PayPal).
+
+// GET /thank-you (returnUrl): pembeli sudah meluluskan; belum ada wang berpindah. Tangkap dengan id yang disimpan.
+await gateway.capturePayment(order.paymentId) // selamat diulang: PayPal memulangkan tangkapan pertama semula
+
+// POST /api/payment/callback (webhook PayPal anda): tanda dibayar pada PAYMENT.CAPTURE.COMPLETED.
+const result = await confirmPayment(gateway, await readCallback(request), {
+  reference,
+  amount,
+  currency: 'USD',
+})
+```
+
+- `getPayment` hanya membaca; pesanan yang diluluskan tetapi belum ditangkap ialah `pending`. Dibayar bermaksud
+  tangkapan `COMPLETED`.
+- `webhookId` ialah id webhook yang anda tambah pada aplikasi REST PayPal anda. `verifyCallback` meminta PayPal
+  mengesahkan setiap acara (`verify-webhook-signature`), jadi ia async; jika PayPal tidak dapat dicapai,
+  `confirmPayment` menjawab `gateway_error` (cuba semula), bukan `invalid_signature`.
+- MYR hanya berfungsi untuk akaun PayPal Malaysia.
+
+Kedua-dua adapter boleh membuat bayaran balik: `await gateway.refundPayment({ paymentId, amount })` dengan amaun tidak
+melebihi baki (disemak sebelum memanggil gateway). Ia memulangkan `pending`, `succeeded`, `failed` atau `unknown`.
+Adapter lain belum melaksanakan bayaran balik.
 
 ## Apa yang `confirmPayment` semak
 
@@ -182,7 +255,9 @@ Petikan ini dijalankan seperti tertulis dalam set ujian ([examples/web-standard/
 `npx bayarkit-fake <gateway>` menjalankan satu gateway palsu sebagai pelayan dan mencetak
 satu baris JSON dengan `url`nya dan URL `control`. Halakan aplikasi anda ke `url`, kemudian kawal melalui HTTP:
 `POST <control>/paid/<id>` menanda bayaran dibayar, `GET <control>/callback/<id>` memulangkan callback bertandatangan
-yang tepat (`/tampered` untuk callback palsu) untuk dihantar ke laluan callback anda. Ia tidak memerlukan vitest.
+yang tepat (`/tampered` untuk callback palsu) untuk dihantar ke laluan callback anda. Untuk PayPal,
+`POST <control>/approve/<id>` ialah pembeli meluluskan tanpa tangkapan, supaya anda boleh menguji langkah tangkap anda.
+Ia tidak memerlukan vitest.
 
 ## Demo
 
@@ -201,7 +276,7 @@ Setiap gateway ialah gateway palsu daripada `@bayarkit/testing`, jadi tiada kunc
 
 [`php/`](php/README.ms.md) ialah kembar PHP untuk projek Laravel: antara muka yang sama dan peraturan `confirmPayment`
 yang sama (`Bayarkit\Confirm::payment`), penyedia servis yang ditetapkan dari `.env`, `Callback::from($request)` dan
-`Checkout::response($payment)`. Pasang dengan `composer require bayarkit/bayarkit`. Ia meliputi toyyibPay dan CHIP, dan setiap adapter PHP diuji terhadap gateway palsu
+`Checkout::response($payment)`. Pasang dengan `composer require bayarkit/bayarkit`. Ia meliputi toyyibPay, CHIP, Paddle dan PayPal, dan setiap adapter PHP diuji terhadap gateway palsu
 yang sama dengan kembar TypeScriptnya (`scripts/php-gate.sh`, sebahagian gerbang).
 
 ## Menambah gateway
