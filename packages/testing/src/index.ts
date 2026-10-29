@@ -10,6 +10,13 @@ export { type FakeFiuu, type FakeFiuuOptions, startFakeFiuu } from './fakes/fiuu
 export { type FakeGkash, startFakeGkash } from './fakes/gkash.js'
 export { type FakeHitPay, startFakeHitPay } from './fakes/hitpay.js'
 export { type FakeIPay88, startFakeIPay88 } from './fakes/ipay88.js'
+export {
+  type FakePaddle,
+  PADDLE_VERSION,
+  type PaddleAdjustment,
+  paddleSignature,
+  startFakePaddle,
+} from './fakes/paddle.js'
 export { dokuSignature, type FakeSenangPay, startFakeSenangPay } from './fakes/senangpay.js'
 export { type FakeStripe, startFakeStripe, stripeSignature } from './fakes/stripe.js'
 export { type FakeToyyibPay, startFakeToyyibPay } from './fakes/toyyibpay.js'

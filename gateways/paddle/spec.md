@@ -22,6 +22,7 @@ listed at the end, for the sandbox run.
 | HTTPS only. Live host `api.paddle.com`, sandbox host `sandbox-api.paddle.com`. Separate accounts, separate keys, separate data. | https://developer.paddle.com/sdks/sandbox.md |
 | Bearer auth: `Authorization: Bearer <api key>`. Keys match `^pdl_(live\|sdbx)_apikey_[a-z\d]{26}_[a-zA-Z\d]{22}_[a-zA-Z\d]{3}$`, so the key itself says sandbox (`sdbx_`) or live (`live_`). | https://developer.paddle.com/api-reference/about/authentication.md |
 | A sandbox key on the live host (or the reverse) returns `forbidden`. | https://developer.paddle.com/sdks/sandbox.md |
+| Auth failures are HTTP **403**, not 401: no header = `authentication_missing`, a header in the wrong format = `authentication_malformed`, an unknown key = `invalid_token`. | https://developer.paddle.com/errors.md |
 | API keys expire: 90 days by default, at most one year. Events `api_key.expiring` (7 days before) and `api_key.expired` exist. | https://developer.paddle.com/api-reference/about/authentication.md |
 | `Paddle-Version` header pins the API version. Current version is **1**. Without the header the account default applies; a version older than the default is refused. | https://developer.paddle.com/api-reference/about/versioning.md |
 | Webhooks do not follow the account default: each notification destination has its own `api_version`. | same |
@@ -136,6 +137,7 @@ Permission `adjustment.write`.
 | Zero-decimal currencies: CLP, JPY, KRW, VND. For them the lowest denomination is the whole unit. | same |
 | Minimum charge per currency, e.g. USD 0.70 (70 cents), EUR 0.65, GBP 0.55, SGD 0.90, JPY 100. `GET /currencies` returns the list with decimals and minimums. | same |
 | Balance (payout) currencies: USD, EUR, GBP, AUD, CAD. | same |
+| A balance below the currency's minimum is refused with `transaction_balance_less_than_charge_limit` (400). | https://developer.paddle.com/errors.md |
 | Rate limit: 240 requests per minute per IP; over it = `429 too_many_requests`, then that IP waits 60 s (`Retry-After`). | https://developer.paddle.com/api-reference/about/rate-limiting.md |
 
 ## 7. Errors
@@ -153,3 +155,5 @@ Permission `adjustment.write`.
    expected) and whether `details.adjusted_totals.grand_total` drops on create or only on approval.
 5. Size limits on `custom_data` (the docs give none).
 6. Whether a declined test card leaves the transaction `ready` (expected from the docs) or moves it elsewhere.
+7. Whether the minimum charge is checked when the transaction is created (the fake refuses it there) or only at
+   checkout.
