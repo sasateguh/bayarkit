@@ -1,0 +1,53 @@
+{
+  "name": "@bayarkit/paypal",
+  "version": "0.2.2",
+  "description": "PayPal Orders v2 for Node.js and TypeScript: create an order, capture it after the buyer approves, verify webhooks through PayPal's own check, confirm each payment with a fresh order query, and refund. Zero dependencies, part of bayarkit.",
+  "keywords": [
+    "payment",
+    "payment-gateway",
+    "malaysia",
+    "fpx",
+    "duitnow",
+    "webhook",
+    "checkout",
+    "typescript",
+    "nodejs",
+    "paypal"
+  ],
+  "homepage": "https://github.com/sasateguh/bayarkit/tree/main/packages/paypal#readme",
+  "bugs": {
+    "url": "https://github.com/sasateguh/bayarkit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sasateguh/bayarkit.git",
+    "directory": "packages/paypal"
+  },
+  "license": "MIT",
+  "author": "Muhammad Aiman (https://github.com/aimanmalib)",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@bayarkit/core": "0.2.2"
+  }
+}

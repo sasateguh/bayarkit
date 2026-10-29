@@ -6,7 +6,7 @@ Your checkout and callback code stay the same when you switch gateways; only the
 
 [Bahasa Melayu](README.ms.md) · **[Try the demo](https://bayarkit.sasateguh.com/en)** (fake gateways, no money)
 
-> **Status:** 0.2.2. Fifteen gateways in TypeScript: toyyibPay, Billplz, Bayarcash and Stripe are measured on their sandboxes;
+> **Status:** 0.2.2. Sixteen gateways in TypeScript: toyyibPay, Billplz, Bayarcash and Stripe are measured on their sandboxes;
 > the others are written from official sources and have not yet run against a real gateway (the table says which
 > source). PHP/Laravel covers toyyibPay and CHIP.
 
@@ -42,6 +42,7 @@ Your checkout and callback code stay the same when you switch gateways; only the
 | Xendit (Malaysia): Payment Sessions              | `@bayarkit/xendit`    | Official docs (Payment Sessions, v3 payment requests, `x-callback-token` webhooks: a static token, not a signature) and Xendit's agent skill; not yet measured in test mode  |
 | eGHL (ADAPTIS e-Commerce)                        | `@bayarkit/eghl`      | Official eGHL public code (hash class, merchant-api QUERY, Omnipay HashValue2 test vector; no public API guide exists); not yet measured on the test host                    |
 | Paddle Billing (merchant of record, no MYR)      | `@bayarkit/paddle`    | Official Paddle Billing docs and paddle-node-sdk (webhook test vector); charges in USD or another Paddle currency, never MYR; not yet measured on the sandbox                |
+| PayPal Orders v2 (approve, then capture)         | `@bayarkit/paypal`    | Official PayPal REST docs and OpenAPI files; paid only when the capture is COMPLETED, webhooks verified by PayPal's postback; not yet measured on the sandbox                |
 <!-- /gateways:table -->
 
 Researched but without an adapter yet: Adyen and Airwallex (specs in [gateways/README.md](gateways/README.md)). An adapter is

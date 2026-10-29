@@ -6,7 +6,7 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 
 [English](README.md) · **[Cuba demo](https://bayarkit.sasateguh.com/)** (gateway palsu, tiada wang)
 
-> **Status:** 0.2.2. Lima belas gateway dalam TypeScript: toyyibPay, Billplz, Bayarcash dan Stripe diukur pada sandbox
+> **Status:** 0.2.2. Enam belas gateway dalam TypeScript: toyyibPay, Billplz, Bayarcash dan Stripe diukur pada sandbox
 > masing-masing; yang lain ditulis daripada sumber rasmi dan belum dijalankan terhadap gateway sebenar (jadual
 > menyatakan sumbernya). PHP/Laravel meliputi toyyibPay dan CHIP.
 
@@ -44,6 +44,7 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 | Xendit (Malaysia): Payment Sessions            | `@bayarkit/xendit`    | Dokumen rasmi (Payment Sessions, payment request v3, webhook `x-callback-token`: token statik, bukan tandatangan) dan skil agen Xendit; belum diukur dalam mod ujian              |
 | eGHL (ADAPTIS e-Commerce)                      | `@bayarkit/eghl`      | Kod awam rasmi eGHL (kelas hash, QUERY merchant-api, vektor ujian HashValue2 Omnipay; tiada panduan API awam); belum diukur pada hos ujian                                        |
 | Paddle Billing (penjual rasmi, tiada MYR)      | `@bayarkit/paddle`    | Dokumen rasmi Paddle Billing dan paddle-node-sdk (vektor ujian webhook); caj dalam USD atau mata wang Paddle lain, bukan MYR; belum diukur pada sandbox                           |
+| PayPal Orders v2 (lulus, kemudian tangkap)     | `@bayarkit/paypal`    | Dokumen rasmi PayPal REST dan fail OpenAPI; dibayar hanya bila tangkapan COMPLETED, webhook disahkan melalui postback PayPal; belum diukur pada sandbox                           |
 <!-- /gateways:table -->
 
 Sudah dikaji tetapi belum ada adapter: Adyen dan Airwallex (spesifikasi dalam [gateways/README.md](gateways/README.md)). Satu

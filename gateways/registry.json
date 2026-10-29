@@ -1172,6 +1172,21 @@
       "name": "PayPal Orders v2",
       "site": "https://www.paypal.com",
       "sandbox": "host api-m.sandbox.paypal.com, HTTPS (separate sandbox app: client id + secret from the developer dashboard)",
+      "adapter": {
+        "package": "@bayarkit/paypal",
+        "factory": "paypal",
+        "evidence": "docs",
+        "configExample": "{ clientId, clientSecret, webhookId, currency: 'USD' }",
+        "fake": "startFakePayPal",
+        "label": {
+          "en": "PayPal Orders v2 (approve, then capture)",
+          "ms": "PayPal Orders v2 (lulus, kemudian tangkap)"
+        },
+        "summary": {
+          "en": "Official PayPal REST docs and OpenAPI files; paid only when the capture is COMPLETED, webhooks verified by PayPal's postback; not yet measured on the sandbox",
+          "ms": "Dokumen rasmi PayPal REST dan fail OpenAPI; dibayar hanya bila tangkapan COMPLETED, webhook disahkan melalui postback PayPal; belum diukur pada sandbox"
+        }
+      },
       "sources": [
         {
           "id": "orders-guide",

@@ -5,10 +5,22 @@ description: Integrate PayPal Orders v2 payments (Malaysia) safely. Use when add
 
 # PayPal Orders v2
 
-## No bayarkit adapter yet
+## Use the bayarkit adapter
 
-Implement it with the official sources below, then follow the rules in this skill. To contribute an adapter, see
-CONTRIBUTING.md in https://github.com/sasateguh/bayarkit.
+Install `@bayarkit/core` and `@bayarkit/paypal`. Evidence: **written from the official docs, not yet measured on the sandbox**.
+
+```ts
+import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
+import { paypal } from '@bayarkit/paypal'
+
+const gateway = paypal({ clientId, clientSecret, webhookId, currency: 'USD' })
+const payment = await gateway.createPayment({ reference, amount /* sen */, description, customer, returnUrl, callbackUrl })
+return checkoutResponse(payment) // a 303 redirect, or a self-submitting page when the gateway wants a POST form
+// then, in the callback route:
+const result = await confirmPayment(gateway, await readCallback(request), { reference, amount })
+```
+
+Test without real money: `startFakePayPal` from `@bayarkit/testing`.
 
 The full contract with a source for every fact: `gateways/paypal/spec.md` in the bayarkit repository.
 
