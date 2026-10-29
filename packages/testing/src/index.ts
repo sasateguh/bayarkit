@@ -17,6 +17,14 @@ export {
   paddleSignature,
   startFakePaddle,
 } from './fakes/paddle.js'
+export {
+  type FakePayPal,
+  PAYPAL_HEADERS,
+  type PayPalCapture,
+  type PayPalOrder,
+  type PayPalRefund,
+  startFakePayPal,
+} from './fakes/paypal.js'
 export { dokuSignature, type FakeSenangPay, startFakeSenangPay } from './fakes/senangpay.js'
 export { type FakeStripe, startFakeStripe, stripeSignature } from './fakes/stripe.js'
 export { type FakeToyyibPay, startFakeToyyibPay } from './fakes/toyyibpay.js'
