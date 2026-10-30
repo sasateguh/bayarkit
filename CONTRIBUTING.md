@@ -56,6 +56,19 @@ run the same conformance cases against the same `bayarkit-fake` gateways, and mo
 `packages/core/test/money-vectors.json`, which both test suites read. After changing `php/composer.json`, run
 `bash scripts/php-compat.sh` (PHP 8.2 with the lowest dependencies, PHP 8.4 with the newest).
 
+## The demo (`examples/demo`)
+
+The demo runs on the fake gateways and sends no JavaScript to the browser (its CSP has no `script-src`). Its text lives
+in `examples/demo/i18n/en.json` and `ms.json`; change both together. The "need help installing?" note on its pages and
+in every README comes from `docs/support.json`: edit that file, then run `node tools/rujukan.mjs skills` to regenerate
+the README sections (`npm run gate` fails while they are out of date). To see a change in a browser:
+
+```bash
+npm run build && npm run demo                      # http://127.0.0.1:4317
+python3 scripts/demo-webkit.py /tmp/demo-shots     # WebKit (iPhone 13 + 1440 px), light and dark, EN and BM
+python3 scripts/demo-shot.py                       # regenerates the README pictures in docs/demo/
+```
+
 ## Before you open a pull request
 
 - `npm run gate` passes.
