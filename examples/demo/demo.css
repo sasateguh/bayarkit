@@ -104,7 +104,7 @@ a:hover {
   clip-path: inset(50%);
   white-space: nowrap;
 }
-.skip {
+.skip-link {
   position: absolute;
   left: var(--gutter);
   top: -100px;
@@ -114,7 +114,7 @@ a:hover {
   color: var(--on-green);
   border-radius: var(--radius-sm);
 }
-.skip:focus {
+.skip-link:focus {
   top: 8px;
 }
 .wrap,
@@ -553,6 +553,7 @@ button:hover,
   color: var(--green);
   font-size: 0.9rem;
   letter-spacing: 0.12em;
+  text-transform: uppercase;
   transform: rotate(-4deg);
 }
 
@@ -585,197 +586,6 @@ button:hover,
     opacity: 0;
     transform: rotate(-4deg) scale(1.35);
   }
-}
-
-/* ── payment + order pages (restyled in full in the next step; tokens shared) ───────────────────────────────── */
-.page-pay main,
-.page-order main,
-.page-error main {
-  max-width: 44rem;
-  padding-block: 28px 48px;
-}
-.page-pay h1,
-.page-order h1 {
-  font-size: clamp(1.6rem, 1.2rem + 2vw, 2.3rem);
-  margin: 0.2em 0 0.5em;
-}
-.card {
-  background: var(--sheet);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-  padding: 20px;
-  margin: 0 0 20px;
-}
-.banner {
-  margin: 0 0 16px;
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  background: var(--sim);
-  color: var(--sim-ink);
-  font-weight: 600;
-  font-size: 0.92rem;
-}
-.facts {
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  gap: 6px 14px;
-  margin: 0 0 18px;
-  font-size: 0.95rem;
-}
-.facts dt {
-  color: var(--ink-2);
-}
-.facts dd {
-  margin: 0;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-@media (max-width: 30rem) {
-  .facts {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-  }
-  .facts dd {
-    margin-bottom: 10px;
-  }
-}
-.choose {
-  font-weight: 600;
-  margin: 0 0 10px;
-}
-.choices {
-  display: grid;
-  gap: 10px;
-}
-.choice {
-  display: grid;
-  gap: 2px;
-  justify-items: start;
-  width: 100%;
-  padding: 14px 16px;
-  text-align: left;
-  background: var(--well);
-  color: var(--ink);
-  border: 1px solid var(--rule-strong);
-  font-weight: 400;
-}
-.choice:hover {
-  background: var(--green-wash);
-}
-.choice strong {
-  font-weight: 600;
-}
-.choice span {
-  color: var(--ink-2);
-  font-size: 0.9rem;
-}
-.choice.pay {
-  background: var(--green);
-  border-color: var(--green);
-  color: var(--on-green);
-}
-.choice.pay span {
-  color: inherit;
-}
-.status {
-  display: inline-block;
-  margin: 0;
-  padding: 4px 12px;
-  border-radius: 999px;
-  font: 500 0.8rem / 1.4 var(--mono);
-  letter-spacing: 0.06em;
-}
-.status.paid {
-  color: var(--ok);
-  background: var(--ok-bg);
-}
-.status.notPaid {
-  color: var(--bad);
-  background: var(--bad-bg);
-}
-.status.waiting {
-  color: var(--wait);
-  background: var(--wait-bg);
-}
-.sub {
-  color: var(--ink-2);
-  margin: 0 0 16px;
-}
-.steps {
-  display: grid;
-  gap: 8px;
-  margin: 0 0 16px;
-  padding: 0;
-  list-style: none;
-}
-.step {
-  display: grid;
-  grid-template-columns: 22px minmax(0, 1fr) auto;
-  gap: 10px;
-  align-items: start;
-  padding: 10px 12px;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-sm);
-}
-.step small {
-  display: block;
-  color: var(--ink-2);
-}
-.state {
-  font-size: 0.85rem;
-  color: var(--ink-2);
-}
-.mark {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  margin-top: 1px;
-  border: 2px solid var(--rule-strong);
-  border-radius: 50%;
-  color: var(--sheet);
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1;
-}
-.step.ok .mark::after {
-  content: "✓";
-}
-.step.fail .mark::after {
-  content: "✕";
-}
-.step.ok .mark {
-  background: var(--ok);
-  border-color: var(--ok);
-}
-.step.ok .state {
-  color: var(--ok);
-}
-.step.fail .mark {
-  background: var(--bad);
-  border-color: var(--bad);
-}
-.step.fail .state {
-  color: var(--bad);
-  font-weight: 600;
-}
-.step.skip {
-  opacity: 0.6;
-}
-.reason {
-  margin: 0 0 12px;
-  font-size: 1.02rem;
-}
-details {
-  margin: 0 0 16px;
-  color: var(--ink-2);
-}
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 18px;
-  margin: 8px 0 0;
 }
 
 /* ── footer: the offer once more, in full, then the project ─────────────────────────────────────────────────── */

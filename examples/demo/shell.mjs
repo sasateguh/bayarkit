@@ -114,7 +114,7 @@ export function shell({ lang, t, other, theme, here: path, offer, title, body, k
 <meta name="color-scheme" content="light dark">
 <title>${title} · ${t('title')}</title><meta name="description" content="${t('tagline')}">
 <meta property="og:title" content="${t('title')}"><meta property="og:description" content="${t('tagline')}">${fonts}<link rel="stylesheet" href="/demo.css"></head>
-<body class="page-${kind}"><a class="skip" href="#main">${t('skip')}</a>
+<body class="page-${kind}"><a class="skip-link" href="#main">${t('skip')}</a>
 <header class="top"><div class="bar"><a class="brand" href="${prefix}/">${ICONS.mark}<span class="word">bayarkit</span><span class="tag">demo</span></a>
 <nav class="prefs" aria-label="${t('theme.label')}"><span class="theme">${themeLinks}</span>
 <a class="lang" href="${other.prefix}/" hreflang="${lang === 'en' ? 'ms' : 'en'}" lang="${lang === 'en' ? 'ms' : 'en'}" title="${esc(other.label)}"><span aria-hidden="true">${esc(other.short)}</span><span class="vh">${esc(other.label)}</span></a></nav></div></header>

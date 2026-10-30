@@ -7,7 +7,7 @@
   },
   "title": "Demo bayarkit",
   "tagline": "Satu antara muka untuk gateway pembayaran Malaysia. Pesanan hanya ditanda dibayar bila gateway sendiri mengesahkannya.",
-  "simulatedNote": "Semua gateway di sini PALSU dan berjalan dalam pelayan demo ini. Tiada wang bergerak, tiada kunci sebenar.",
+  "simulatedNote": "Semua gateway di sini palsu dan berjalan dalam pelayan demo ini. Tiada wang bergerak, tiada kunci sebenar.",
   "form": {
     "heading": "Cuba satu bayaran",
     "gateway": "Gateway",
@@ -22,12 +22,18 @@
     "minimum": "Jumlah minimum untuk gateway ini ialah RM{min}.",
     "gateway": "Gateway tidak dikenali.",
     "refused": "Gateway menolak: {message}",
-    "order": "Pesanan tidak ditemui. Pesanan demo disimpan dalam memori dan hilang bila pelayan dimulakan semula.",
-    "busy": "Demo sedang penuh. Cuba lagi sebentar lagi.",
-    "notFound": "Halaman ini tidak wujud. Mula semula dari halaman utama demo."
+    "order": "Pesanan demo disimpan dalam memori dan hilang bila pelayan dimulakan semula. Mulakan pesanan baharu dari halaman utama demo.",
+    "busy": "Terlalu ramai mencuba serentak. Cuba lagi sebentar lagi.",
+    "notFound": "Tiada apa-apa di alamat ini. Mula semula dari halaman utama demo.",
+    "back": "Kembali ke demo",
+    "headings": {
+      "notFound": "Halaman tidak ditemui",
+      "order": "Pesanan tidak ditemui",
+      "busy": "Demo sedang penuh"
+    }
   },
   "pay": {
-    "banner": "Halaman bayaran SIMULASI · {gateway} palsu · tiada wang bergerak",
+    "banner": "Halaman bayaran simulasi · {gateway} palsu · tiada wang bergerak",
     "heading": "Bayar {amount}",
     "reference": "Rujukan pesanan",
     "paymentId": "ID bayaran gateway",
@@ -52,12 +58,13 @@
         "label": "Tidak bayar, tetapi callback pesanan lain yang sudah dibayar dihantar",
         "hint": "Pesanan lain yang lebih murah di kedai yang sama memang dibayar. Callback sahnya dihantar ke pesanan ini."
       }
-    }
+    },
+    "title": "Bayar kepada kedai demo"
   },
   "order": {
     "heading": "Pesanan {reference}",
-    "paid": "DIBAYAR",
-    "notPaid": "BELUM DIBAYAR",
+    "paid": "Dibayar",
+    "notPaid": "Belum dibayar",
     "waiting": "Menunggu callback",
     "steps": {
       "received": "Callback diterima oleh pelayan kedai",
@@ -113,5 +120,11 @@
     },
     "verdict": "Hanya selepas keempat-empatnya lulus, pesanan dikira dibayar. Cuba setiap senario untuk melihat satu gagal.",
     "lead": "Satu antara muka untuk gateway pembayaran Malaysia, dalam TypeScript dan PHP. Pilih gateway, bayar bil palsu, dan lihat apa yang bayarkit semak sebelum mempercayai callback."
+  },
+  "flow": {
+    "label": "Kedudukan anda dalam demo",
+    "order": "Pesanan",
+    "gateway": "Gateway palsu",
+    "result": "Keputusan"
   }
 }

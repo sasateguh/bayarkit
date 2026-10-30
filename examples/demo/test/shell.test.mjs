@@ -6,7 +6,10 @@ import { supportFor } from '../../../tools/support.mjs'
 import { startDemo } from '../app.mjs'
 
 const config = JSON.parse(readFileSync(new URL('../../../docs/support.json', import.meta.url), 'utf8'))
-const css = readFileSync(new URL('../demo.css', import.meta.url), 'utf8')
+// Both files the demo serves as /demo.css.
+const css = ['../demo.css', '../pages.css']
+  .map((f) => readFileSync(new URL(f, import.meta.url), 'utf8'))
+  .join('\n')
 
 let demo
 beforeAll(async () => {

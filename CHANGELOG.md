@@ -39,8 +39,13 @@ All notable changes to this project are documented here. The format follows
   "Work with Sasa Teguh" section and names three contacts: the contact page, admin@sasateguh.com and WhatsApp. The
   generator refuses a config that names another contact, a price or a ranking claim; `"enabled": false` removes the
   section everywhere.
+- Demo: a new look in light and dark themes (switched with a link, no JavaScript) and self-hosted fonts. The
+  simulated payment page is drawn as a taped "fake gateway" panel apart from the demo, each check on the order page
+  shows a drawn mark and its state in words, and 404 / 503 are pages with a way back.
 
 ### Fixed
+
+- Demo: on the order page, checks that did not run were moved off screen by the skip link's style.
 
 - Demo memory: each rotated set of fakes now uses its own HTTP agent, closed with the set. Global `fetch` kept a
   connection pool for every port it had seen (~1.7 MB per 1 000 checkouts). Smoke setups accept an optional `fetch`.

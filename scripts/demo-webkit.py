@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # The demo on WebKit iPhone 13, light + dark, BM + EN: no horizontal scroll, tap targets >= 24 px, no console errors,
-# and the forged / paid / another-order flows end in the right state. Needs `npm run demo` running and Python Playwright with WebKit.
+# the four scenarios (forged / paid / another order's callback / unpaid) end in the right state, and 404 is a branded page.
+# Needs `npm run demo` running and Python Playwright with WebKit.
 # Not part of the gate (CI runners have no WebKit); run it after any change to examples/demo.
 #   python3 scripts/demo-webkit.py <screenshot dir> [base url]
 import sys
@@ -24,6 +25,7 @@ with sync_playwright() as p:
             def check(name):
                 w = pg.evaluate('[document.documentElement.scrollWidth, window.innerWidth]')
                 if w[0] > w[1]: problems.append(f'{scheme}{prefix} {name}: scrollWidth {w[0]} > {w[1]}')
+                pg.wait_for_timeout(800)  # the arrival animation (checks, stamp) settles before the picture
                 pg.screenshot(path=f'{out}/{scheme}{prefix.replace("/","-")}-{name}.png', full_page=True)
             check('home')
             pg.click('form button[type=submit]')
@@ -33,6 +35,9 @@ with sync_playwright() as p:
             pg.wait_for_url('**/order/**')
             check('order-forged')
             assert pg.locator('.status.notPaid').count() == 1
+            # all four checks on the page, the two that did not run included (a stray rule once moved them off screen)
+            on_page = pg.evaluate("[...document.querySelectorAll('.step')].filter(e=>{const r=e.getBoundingClientRect();return r.height>0&&r.left>=0&&r.top+scrollY>=0}).length")
+            if on_page != 4: problems.append(f'{scheme}{prefix} order-forged: {on_page} of 4 checks on the page')
             pg.click('a.button')
             pg.select_option('#gateway', 'chip')
             pg.click('form button[type=submit]')
@@ -50,6 +55,22 @@ with sync_playwright() as p:
             pg.wait_for_url('**/order/**')
             assert pg.locator('.status.notPaid').count() == 1 and pg.locator('.step.fail').count() == 1
             check('order-swapped')
+            # a signed callback for an unpaid payment: refused at the third check (the gateway says not paid)
+            pg.click('a.button')
+            pg.select_option('#gateway', 'toyyibpay')
+            pg.click('form button[type=submit]')
+            pg.wait_for_url('**/pay/**')
+            pg.click('button.choice.decline')
+            pg.wait_for_url('**/order/**')
+            assert pg.locator('.status.notPaid').count() == 1
+            check('order-declined')
+            # a missing page is a branded 404 with a way back
+            seen = len(errors)
+            pg.goto(base + prefix + '/order/NOPE')
+            assert pg.locator('.oops a.button').count() == 1
+            check('not-found')
+            # WebKit logs the document's own 404 status as an error; that one is expected here, nothing else is.
+            errors[seen:] = [e for e in errors[seen:] if 'status of 404' not in e]
             # tap targets
             small = pg.evaluate("[...document.querySelectorAll('a,button,select,input')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height<24}).map(e=>e.outerHTML.slice(0,60))")
             if small: problems.append(f'{scheme}{prefix} small targets: {small}')

@@ -24,7 +24,8 @@ import {
 } from '@bayarkit/core'
 import * as testing from '@bayarkit/testing'
 import { loadSupport, supportFor } from '../../tools/support.mjs'
-import { esc, FONTS, ICONS, shell, themeFrom, themeRoute } from './shell.mjs'
+import { esc, FONTS, shell, themeFrom, themeRoute } from './shell.mjs'
+import { errorView, homeView, orderView, payView } from './views.mjs'
 
 const here = new URL('./', import.meta.url)
 const root = new URL('../../', import.meta.url)
@@ -32,7 +33,8 @@ const LANGS = {
   ms: JSON.parse(readFileSync(new URL('i18n/ms.json', here), 'utf8')),
   en: JSON.parse(readFileSync(new URL('i18n/en.json', here), 'utf8')),
 }
-const CSS = readFileSync(new URL('demo.css', here), 'utf8')
+// One stylesheet for the browser, kept in two files: the frame + home page, then the pages after it.
+const CSS = ['demo.css', 'pages.css'].map((f) => readFileSync(new URL(f, here), 'utf8')).join('\n')
 // Memory stays bounded when hosted: every PER_GENERATION checkouts a fresh set of fakes starts, and the set before the
 // previous one is closed with its orders (the fakes keep every bill they ever saw).
 const PER_GENERATION = 250
@@ -215,42 +217,25 @@ export async function startDemo({
 
   function home(ctx, error = '', values = {}) {
     const { lang, t } = ctx
-    const prefix = lang === 'en' ? '/en' : ''
-    const options = [...gateways.values()]
-      .map(
-        (g) =>
-          `<option value="${g.id}"${values.gateway === g.id ? ' selected' : ''}>${esc(shortName(g, lang))} · ${t(g.evidence === 'measured' ? 'form.measured' : 'form.docs')}</option>`,
-      )
-      .join('')
+    const options = [...gateways.values()].map((g) => ({
+      id: g.id,
+      name: shortName(g, lang),
+      measured: g.evidence === 'measured',
+      selected: values.gateway === g.id,
+    }))
     // The four checks, in the order confirmPayment runs them; the same step names the order page uses.
     const checks = ['received', 'signature', 'query', 'match']
-      .map(
-        (step, i) =>
-          `<li class="check"><span class="n" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span><div><h3>${t(`order.steps.${step}`)}</h3><p>${t(`home.checks.${step}`)}</p></div></li>`,
-      )
-      .join('')
-    return page(
-      ctx,
-      t('form.heading'),
-      `<div class="home"><section class="intro"><h1>${t('home.heading')}</h1><p class="lead">${t('home.lead')}</p></section>
-<form class="slip" method="post" action="${prefix}/checkout" aria-labelledby="slip-h">
-<div class="slip-head"><h2 id="slip-h">${t('form.heading')}</h2><span class="slip-tag">${t('form.tag')}</span></div>
-<div class="slip-body">${error ? `<p class="error" role="alert">${error}</p>` : ''}
-<label for="gateway">${t('form.gateway')}</label><select id="gateway" name="gateway">${options}</select>
-<label for="amount">${t('form.amount')}</label><div class="money"><span class="cur" aria-hidden="true">RM</span><input id="amount" name="amount" inputmode="decimal" autocomplete="off" value="${esc(values.amount ?? '1.00')}" required></div>
-<button type="submit">${t('form.submit')}${ICONS.arrow}</button>
-<p class="note">${t('simulatedNote')}</p></div></form>
-<section class="rail" aria-labelledby="rail-h"><h2 id="rail-h">${t('home.checksHeading')}</h2>
-<ol class="checks">${checks}</ol><p class="verdict"><span class="stamp">${t('order.paid')}</span><span>${t('home.verdict')}</span></p></section></div>`,
-      error ? 400 : 200,
-      'home',
-    )
+    const body = homeView(t, { lang, options, checks, error, amount: values.amount ?? '1.00' })
+    return page(ctx, t('form.heading'), body, error ? 400 : 200, 'home')
   }
+
+  /** A branded 404 / 503 page: `kind` names the message in errors.<kind>. */
+  const failure = (ctx, code, kind) =>
+    page(ctx, ctx.t(`errors.headings.${kind}`), errorView(ctx.t, { lang: ctx.lang, code, kind }), code)
 
   /** 503 while the demo cannot make room (rotation failing): refusing keeps memory bounded. */
   function busy(ctx) {
-    const { t } = ctx
-    const response = page(ctx, t('errors.busy'), `<p class="card error">${t('errors.busy')}</p>`, 503)
+    const response = failure(ctx, 503, 'busy')
     response.headers.set('retry-after', String(RETRY_AFTER_MS / 1000))
     return response
   }
@@ -310,26 +295,19 @@ export async function startDemo({
 
   function payPage(ctx, order) {
     const { lang, t } = ctx
-    const prefix = lang === 'en' ? '/en' : ''
-    const label = shortName(order.gateway, lang)
     // What a real checkout route would return for this payment: shows whether the gateway takes a redirect or a form.
     const method =
       checkoutResponse(order.payment).status === 303 ? t('pay.methodRedirect') : t('pay.methodForm')
-    const action = (name) =>
-      `<button class="choice ${name}" name="action" value="${name}"><strong>${t(`pay.actions.${name}.label`)}</strong><span>${t(`pay.actions.${name}.hint`)}</span></button>`
-    return page(
-      ctx,
-      t('pay.heading', { amount: `RM${toRinggit(order.amount)}` }),
-      `<p class="banner">${t('pay.banner', { gateway: label })}</p>
-<section class="card"><h1>${t('pay.heading', { amount: `RM${toRinggit(order.amount)}` })}</h1>
-<dl class="facts"><dt>${t('pay.reference')}</dt><dd><code>${esc(order.reference)}</code></dd>
-<dt>${t('pay.paymentId')}</dt><dd><code>${esc(order.payment.id)}</code></dd>
-<dt>${t('pay.method')}</dt><dd>${method}</dd></dl>
-<form method="post" action="${prefix}/pay/${esc(order.reference)}"><p class="choose">${t('pay.choose')}</p>
-<div class="choices">${CHOICES.map(action).join('')}</div></form></section>`,
-      200,
-      'pay',
-    )
+    const body = payView(t, {
+      lang,
+      gateway: shortName(order.gateway, lang),
+      amount: toRinggit(order.amount),
+      reference: order.reference,
+      paymentId: order.payment.id,
+      method,
+      choices: CHOICES,
+    })
+    return page(ctx, t('pay.heading', { amount: `RM${toRinggit(order.amount)}` }), body, 200, 'pay')
   }
 
   /** The simulated gateway acts, then delivers its callback to our own callback route over a real Request. */
@@ -398,7 +376,6 @@ export async function startDemo({
 
   function orderPage(ctx, order) {
     const { lang, t } = ctx
-    const prefix = lang === 'en' ? '/en' : ''
     const r = order.result
     const status = !r ? 'waiting' : r.ok ? 'paid' : 'notPaid'
     const reason = !r ? '' : r.ok ? 'ok' : r.reason
@@ -415,29 +392,24 @@ export async function startDemo({
               : 'skip',
       match: !r ? 'skip' : r.ok ? 'ok' : reason === 'mismatch' ? 'fail' : 'skip',
     }
-    const steps = Object.entries(state)
-      .map(
-        ([step, s]) =>
-          `<li class="step ${s}"><span class="mark" aria-hidden="true"></span><span>${t(`order.steps.${step}`)}${
-            step === 'query' && r?.payment
-              ? `<small>${t('order.gatewaySays', { status: t(`order.status.${r.payment.status}`) })}</small>`
-              : ''
-          }</span><span class="state">${t(`order.stepState.${s}`)}</span></li>`,
-      )
-      .join('')
-    return page(
-      ctx,
-      t('order.heading', { reference: order.reference }),
-      `<section class="card"><p class="status ${status}">${t(status === 'waiting' ? 'order.waiting' : `order.${status}`)}</p>
-<h1>${t('order.heading', { reference: order.reference })}</h1>
-<p class="sub">${esc(shortName(order.gateway, lang))} · RM${toRinggit(order.amount)}</p>
-<ol class="steps">${steps}</ol>${reason ? `<p class="reason">${t(`order.reasons.${reason}`)}</p>` : ''}
-${r && !r.ok ? `<details><summary>${t('order.detail')}</summary><p><code>${esc(r.detail)}</code></p></details>` : ''}
-<p class="actions"><a class="button" href="${prefix}/">${t('order.again')}</a>
-<a href="https://github.com/sasateguh/bayarkit/blob/main/packages/core/src/confirm.ts">${t('order.code')}</a></p></section>`,
-      200,
-      'order',
-    )
+    const steps = Object.entries(state).map(([step, s]) => [
+      step,
+      s,
+      step === 'query' && r?.payment
+        ? t('order.gatewaySays', { status: t(`order.status.${r.payment.status}`) })
+        : '',
+    ])
+    const body = orderView(t, {
+      lang,
+      reference: order.reference,
+      gateway: shortName(order.gateway, lang),
+      amount: toRinggit(order.amount),
+      outcome: status,
+      steps,
+      reason,
+      detail: r && !r.ok ? r.detail : '',
+    })
+    return page(ctx, t('order.heading', { reference: order.reference }), body, 200, 'order')
   }
 
   async function handle(request) {
@@ -468,8 +440,7 @@ ${r && !r.ok ? `<details><summary>${t('order.detail')}</summary><p><code>${esc(r
     if (request.method === 'POST' && path === '/checkout') return checkout(ctx, request)
     const m = /^\/(pay|order|callback)\/([A-Za-z0-9]{1,40})$/.exec(path)
     const order = m ? orders.get(m[2]) : undefined
-    if (m && !order)
-      return page(ctx, t('errors.order'), `<p class="card error">${t('errors.order')}</p>`, 404)
+    if (m && !order) return failure(ctx, 404, 'order')
     if (m?.[1] === 'pay' && request.method === 'GET')
       return order.choice
         ? seeOther(`${lang === 'en' ? '/en' : ''}/order/${order.reference}`)
@@ -477,7 +448,7 @@ ${r && !r.ok ? `<details><summary>${t('order.detail')}</summary><p><code>${esc(r
     if (m?.[1] === 'pay' && request.method === 'POST') return pay(ctx, order, request)
     if (m?.[1] === 'order' && request.method === 'GET') return orderPage(ctx, order)
     if (m?.[1] === 'callback' && request.method === 'POST') return callback(order, request)
-    return page(ctx, t('errors.notFound'), `<p class="card error">${t('errors.notFound')}</p>`, 404)
+    return failure(ctx, 404, 'notFound')
   }
 
   return {
