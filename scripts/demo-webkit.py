@@ -5,10 +5,20 @@
 #   phone: the four scenarios (forged / paid / another order's callback / unpaid) end in the right state, 404 is a
 #   branded page, tap targets >= 24 px, the theme switch (a link + cookie, no JavaScript) changes the page and back,
 #   and the page has not crashed 8 s after loading (WebKit crashes on animated filters a few seconds in).
+# Before the browser, plain HTTP (BM + EN home, CSS): security headers and a CSP that allows no script, no-transform on
+#   HTML, no Cloudflare analytics beacon, the seal linking to exactly the contacts in docs/support.json and no other
+#   contact link on the page; on the hosted demo also compression and HSTS.
 # Needs `npm run demo` running and Python Playwright with WebKit.
 # Not part of the gate (CI runners have no WebKit); run it after any change to examples/demo.
 #   python3 scripts/demo-webkit.py <screenshot dir> [base url]
+import gzip
+import json
 import sys
+import urllib.request
+import zlib
+from html.parser import HTMLParser
+from pathlib import Path
+
 from playwright.sync_api import sync_playwright
 out = sys.argv[1]
 base = sys.argv[2] if len(sys.argv) > 2 else 'http://127.0.0.1:4317'
@@ -53,6 +63,75 @@ def start(pg, prefix, gateway, amount=None):
     if amount: pg.fill('#amount', amount)
     pg.click('form button[type=submit]')
     pg.wait_for_url('**/pay/**')
+
+
+# Without a browser first: what every visitor receives. Compression and HSTS come from traefik, so they are checked
+# only on the hosted demo (https); the local `npm run demo` serves neither.
+remote = base.startswith('https:')
+support = json.loads((Path(__file__).resolve().parent.parent / 'docs' / 'support.json').read_text())
+
+SAFARI = ('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 '
+          '(KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1')
+
+
+def get(path, encoding='gzip, br', accept='text/html,*/*'):
+    req = urllib.request.Request(base + path, headers={
+        'User-Agent': SAFARI, 'Accept': accept, 'Accept-Encoding': encoding})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return r.status, {k.lower(): v for k, v in r.headers.items()}, r.read()
+
+
+class Links(HTMLParser):
+    """Every href on the page, and the ones inside the seal (<aside class="seal">) separately."""
+
+    def __init__(self):
+        super().__init__()
+        self.all, self.seal, self.depth = [], [], 0
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if self.depth: self.depth += 1
+        elif tag == 'aside' and 'seal' in (a.get('class') or '').split(): self.depth = 1
+        if tag == 'a' and a.get('href'):
+            self.all.append(a['href'])
+            if self.depth: self.seal.append(a['href'])
+
+    def handle_endtag(self, tag):
+        if self.depth: self.depth -= 1
+
+
+def is_contact(href):
+    return href.startswith('mailto:') or '//wa.me/' in href or href.rstrip('/').endswith('/contact')
+
+
+for path in ('/', '/en', '/demo.css'):
+    status, h, body = get(path)
+    if status != 200: problems.append(f'{path}: HTTP {status}')
+    enc = h.get('content-encoding', '')
+    if remote and enc not in ('gzip', 'br', 'zstd'): problems.append(f'{path}: not compressed (content-encoding "{enc}")')
+    for name, want in (('x-content-type-options', 'nosniff'), ('x-frame-options', 'DENY')):
+        if h.get(name) != want: problems.append(f'{path}: {name} is "{h.get(name)}", not "{want}"')
+    if not h.get('referrer-policy'): problems.append(f'{path}: no referrer-policy')
+    if remote and not h.get('strict-transport-security'): problems.append(f'{path}: no HSTS')
+    if path == '/demo.css': continue
+    csp = h.get('content-security-policy', '')
+    if "default-src 'none'" not in csp: problems.append(f"{path}: CSP lacks default-src 'none': {csp!r}")
+    if 'script-src' in csp or 'unsafe-' in csp: problems.append(f'{path}: CSP allows script or unsafe-*: {csp!r}')
+    if 'no-transform' not in h.get('cache-control', ''): problems.append(f'{path}: HTML without no-transform')
+
+for path, lang in (('/', 'ms'), ('/en', 'en')):
+    _, h, raw = get(path, encoding='identity')
+    if h.get('content-encoding') == 'gzip': raw = gzip.decompress(raw)
+    elif h.get('content-encoding') == 'deflate': raw = zlib.decompress(raw)
+    html = raw.decode('utf-8', 'replace')
+    if 'cloudflareinsights' in html: problems.append(f'{path}: Cloudflare beacon injected')
+    p = Links()
+    p.feed(html)
+    c = support['contact']
+    want = [c['page'][lang], f'mailto:{c["email"]}', c['whatsapp']['url']] if support.get('enabled') else []
+    if sorted(p.seal) != sorted(want): problems.append(f'{path}: seal links {p.seal}, config says {want}')
+    stray = [x for x in p.all if is_contact(x) and x not in want]
+    if stray: problems.append(f'{path}: contact links not from docs/support.json: {stray}')
 
 
 with sync_playwright() as p:
@@ -160,6 +239,6 @@ with sync_playwright() as p:
         if errors: problems.append(f'desktop {scheme} console errors: {errors}')
         ctx.close()
     b.close()
-print('PROBLEMS:' if problems else 'OK: no overflow, no console errors, no crash in 8 s, seal in place, theme switch, flows pass (iPhone 13 + 1440 px, light+dark, BM+EN)')
+print('PROBLEMS:' if problems else 'OK: headers + seal links, no overflow, no console errors, no crash in 8 s, seal in place, theme switch, flows pass (iPhone 13 + 1440 px, light+dark, BM+EN)')
 for x in problems: print(' ', x)
 sys.exit(1 if problems else 0)

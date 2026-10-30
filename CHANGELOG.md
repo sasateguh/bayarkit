@@ -45,6 +45,9 @@ All notable changes to this project are documented here. The format follows
 - `scripts/demo-webkit.py` also checks the demo at 1440 px, the theme switch, that the install offer stays in the flow
   of every page without covering a button, form or the simulated gateway, and that WebKit has not crashed 8 s after
   loading. The README pictures (`docs/demo/`) show the new look.
+- `scripts/demo-webkit.py` first checks what every visitor receives, without a browser: the security headers and a
+  CSP that allows no script, no Cloudflare analytics beacon, the install offer linking to exactly the contacts in
+  `docs/support.json`, and on the hosted demo HTML and CSS compressed.
 
 ### Fixed
 
