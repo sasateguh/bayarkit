@@ -42,6 +42,9 @@ All notable changes to this project are documented here. The format follows
 - Demo: a new look in light and dark themes (switched with a link, no JavaScript) and self-hosted fonts. The
   simulated payment page is drawn as a taped "fake gateway" panel apart from the demo, each check on the order page
   shows a drawn mark and its state in words, and 404 / 503 are pages with a way back.
+- `scripts/demo-webkit.py` also checks the demo at 1440 px, the theme switch, that the install offer stays in the flow
+  of every page without covering a button, form or the simulated gateway, and that WebKit has not crashed 8 s after
+  loading. The README pictures (`docs/demo/`) show the new look.
 
 ### Fixed
 

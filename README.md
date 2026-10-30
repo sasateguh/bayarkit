@@ -265,7 +265,7 @@ signed callback for an unpaid payment; a forged callback; or the paid callback o
 check `confirmPayment` makes. Every gateway is a fake from `@bayarkit/testing`, so no keys and
 no money are involved. Source: [examples/demo](examples/demo/app.mjs).
 
-![The demo on an iPhone: a simulated toyyibPay payment page; a forged callback refused at the signature check, so the gateway is never asked; a real payment confirmed after the gateway itself says paid](docs/demo/demo.png)
+![The demo on an iPhone: a simulated toyyibPay payment page; a forged callback refused at the signature check, so the gateway is never asked; a real payment confirmed after the gateway itself says paid; above each page, a line offering installation by Sasa Teguh](docs/demo/demo.png)
 
 <sub>Regenerated from the running demo by `python3 scripts/demo-shot.py` (WebKit, iPhone 13).</sub>
 

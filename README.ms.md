@@ -274,7 +274,7 @@ daripada pesanan lain yang lebih murah) dan lihat setiap semakan yang dibuat `co
 Setiap gateway ialah gateway palsu daripada `@bayarkit/testing`, jadi tiada kunci dan tiada wang terlibat. Sumber:
 [examples/demo](examples/demo/app.mjs).
 
-![Demo pada iPhone: halaman bayaran toyyibPay simulasi; callback dipalsukan ditolak pada semakan tandatangan, jadi gateway tidak ditanya pun; bayaran sebenar disahkan selepas gateway sendiri kata dibayar](docs/demo/demo.ms.png)
+![Demo pada iPhone: halaman bayaran toyyibPay simulasi; callback dipalsukan ditolak pada semakan tandatangan, jadi gateway tidak ditanya pun; bayaran sebenar disahkan selepas gateway sendiri kata dibayar; di atas setiap halaman, satu baris tawaran pemasangan oleh Sasa Teguh](docs/demo/demo.ms.png)
 
 <sub>Dijana semula daripada demo yang berjalan oleh `python3 scripts/demo-shot.py` (WebKit, iPhone 13).</sub>
 

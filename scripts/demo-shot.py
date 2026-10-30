@@ -15,6 +15,7 @@ docs = Path(__file__).resolve().parent.parent / 'docs' / 'demo'
 
 
 def shot(pg):
+    pg.wait_for_timeout(1000)  # the stamp and the checks arrive animated; take the picture once they have settled
     return Image.open(io.BytesIO(pg.screenshot(full_page=False)))
 
 
@@ -48,7 +49,7 @@ def render(lang_prefix, out):
   phone_w = (width - 2 * pad - 2 * gap) // 3
   phones = [s.resize((phone_w, round(s.height * phone_w / s.width)), Image.LANCZOS) for s in shots]
   height = max(ph.height for ph in phones) + 2 * pad
-  canvas = Image.new('RGB', (width, height), (232, 230, 223))
+  canvas = Image.new("RGB", (width, height), (242, 238, 228))  # the demo's own paper (--paper, light)
   draw = ImageDraw.Draw(canvas)
   for i, ph in enumerate(phones):
       x = pad + i * (phone_w + gap)
