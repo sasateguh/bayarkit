@@ -124,6 +124,22 @@ describe('fake Paddle (Billing API, transactions + adjustments)', () => {
     expect(two.details.totals.grand_total).toBe('500')
   })
 
+  it('lets the buyer change the quantity at checkout within price.quantity (default 1 to 100, measured)', async () => {
+    const t = await create()
+    expect((t.items[0] as unknown as { price: Json }).price.quantity).toEqual({ minimum: 1, maximum: 100 })
+    fake.setQuantity(t.id, 2)
+    const read = (await call('GET', `/transactions/${t.id}`)).json.data
+    expect(read.details.line_items[0]).toMatchObject({ quantity: 2, totals: { total: '2100' } })
+    expect(read.details.totals).toMatchObject({ grand_total: '2100', balance: '2100' })
+    const pinned = await create({}, { quantity: { minimum: 1, maximum: 1 } })
+    expect(() => fake.setQuantity(pinned.id, 2)).toThrow(/quantity/)
+    expect((await call('GET', `/transactions/${pinned.id}`)).json.data.details.totals.grand_total).toBe(
+      '1050',
+    )
+    const bad = await call('POST', '/transactions', txnBody({}, { quantity: { minimum: 2, maximum: 1 } }))
+    expect(bad.json.error.code).toBe('invalid_field')
+  })
+
   it('refuses what the docs refuse, with Paddle error bodies', async () => {
     const code = async (body: unknown) => (await call('POST', '/transactions', body)).json.error?.code
     expect(await code('{')).toBe('invalid_json')

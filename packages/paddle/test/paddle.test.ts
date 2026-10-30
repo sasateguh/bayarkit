@@ -126,6 +126,16 @@ describe('paddle: against the fake', () => {
     expect(await confirmPayment(gw, cb, { ...input, currency: 'MYR' })).toMatchObject({ reason: 'mismatch' })
   })
 
+  it('pins the quantity to 1, so the checkout offers no quantity picker (measured: the default lets the buyer pick 1-100)', async () => {
+    const input = sampleInput()
+    const created = await gw.createPayment(input)
+    const sent = fake.requests.at(-1)?.body as { items: { price: Record<string, unknown> }[] }
+    expect(sent.items[0]?.price.quantity).toEqual({ minimum: 1, maximum: 1 })
+    expect(() => fake.setQuantity(created.id, 2)).toThrow(/quantity/)
+    fake.markPaid(created.id)
+    expect(await confirmPayment(gw, fake.callbackFor(created.id), input)).toMatchObject({ ok: true })
+  })
+
   it('reads the amount from details.totals.grand_total (what the buyer pays), not the subtotal', async () => {
     const input = sampleInput()
     const created = await gw.createPayment(input)

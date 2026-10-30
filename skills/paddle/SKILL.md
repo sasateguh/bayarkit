@@ -7,7 +7,7 @@ description: Integrate Paddle Billing payments (from Malaysia) safely. Use when 
 
 ## Use the bayarkit adapter
 
-Install `@bayarkit/core` and `@bayarkit/paddle`. Evidence: **written from the official docs, not yet measured on the sandbox**.
+Install `@bayarkit/core` and `@bayarkit/paddle`. Evidence: **measured on the Paddle Billing sandbox**.
 
 ```ts
 import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'

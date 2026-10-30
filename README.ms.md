@@ -7,8 +7,8 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 [English](README.md) · **[Cuba demo](https://bayarkit.sasateguh.com/)** (gateway palsu, tiada wang)
 
 > **Status:** 0.2.2. Enam belas gateway dalam TypeScript; Paddle dan PayPal ada dalam repositori ini tetapi belum di npm.
-> toyyibPay, Billplz, Bayarcash dan Stripe diukur pada sandbox masing-masing; yang lain ditulis daripada sumber rasmi
-> dan belum dijalankan terhadap gateway sebenar (jadual menyatakan sumbernya). PHP/Laravel meliputi toyyibPay, CHIP,
+> toyyibPay, Billplz, Bayarcash, Stripe dan Paddle diukur pada sandbox masing-masing; yang lain ditulis daripada
+> sumber rasmi dan belum dijalankan terhadap gateway sebenar (jadual menyatakan sumbernya). PHP/Laravel meliputi toyyibPay, CHIP,
 > Paddle dan PayPal.
 
 ## Kenapa
@@ -44,7 +44,7 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 | Gkash                                          | `@bayarkit/gkash`     | Dokumen rasmi (vektor ujian tandatangan SHA-512), plugin WooCommerce dan SDK gkashmy; belum diukur pada staging                                                                   |
 | Xendit (Malaysia): Payment Sessions            | `@bayarkit/xendit`    | Dokumen rasmi (Payment Sessions, payment request v3, webhook `x-callback-token`: token statik, bukan tandatangan) dan skil agen Xendit; belum diukur dalam mod ujian              |
 | eGHL (ADAPTIS e-Commerce)                      | `@bayarkit/eghl`      | Kod awam rasmi eGHL (kelas hash, QUERY merchant-api, vektor ujian HashValue2 Omnipay; tiada panduan API awam); belum diukur pada hos ujian                                        |
-| Paddle Billing (penjual rasmi, tiada MYR)      | `@bayarkit/paddle`    | Dokumen rasmi Paddle Billing dan paddle-node-sdk (vektor ujian webhook); caj dalam USD atau mata wang Paddle lain, bukan MYR; belum diukur pada sandbox                           |
+| Paddle Billing (penjual rasmi, tiada MYR)      | `@bayarkit/paddle`    | Diukur pada sandbox, 30 Okt 2026: kad dibayar dan ditolak, webhook bertandatangan sebenar, bayaran balik penuh dan separa; caj dalam USD atau mata wang Paddle lain, bukan MYR    |
 | PayPal Orders v2 (lulus, kemudian tangkap)     | `@bayarkit/paypal`    | Dokumen rasmi PayPal REST dan fail OpenAPI; dibayar hanya bila tangkapan COMPLETED, webhook disahkan melalui postback PayPal; belum diukur pada sandbox                           |
 <!-- /gateways:table -->
 
@@ -142,7 +142,8 @@ const result = await confirmPayment(gateway, await readCallback(request), {
 - Tetapkan pautan pembayaran lalai dalam Paddle > Checkout dahulu (halaman anda sendiri yang memuatkan Paddle.js);
   sebelum itu Paddle menolak setiap transaksi baharu. `returnUrl` dan `callbackUrl` tidak dihantar: tambah destinasi
   notifikasi untuk acara `transaction.*` yang menghala ke laluan callback anda.
-- Harga dihantar termasuk cukai, jadi pembeli membayar tepat `amount` dan `confirmPayment` membandingkan jumlah itu.
+- Harga dihantar termasuk cukai dengan kuantiti ditetapkan 1, jadi pembeli membayar tepat `amount` dan
+  `confirmPayment` membandingkan jumlah itu.
 - Bayaran balik (`gateway.refundPayment`) menunggu kelulusan Paddle: hasilnya `pending` dahulu.
 
 **PayPal** (Orders v2). Bayaran ada dua langkah, dan meluluskan bukan membayar.

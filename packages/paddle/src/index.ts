@@ -2,9 +2,13 @@
  * Paddle Billing adapter: one-time transactions, webhooks and refunds over raw REST (no Paddle SDK, zero runtime
  * dependencies).
  *
- * Written from the official docs only, read 29 October 2026 (`gateways/paddle/spec.md`, a source next to every fact):
- * developer.paddle.com (`.md` renderings) and paddle-node-sdk @ 6a01ef4 for webhook verification. NOT yet measured on
- * the sandbox: `evidence.kind` stays `docs` until it is.
+ * Written from the official docs, read 29 October 2026 (`gateways/paddle/spec.md`, a source next to every fact):
+ * developer.paddle.com (`.md` renderings) and paddle-node-sdk @ 6a01ef4 for webhook verification. Measured on the
+ * sandbox 30 October 2026 (spec "Measured"): card payments, a declined card, real webhooks, refunds. Where the
+ * sandbox differed from what the docs led us to expect:
+ * - The checkout shows a quantity picker (1 to 100 by default) and the buyer can pay a multiple of the price. The
+ *   price is therefore sent with `quantity: { minimum: 1, maximum: 1 }`, which removes the picker.
+ * - A retried notification is signed again with a fresh `ts`, so the five-second tolerance holds for retries.
  *
  * - Paddle does not charge Malaysian ringgit. The adapter charges in ONE currency, `currency` in the config (default
  *   USD, any of the 33 Paddle lists), declares it as `info.currency`, and refuses any other before calling Paddle.
@@ -12,8 +16,9 @@
  * - Amounts are the currency's minor unit both ways (cents; whole yen for JPY), sent as strings as Paddle asks.
  * - Paddle is the merchant of record and adds tax per buyer country. The price is sent with `tax_mode: "internal"`
  *   (tax included), so what the app asked for is what the buyer pays, and `getPayment` reads the amount from
- *   `details.totals.grand_total` ("total due after credits but before any payments"). How Paddle splits an inclusive
- *   price into subtotal and tax is UNCONFIRMED; only `grand_total` is relied on.
+ *   `details.totals.grand_total` ("total due after credits but before any payments"). Measured: `grand_total` stays
+ *   the price whatever the buyer's country; Paddle carves the tax out of it once the address is known (USD 10.50 to
+ *   New York = 964 subtotal + 86 tax). Only `grand_total` is relied on.
  * - Every request pins `Paddle-Version: 1`. The key decides the host: `pdl_sdbx_` = sandbox, `pdl_live_` = live.
  * - One non-catalog price on a non-catalog product (`taxCategory`, default `standard`, must be enabled on the account),
  *   your reference in `custom_data.reference`. No customer is sent: the checkout collects it, so a new transaction is
@@ -26,20 +31,22 @@
  *   `callbackUrl` (add a notification destination for `transaction.*` events), `expiresAt`, and `idempotencyKey`
  *   (Paddle has no idempotency key: a retried create makes a second transaction).
  * - Status: `paid` and `completed` = paid; `draft`, `ready`, `billed` = pending; `canceled`, `past_due` = failed. A
- *   declined card does not change a one-time transaction's status (it stays pending). A refund does not change it
+ *   declined card does not change a one-time transaction's status (measured: it stays `ready`, with an `error`
+ *   payment, and `transaction.payment_failed` is sent). A refund does not change it
  *   either: a refunded transaction stays `completed` and reads as paid, as Stripe's does; the refund is the
  *   `RefundRecord` (and `details.adjusted_totals` in `raw`).
  * - Refunds are `POST /adjustments` with `action: refund`: `type: full` when the whole amount is still refundable,
  *   otherwise `partial` on the one line item. Only `completed` transactions can be refunded, and no new refund is
  *   accepted while one awaits approval (`adjustment_pending_refund_request`, Paddle's only guard against a double
- *   refund). A refund starts `pending_approval` (= `pending`); `approved` = `succeeded`, `rejected` = `failed`. The
- *   amount checked before asking is `details.adjusted_totals.grand_total` (what approved refunds left).
+ *   refund). A refund starts `pending_approval` (= `pending`, measured); `approved` = `succeeded`, `rejected` = `failed`.
+ *   The amount checked before asking is `details.adjusted_totals.grand_total` (what approved refunds left; measured:
+ *   it does not drop while a refund is pending).
  *
  * Webhook verification follows the docs and paddle-node-sdk: split `Paddle-Signature` on `;` then `=`, HMAC-SHA256
  * over `${ts}:${rawBody}` keyed with the destination's secret (`pdl_ntfset_…`), hex, constant-time compare against
  * every `h1` (several appear while a secret is rotated), then the age check: older than `toleranceSeconds` (default
- * 5, the SDK's value) is refused. Whether a retried notification is re-signed with a fresh `ts` is UNCONFIRMED; raise
- * the tolerance if retries arrive stale. Like the Stripe adapter, a future `ts` passes (only the secret can sign one).
+ * 5, the SDK's value) is refused. Measured: notifications arrived 0.2 to 2.2 s after their `ts`, and each retry is
+ * signed again with a fresh `ts`. Like the Stripe adapter, a future `ts` passes (only the secret can sign one).
  */
 import { createHmac } from 'node:crypto'
 import {
@@ -98,9 +105,10 @@ export const info: GatewayInfo = {
   minimumAmount: MINIMUMS.USD as number,
   currency: 'USD',
   evidence: {
-    kind: 'docs',
-    date: '2026-10-29',
-    source: 'developer.paddle.com + paddle-node-sdk (not yet measured on the sandbox)',
+    kind: 'measured',
+    date: '2026-10-30',
+    source:
+      'Paddle sandbox: card paid + declined, real webhooks, refunds; developer.paddle.com + paddle-node-sdk',
   },
 }
 
@@ -285,6 +293,8 @@ export function paddle(config: PaddleConfig): Gateway & {
               name,
               unit_price: { amount: String(input.amount), currency_code: currency },
               tax_mode: 'internal',
+              // Without it the checkout shows a 1-100 quantity picker and the buyer can pay a multiple (measured).
+              quantity: { minimum: 1, maximum: 1 },
               product: { name: words.slice(0, 200), tax_category: taxCategory },
             },
           },

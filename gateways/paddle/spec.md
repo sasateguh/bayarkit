@@ -10,8 +10,30 @@ read as a reference, not used as a dependency.
 > Paddle is the merchant of record: it adds or carves out tax per buyer country, so the amount a buyer pays depends on
 > `tax_mode` (§2.3).
 
-Nothing in this file has been measured on the sandbox yet. Facts the docs leave open are marked **UNCONFIRMED** and
-listed at the end, for the sandbox run.
+Facts the docs leave open are marked **UNCONFIRMED**; the sandbox run below answers them (summary at the end).
+
+## Measured on the sandbox (30 October 2026)
+
+A sandbox account, through `@bayarkit/paddle` (and `Bayarkit\Gateways\Paddle`), with the default payment link set, a
+page loading Paddle.js and a temporary notification destination (deleted afterwards):
+
+| Fact | Result |
+| --- | --- |
+| Create without a default payment link | 400 `transaction_default_checkout_url_not_set`, even with `checkout.url` passed |
+| Create, price 69 cents USD | 400 `transaction_balance_less_than_charge_limit` at create, not at checkout |
+| New transaction (no customer) | `draft`, `tax: "0"`, `checkout.url` = default link + `?_ptxn=<id>` |
+| `price.quantity` not sent | defaults to `{ minimum: 1, maximum: 100 }`; the checkout shows a quantity picker, a buyer picked 2 and paid USD 20.00 for a USD 10.00 price (`grand_total` 2000, so `confirmPayment` said mismatch) |
+| `price.quantity: { minimum: 1, maximum: 1 }` | no picker; paid as asked |
+| Buyer in New York, USD 10.50 `tax_mode: internal` | `grand_total` 1050 = what was charged; Paddle carves tax out once the address is known: subtotal 964, tax 86 (USD 20.00: 1837 + 163). Fee and earnings appear on `completed` |
+| Card `4242 4242 4242 4242` | `ready` → `paid` → `completed` within about 1.5 s; events `transaction.paid` then `transaction.completed`, each with a `transaction.updated` |
+| Card `4000 0000 0000 0002` | transaction stays `ready`, one payment `status: error`, `error_code: declined`; `transaction.payment_failed` sent with `status: ready` |
+| Webhook signature | `ts=…;h1=…` (one `h1`), HMAC as documented; a one-byte change to the body fails |
+| Delivery delay | 0.2 to 2.2 s between `ts` and arrival, so the 5 s tolerance holds |
+| Retries (endpoint answered 500) | sandbox tried three times in about 100 s; every retry has the same `event_id` and `notification_id` and a **fresh `ts`** with a new signature |
+| `custom_data` of 200 000 characters | accepted (no limit hit) |
+| Refund `type: full` and `partial` | `pending_approval` on create; `adjusted_totals` unchanged while pending; approved by the sandbox about 7 minutes later, then `adjusted_totals.grand_total` drops (to 0, or 2000 → 1500) |
+| Second refund while one is pending | 400 `adjustment_pending_refund_request` |
+| Transaction after refunds | stays `completed` |
 
 ---
 
@@ -145,7 +167,12 @@ Permission `adjustment.write`.
 `4xx`/`5xx` with `{ "error": { "type": "request_error" | "api_error", "code", "detail", "documentation_url" } }`. Retry `5xx` with backoff. The adapter quotes `type`, `code` and `detail` only.
 *(https://developer.paddle.com/api-reference/about/errors.md)*
 
-## UNCONFIRMED summary (for the sandbox run)
+## UNCONFIRMED summary (answered by the sandbox run above, 30 October 2026)
+
+Answers: 1. `grand_total` = the price; the split depends on the buyer's address (964 + 86 for New York). 2. Yes, a
+fresh `ts` on every retry. 3. Both, `transaction.paid` first. 4. `pending_approval`; adjusted totals drop on approval
+only. 5. None hit up to 200 000 characters. 6. It stays `ready`. 7. At create. The questions as they were:
+
 
 1. How an inclusive (`tax_mode: internal`) non-catalog price splits into `subtotal`/`tax`, and whether `grand_total`
    always equals `unit_price.amount × quantity` whatever the buyer's country.

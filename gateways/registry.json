@@ -1077,7 +1077,7 @@
       "adapter": {
         "package": "@bayarkit/paddle",
         "factory": "paddle",
-        "evidence": "docs",
+        "evidence": "measured",
         "configExample": "{ apiKey, webhookSecret, currency: 'USD' }",
         "currency": "USD",
         "flow": {
@@ -1090,8 +1090,8 @@
           "ms": "Paddle Billing (penjual rasmi, tiada MYR)"
         },
         "summary": {
-          "en": "Official Paddle Billing docs and paddle-node-sdk (webhook test vector); charges in USD or another Paddle currency, never MYR; not yet measured on the sandbox",
-          "ms": "Dokumen rasmi Paddle Billing dan paddle-node-sdk (vektor ujian webhook); caj dalam USD atau mata wang Paddle lain, bukan MYR; belum diukur pada sandbox"
+          "en": "Measured on the sandbox, 30 Oct 2026: card paid and declined, real signed webhooks, full and partial refunds; charges in USD or another Paddle currency, never MYR",
+          "ms": "Diukur pada sandbox, 30 Okt 2026: kad dibayar dan ditolak, webhook bertandatangan sebenar, bayaran balik penuh dan separa; caj dalam USD atau mata wang Paddle lain, bukan MYR"
         }
       },
       "sources": [

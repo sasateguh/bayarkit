@@ -1,7 +1,7 @@
 /**
  * A fake Paddle Billing API (one-time transactions and refund adjustments), built from the official docs in
- * `gateways/paddle/spec.md`. Not yet checked against the sandbox: every rule below is the docs' word until a sandbox
- * run says otherwise. Change this file first when Paddle changes.
+ * `gateways/paddle/spec.md`, then checked against the sandbox on 30 October 2026 (spec "Measured"). Rules not marked
+ * measured are still the docs' word. Change this file first when Paddle changes.
  *
  * What it checks, and where each rule comes from (spec sections in brackets):
  * - auth: `Authorization: Bearer <key>`; missing → 403 `authentication_missing`, not Bearer → 403
@@ -16,11 +16,13 @@
  * - tax (merchant of record) [§2.3]: a `tax_mode: internal` price is charged as asked. Any other mode gets a 10% tax on
  *   top here. The rate is the fake's own choice: real tax depends on the buyer's country, so the point is only that
  *   an app cannot know the total in advance unless it sends `internal`;
+ * - `price.quantity` = the range the buyer may pick at checkout, default `{ minimum: 1, maximum: 100 }` (measured on the
+ *   sandbox 30 Oct 2026: the checkout shows a quantity picker and the total follows it); `setQuantity()` plays it;
  * - a new transaction without a customer is `draft`; `markPaid` = `completed` with one captured payment; a declined
  *   card adds an `error` payment and leaves the status alone [§3];
  * - refunds: `POST /adjustments` with `action: refund`, only on `completed`, full or per-item partial, never above
  *   what remains, not while another refund awaits approval; each starts `pending_approval` and `approveRefunds()`
- *   plays the sandbox's approval run. Adjusted totals drop on approval (UNCONFIRMED: maybe on create) [§5];
+ *   plays the sandbox's approval run. Adjusted totals drop on approval, not on create (measured) [§5];
  * - webhooks: `Paddle-Signature: ts=<unix>;h1=<hex HMAC-SHA256(secret, "<ts>:<raw body>")>`, one `h1` per secret [§4].
  */
 import { createHmac, randomBytes } from 'node:crypto'
@@ -103,6 +105,11 @@ export interface FakePaddle extends FakeGateway {
   /** The fake's own record of a transaction (what `GET /transactions/{id}` answers under `data`). */
   transaction(id: string): PaddleTransaction | undefined
   adjustment(id: string): PaddleAdjustment | undefined
+  /**
+   * The buyer changes a line's quantity in the checkout's picker (measured). Throws outside the price's
+   * `quantity` range, as the picker does not offer it; totals follow, as on the sandbox.
+   */
+  setQuantity(id: string, quantity: number, line?: number): void
   /** A declined card: an `error` payment attempt, status unchanged (one-time checkout) [§3]. */
   decline(id: string): void
   /** The sandbox's periodic approval run: every `pending_approval` refund becomes `approved` [§5]. */
@@ -240,6 +247,8 @@ export async function startFakePaddle(opts: {
     const items = body.items
     if (!Array.isArray(items) || items.length < 1 || items.length > 100)
       throw invalid('items: 1 to 100 entries.')
+    // What GET answers: the request's items with Paddle's defaults filled in (the request log stays as sent).
+    const stored = structuredClone(items) as Body[]
     let currency = ''
     const lineItems: LineItem[] = []
     let subtotal = 0
@@ -279,6 +288,18 @@ export async function startFakePaddle(opts: {
       if (typeof product.tax_category !== 'string' || !TAX_CATEGORIES.has(product.tax_category)) {
         throw invalid(`items[${i}].price.product.tax_category is not valid.`)
       }
+      const range = p.quantity ?? { minimum: 1, maximum: 100 }
+      const qmin = obj(range).minimum
+      const qmax = obj(range).maximum
+      if (
+        !Number.isInteger(qmin) ||
+        !Number.isInteger(qmax) ||
+        (qmin as number) < 1 ||
+        (qmax as number) < (qmin as number)
+      ) {
+        throw invalid(`items[${i}].price.quantity: minimum and maximum, 1 <= minimum <= maximum.`)
+      }
+      obj(obj(stored[i]).price).quantity = { minimum: qmin, maximum: qmax }
       const lineSub = Number(amount) * q
       const lineTax = mode === 'internal' ? 0 : Math.round(lineSub * FAKE_TAX_RATE)
       subtotal += lineSub
@@ -358,7 +379,7 @@ export async function startFakePaddle(opts: {
       created_at: now,
       updated_at: now,
       billed_at: null,
-      items,
+      items: stored,
       details: {
         tax_rates_used: [],
         totals,
@@ -509,6 +530,32 @@ export async function startFakePaddle(opts: {
         created_at: now,
         captured_at: now,
       })
+    },
+    setQuantity(id, quantity, line = 0) {
+      const t = known(id)
+      const li = t.details.line_items[line]
+      const range = obj(obj(obj((t.items as unknown[])[line]).price).quantity)
+      if (
+        !li ||
+        !Number.isInteger(quantity) ||
+        quantity < Number(range.minimum) ||
+        quantity > Number(range.maximum)
+      ) {
+        throw new Error(`quantity ${quantity} is outside the price's quantity range`)
+      }
+      const unit = Number(obj(li.unit_totals).total)
+      const rate = Number(li.tax_rate)
+      const sub = unit * quantity
+      const tax = Math.round(sub * rate)
+      li.quantity = quantity
+      li.totals = { subtotal: String(sub), discount: '0', tax: String(tax), total: String(sub + tax) }
+      const sum = (k: 'subtotal' | 'tax' | 'total') =>
+        String(t.details.line_items.reduce((n, x) => n + Number(x.totals[k]), 0))
+      const totals = { subtotal: sum('subtotal'), tax: sum('tax'), total: sum('total') }
+      Object.assign(t.details.totals, totals, { grand_total: totals.total, balance: totals.total })
+      Object.assign(t.details.adjusted_totals, totals, { grand_total: totals.total, balance: totals.total })
+      obj((t.items as unknown[])[line]).quantity = quantity
+      t.updated_at = iso()
     },
     decline(id) {
       const t = known(id)

@@ -3,7 +3,7 @@
 Paddle Billing (merchant of record, no MYR) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian and global payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
-**Evidence:** Official Paddle Billing docs and paddle-node-sdk (webhook test vector); charges in USD or another Paddle currency, never MYR; not yet measured on the sandbox.
+**Evidence:** Measured on the sandbox, 30 Oct 2026: card paid and declined, real signed webhooks, full and partial refunds; charges in USD or another Paddle currency, never MYR.
 
 ```bash
 npm install @bayarkit/core @bayarkit/paddle
@@ -47,7 +47,7 @@ The full contract, with a source for every fact: [gateways/paddle/spec.md](https
 Paddle Billing (penjual rasmi, tiada MYR) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia dan global, dan cara bersemak untuk
 mengesahkan bayaran.
 
-**Bukti:** Dokumen rasmi Paddle Billing dan paddle-node-sdk (vektor ujian webhook); caj dalam USD atau mata wang Paddle lain, bukan MYR; belum diukur pada sandbox.
+**Bukti:** Diukur pada sandbox, 30 Okt 2026: kad dibayar dan ditolak, webhook bertandatangan sebenar, bayaran balik penuh dan separa; caj dalam USD atau mata wang Paddle lain, bukan MYR.
 
 ```bash
 npm install @bayarkit/core @bayarkit/paddle

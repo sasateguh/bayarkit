@@ -13,8 +13,9 @@ All notable changes to this project are documented here. The format follows
   reference and amount refuses it.
 - `@bayarkit/paddle` and `Bayarkit\Gateways\Paddle`: Paddle Billing, for selling abroad with Paddle as merchant of
   record. One-time transactions sent tax-inclusive, `Paddle-Signature` webhooks, refunds. Paddle has no MYR: the
-  adapter charges in one configured currency (USD by default). Written from the official docs; not yet measured on
-  the sandbox.
+  adapter charges in one configured currency (USD by default). Measured on the sandbox: card payments paid and
+  declined, real signed webhooks (retries re-signed), full and partial refunds. The price is sent with its quantity
+  fixed at 1, because the checkout otherwise lets the buyer pick 1 to 100.
 - `@bayarkit/paypal` and `Bayarkit\Gateways\PayPal`: PayPal Orders v2. `capturePayment` captures an approved order
   (safe to retry); `getPayment` only reads, and an order is paid only when its capture is `COMPLETED`. Webhooks are
   verified by PayPal's `verify-webhook-signature`. Refunds. Written from the official docs; not yet measured on the
