@@ -1,0 +1,38 @@
+{
+  "enabled": true,
+  "contact": {
+    "page": {
+      "en": "https://sasateguh.com/contact",
+      "ms": "https://sasateguh.com/ms/contact"
+    },
+    "email": "admin@sasateguh.com",
+    "whatsapp": {
+      "display": "017-762 9379",
+      "url": "https://wa.me/60177629379"
+    }
+  },
+  "labels": {
+    "en": { "page": "Contact page", "email": "Email", "whatsapp": "WhatsApp" },
+    "ms": { "page": "Halaman hubungi", "email": "E-mel", "whatsapp": "WhatsApp" }
+  },
+  "demo": {
+    "en": {
+      "seal": "Want this on your own site? Sasa Teguh can set up the payment gateway for you.",
+      "cta": "Talk to Sasa Teguh"
+    },
+    "ms": {
+      "seal": "Mahu ini di laman anda sendiri? Sasa Teguh boleh memasang gateway pembayaran untuk anda.",
+      "cta": "Bincang dengan Sasa Teguh"
+    }
+  },
+  "readme": {
+    "en": {
+      "heading": "Need help installing?",
+      "body": "If you would rather not wire up a payment gateway yourself, Sasa Teguh, the studio that maintains bayarkit, can install it on your site or app and test it against the gateway sandbox before you go live."
+    },
+    "ms": {
+      "heading": "Perlukan bantuan memasang?",
+      "body": "Jika anda tidak mahu menyambung gateway pembayaran sendiri, Sasa Teguh, studio yang menyelenggara bayarkit, boleh memasangnya di laman atau aplikasi anda dan mengujinya pada sandbox gateway sebelum anda mula menerima bayaran."
+    }
+  }
+}
