@@ -300,14 +300,16 @@ The evidence that it works is meant to be checkable:
   the side paths they did find are listed under "Fixed" in [CHANGELOG.md](CHANGELOG.md), each with a test that failed
   first. The TypeScript and PHP twins agree on 20,030 randomised inputs on PHP 8.2, 8.3 and 8.4.
 
+Why bayarkit exists and what measuring the gateway sandboxes turned up: [the bayarkit case study](https://sasateguh.com/work/bayarkit).
+
 ## License
 
 MIT. See [LICENSE](LICENSE). Security issues: see [SECURITY.md](SECURITY.md).
 
-## Work with Sasa Teguh
+<!-- support:help (generated from docs/support.json by `node tools/rujukan.mjs skills`) -->
+## Need help installing?
 
-[![Work with Sasa Teguh: book a call](https://raw.githubusercontent.com/sasateguh/.github/main/assets/work-with-sasa-teguh.png)](https://sasateguh.com/book)
+If you would rather not wire up a payment gateway yourself, Sasa Teguh, the studio that maintains bayarkit, can install it on your site or app and test it against the gateway sandbox before you go live.
 
-This project is built and maintained by [Sasa Teguh](https://sasateguh.com), a studio in Malaysia. We build websites that are found on Google and in AI answers, and we set up systems like this one for businesses.
-
-[Book a call](https://sasateguh.com/book) · hello@sasateguh.com · [More from Sasa Teguh](https://github.com/sasateguh)
+[Contact page](https://sasateguh.com/contact) · Email: [admin@sasateguh.com](mailto:admin@sasateguh.com) · WhatsApp: [017-762 9379](https://wa.me/60177629379)
+<!-- /support:help -->

@@ -17,6 +17,12 @@ Every fake has `markPaid(id)`, `callbackFor(id)` (a correctly signed callback) a
   `GET /callback/<id>/tampered`, and for PayPal `POST /approve/<id>` (the buyer approves, nothing captured yet).
   vitest is not needed for this.
 
+## Need help installing?
+
+If you would rather not wire up a payment gateway yourself, Sasa Teguh, the studio that maintains bayarkit, can install it on your site or app and test it against the gateway sandbox before you go live.
+
+[Contact page](https://sasateguh.com/contact) · Email: [admin@sasateguh.com](mailto:admin@sasateguh.com) · WhatsApp: [017-762 9379](https://wa.me/60177629379)
+
 ## Bahasa Melayu
 
 Gateway pembayaran palsu (Malaysia dan global) dan set ujian keakuran [bayarkit](https://github.com/sasateguh/bayarkit): uji checkout dan callback tanpa wang
@@ -26,5 +32,11 @@ sama seperti gateway itu. `npx bayarkit-fake <gateway>` menjalankan satu fake se
 pembeli meluluskan, belum ditangkap) untuk ujian PHP, Python atau Go.
 
 Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+
+## Perlukan bantuan memasang?
+
+Jika anda tidak mahu menyambung gateway pembayaran sendiri, Sasa Teguh, studio yang menyelenggara bayarkit, boleh memasangnya di laman atau aplikasi anda dan mengujinya pada sandbox gateway sebelum anda mula menerima bayaran.
+
+[Halaman hubungi](https://sasateguh.com/ms/contact) · E-mel: [admin@sasateguh.com](mailto:admin@sasateguh.com) · WhatsApp: [017-762 9379](https://wa.me/60177629379)
 
 MIT © Muhammad Aiman

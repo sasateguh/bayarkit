@@ -32,6 +32,14 @@ All notable changes to this project are documented here. The format follows
 - `@bayarkit/testing`: `startFakePaddle` and `startFakePayPal`, and `bayarkit-fake paddle` / `bayarkit-fake paypal`.
   The control API gains `POST /approve/<id>` (PayPal: the buyer approves, nothing captured).
 
+### Changed
+
+- Every README (the repository, the PHP package and each npm package) ends with a "Need help installing?" section in
+  English and Malay, generated from one file, `docs/support.json`, by `node tools/rujukan.mjs skills`. It replaces the
+  "Work with Sasa Teguh" section and names three contacts: the contact page, admin@sasateguh.com and WhatsApp. The
+  generator refuses a config that names another contact, a price or a ranking claim; `"enabled": false` removes the
+  section everywhere.
+
 ### Fixed
 
 - Demo memory: each rotated set of fakes now uses its own HTTP agent, closed with the set. Global `fetch` kept a

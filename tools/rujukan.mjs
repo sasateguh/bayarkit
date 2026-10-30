@@ -21,6 +21,7 @@ import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { packageFiles } from './pakej.mjs'
+import { fillSupport, loadSupport, SUPPORT_READMES, supportSection } from './support.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const REGISTRY = join(ROOT, 'gateways', 'registry.json')
@@ -381,6 +382,16 @@ function readmes(registry) {
   })
 }
 
+/** The "need help installing?" block in the repository and PHP READMEs, from docs/support.json. */
+function supportReadmes(pending) {
+  const config = loadSupport(ROOT)
+  return Object.entries(SUPPORT_READMES).map(([file, lang]) => {
+    const path = join(ROOT, file)
+    const text = pending.get(path) ?? readFileSync(path, 'utf8')
+    return [path, fillSupport(text, supportSection(config, lang), file)]
+  })
+}
+
 function skills(args) {
   const registry = readJson(REGISTRY)
   const lock = readJson(LOCK, {})
@@ -391,6 +402,12 @@ function skills(args) {
     // npm's view of every package (metadata + README), from the root package.json and the registry.
     ...packageFiles(ROOT, registry),
   ]
+  // README.md and README.ms.md also carry the gateway table: fill the support block on top of that text.
+  const pending = new Map(files)
+  for (const [path, text] of supportReadmes(pending)) {
+    if (pending.has(path)) files[files.findIndex(([p]) => p === path)][1] = text
+    else files.push([path, text])
+  }
   for (const gw of registry.gateways) {
     // A skill without official sources would be guesswork; inventory-only gateways get none yet.
     if (!(gw.sources ?? []).length) continue

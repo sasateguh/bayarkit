@@ -116,3 +116,34 @@ export function loadSupport(root, config = JSON.parse(readFileSync(join(root, SU
   if (problems.length) throw new Error(`${SUPPORT_FILE} cannot be published:\n- ${problems.join('\n- ')}`)
   return config
 }
+
+/** Repository READMEs that carry the offer between `support:help` markers, and the language of each. */
+export const SUPPORT_READMES = {
+  'README.md': 'en',
+  'README.ms.md': 'ms',
+  'php/README.md': 'en',
+  'php/README.ms.md': 'ms',
+}
+
+/** The offer as a Markdown section (`## heading`, body, the three contacts), or '' when it is switched off. */
+export function supportSection(config, lang) {
+  const offer = supportFor(config, lang)
+  if (!offer) return ''
+  const line = offer.links
+    .map((l) => (l.text === l.label ? `[${l.text}](${l.href})` : `${l.label}: [${l.text}](${l.href})`))
+    .join(' · ')
+  return `## ${offer.heading}\n\n${offer.body}\n\n${line}\n`
+}
+
+const OPEN = '<!-- support:help'
+const CLOSE = '<!-- /support:help -->'
+
+/** `text` with everything between the support:help markers replaced by `section`; throws when the markers are missing. */
+export function fillSupport(text, section, file) {
+  const a = text.indexOf(OPEN)
+  const b = text.indexOf(CLOSE)
+  if (a < 0 || b < a || text.indexOf(OPEN, a + 1) >= 0)
+    throw new Error(`${file}: support:help markers missing`)
+  const open = text.slice(a, text.indexOf('\n', a) + 1)
+  return `${text.slice(0, a)}${open}${section}${text.slice(b)}`
+}

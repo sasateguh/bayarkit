@@ -38,6 +38,12 @@ included), and `npx bayarkit-fake ipay88` runs it as a server for tests in other
 
 The full contract, with a source for every fact: [gateways/ipay88/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/ipay88/spec.md).
 
+## Need help installing?
+
+If you would rather not wire up a payment gateway yourself, Sasa Teguh, the studio that maintains bayarkit, can install it on your site or app and test it against the gateway sandbox before you go live.
+
+[Contact page](https://sasateguh.com/contact) · Email: [admin@sasateguh.com](mailto:admin@sasateguh.com) · WhatsApp: [017-762 9379](https://wa.me/60177629379)
+
 ## Bahasa Melayu
 
 iPay88 (NTT DATA Payment Services Malaysia) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia, dan cara bersemak untuk
@@ -65,5 +71,11 @@ pelayan.
 
 Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/ipay88/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/ipay88/spec.md).
 Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+
+## Perlukan bantuan memasang?
+
+Jika anda tidak mahu menyambung gateway pembayaran sendiri, Sasa Teguh, studio yang menyelenggara bayarkit, boleh memasangnya di laman atau aplikasi anda dan mengujinya pada sandbox gateway sebelum anda mula menerima bayaran.
+
+[Halaman hubungi](https://sasateguh.com/ms/contact) · E-mel: [admin@sasateguh.com](mailto:admin@sasateguh.com) · WhatsApp: [017-762 9379](https://wa.me/60177629379)
 
 MIT © Muhammad Aiman

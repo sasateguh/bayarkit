@@ -21,6 +21,12 @@ npm install @bayarkit/core @bayarkit/<gateway>
 
 Adapters: `@bayarkit/toyyibpay`, `@bayarkit/bayarcash`, `@bayarkit/billplz`, `@bayarkit/chip`, `@bayarkit/stripe`, `@bayarkit/senangpay`, `@bayarkit/ipay88`, `@bayarkit/fiuu`, `@bayarkit/2c2p`, `@bayarkit/curlec`, `@bayarkit/hitpay`, `@bayarkit/gkash`, `@bayarkit/xendit`, `@bayarkit/eghl`, `@bayarkit/paddle`, `@bayarkit/paypal`.
 
+## Need help installing?
+
+If you would rather not wire up a payment gateway yourself, Sasa Teguh, the studio that maintains bayarkit, can install it on your site or app and test it against the gateway sandbox before you go live.
+
+[Contact page](https://sasateguh.com/contact) · Email: [admin@sasateguh.com](mailto:admin@sasateguh.com) · WhatsApp: [017-762 9379](https://wa.me/60177629379)
+
 ## Bahasa Melayu
 
 Antara muka yang dilaksanakan oleh setiap adapter [bayarkit](https://github.com/sasateguh/bayarkit), dan `confirmPayment`: satu-satunya jalan
@@ -46,5 +52,11 @@ npm install @bayarkit/core @bayarkit/<gateway>
 Adapter: `@bayarkit/toyyibpay`, `@bayarkit/bayarcash`, `@bayarkit/billplz`, `@bayarkit/chip`, `@bayarkit/stripe`, `@bayarkit/senangpay`, `@bayarkit/ipay88`, `@bayarkit/fiuu`, `@bayarkit/2c2p`, `@bayarkit/curlec`, `@bayarkit/hitpay`, `@bayarkit/gkash`, `@bayarkit/xendit`, `@bayarkit/eghl`, `@bayarkit/paddle`, `@bayarkit/paypal`.
 
 Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
+
+## Perlukan bantuan memasang?
+
+Jika anda tidak mahu menyambung gateway pembayaran sendiri, Sasa Teguh, studio yang menyelenggara bayarkit, boleh memasangnya di laman atau aplikasi anda dan mengujinya pada sandbox gateway sebelum anda mula menerima bayaran.
+
+[Halaman hubungi](https://sasateguh.com/ms/contact) · E-mel: [admin@sasateguh.com](mailto:admin@sasateguh.com) · WhatsApp: [017-762 9379](https://wa.me/60177629379)
 
 MIT © Muhammad Aiman

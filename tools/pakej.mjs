@@ -6,6 +6,7 @@
  */
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { loadSupport, supportSection } from './support.mjs'
 
 /** Keys first in this order; everything else keeps its place after them. */
 const ORDER = [
@@ -71,7 +72,7 @@ if (result.ok) {
 }
 \`\`\``
 
-function adapterReadme(gw, root) {
+function adapterReadme(gw, root, help) {
   const repo = repoUrl(root)
   const label = (lang) => gw.adapter.label[lang]
   const summary = (lang) => gw.adapter.summary[lang]
@@ -96,7 +97,7 @@ Test without real money: \`${gw.adapter.fake}\` from \`@bayarkit/testing\` answe
 included), and \`npx bayarkit-fake ${gw.id}\` runs it as a server for tests in other languages.
 
 ${gotchas ? `## Traps\n\n${gotchas}\n\n` : ''}The full contract, with a source for every fact: [gateways/${gw.id}/spec.md](${spec}).
-
+${help.en}
 ## Bahasa Melayu
 
 ${label('ms')} untuk [bayarkit](${repo}): satu antara muka untuk gateway pembayaran ${myr ? 'Malaysia' : 'Malaysia dan global'}, dan cara bersemak untuk
@@ -124,12 +125,12 @@ pelayan.
 
 ${gotchasMs ? `## Perangkap\n\n${gotchasMs}\n\n` : ''}Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/${gw.id}/spec.md](${spec}).
 Dokumentasi penuh: [README.ms.md](${repo}/blob/main/README.ms.md).
-
+${help.ms}
 MIT © ${root.author.replace(/\s*\(.*\)$/, '')}
 `
 }
 
-function coreReadme(root, adapters) {
+function coreReadme(root, adapters, help) {
   const repo = repoUrl(root)
   return `# @bayarkit/core
 
@@ -153,7 +154,7 @@ npm install @bayarkit/core @bayarkit/<gateway>
 - \`GatewayError\` — messages quote the gateway's answer only, never a key.
 
 Adapters: ${adapters.map((g) => `\`${g.adapter.package}\``).join(', ')}.
-
+${help.en}
 ## Bahasa Melayu
 
 Antara muka yang dilaksanakan oleh setiap adapter [bayarkit](${repo}), dan \`confirmPayment\`: satu-satunya jalan
@@ -179,12 +180,12 @@ npm install @bayarkit/core @bayarkit/<gateway>
 Adapter: ${adapters.map((g) => `\`${g.adapter.package}\``).join(', ')}.
 
 Dokumentasi penuh: [README.ms.md](${repo}/blob/main/README.ms.md).
-
+${help.ms}
 MIT © ${root.author.replace(/\s*\(.*\)$/, '')}
 `
 }
 
-function testingReadme(root, adapters) {
+function testingReadme(root, adapters, help) {
   const repo = repoUrl(root)
   return `# @bayarkit/testing
 
@@ -204,7 +205,7 @@ Every fake has \`markPaid(id)\`, \`callbackFor(id)\` (a correctly signed callbac
   (\`url\`, \`control\`) and serves a control API: \`POST /paid/<id>\`, \`GET /callback/<id>\`,
   \`GET /callback/<id>/tampered\`, and for PayPal \`POST /approve/<id>\` (the buyer approves, nothing captured yet).
   vitest is not needed for this.
-
+${help.en}
 ## Bahasa Melayu
 
 Gateway pembayaran palsu (Malaysia dan global) dan set ujian keakuran [bayarkit](${repo}): uji checkout dan callback tanpa wang
@@ -214,13 +215,24 @@ sama seperti gateway itu. \`npx bayarkit-fake <gateway>\` menjalankan satu fake 
 pembeli meluluskan, belum ditangkap) untuk ujian PHP, Python atau Go.
 
 Dokumentasi penuh: [README.ms.md](${repo}/blob/main/README.ms.md).
-
+${help.ms}
 MIT © ${root.author.replace(/\s*\(.*\)$/, '')}
 `
 }
 
-/** [path, text] for every package's package.json and README.md. */
-export function packageFiles(rootDir, registry) {
+/** The offer from docs/support.json, one section per language with a blank line before it; '' when switched off. */
+function helpSections(rootDir, support) {
+  const config = support === undefined ? loadSupport(rootDir) : loadSupport(rootDir, support)
+  const section = (lang) => {
+    const md = supportSection(config, lang)
+    return md ? `\n${md}` : ''
+  }
+  return { en: section('en'), ms: section('ms') }
+}
+
+/** [path, text] for every package's package.json and README.md. `support` replaces docs/support.json in tests. */
+export function packageFiles(rootDir, registry, support) {
+  const help = helpSections(rootDir, support)
   const root = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf8'))
   const adapters = registry.gateways.filter((g) => g.adapter)
   const files = []
@@ -229,16 +241,16 @@ export function packageFiles(rootDir, registry) {
     join(rootDir, 'packages/core/package.json'),
     metadata('core', pkg('core'), root, ['confirm-payment']),
   ])
-  files.push([join(rootDir, 'packages/core/README.md'), coreReadme(root, adapters)])
+  files.push([join(rootDir, 'packages/core/README.md'), coreReadme(root, adapters, help)])
   files.push([
     join(rootDir, 'packages/testing/package.json'),
     metadata('testing', pkg('testing'), root, ['testing', 'fake', 'mock', 'conformance']),
   ])
-  files.push([join(rootDir, 'packages/testing/README.md'), testingReadme(root, adapters)])
+  files.push([join(rootDir, 'packages/testing/README.md'), testingReadme(root, adapters, help)])
   for (const gw of adapters) {
     const dir = gw.adapter.package.replace('@bayarkit/', '')
     files.push([join(rootDir, 'packages', dir, 'package.json'), metadata(dir, pkg(dir), root, [gw.id])])
-    files.push([join(rootDir, 'packages', dir, 'README.md'), adapterReadme(gw, root)])
+    files.push([join(rootDir, 'packages', dir, 'README.md'), adapterReadme(gw, root, help)])
   }
   return files
 }

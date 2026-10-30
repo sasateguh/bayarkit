@@ -310,16 +310,16 @@ Bukti bahawa ia berfungsi boleh disemak:
   [CHANGELOG.md](CHANGELOG.md), masing-masing dengan ujian yang gagal dahulu. Kembar TypeScript dan PHP sepakat pada
   20,030 input rawak pada PHP 8.2, 8.3 dan 8.4.
 
+Kenapa bayarkit wujud dan apa yang ditemui semasa sandbox gateway diukur: [kajian kes bayarkit](https://sasateguh.com/ms/work/bayarkit).
+
 ## Lesen
 
 MIT. Lihat [LICENSE](LICENSE). Isu keselamatan: lihat [SECURITY.md](SECURITY.md).
 
-## Bekerja dengan Sasa Teguh
+<!-- support:help (generated from docs/support.json by `node tools/rujukan.mjs skills`) -->
+## Perlukan bantuan memasang?
 
-[![Bekerja dengan Sasa Teguh: tempah panggilan](https://raw.githubusercontent.com/sasateguh/.github/main/assets/work-with-sasa-teguh.png)](https://sasateguh.com/ms/book)
+Jika anda tidak mahu menyambung gateway pembayaran sendiri, Sasa Teguh, studio yang menyelenggara bayarkit, boleh memasangnya di laman atau aplikasi anda dan mengujinya pada sandbox gateway sebelum anda mula menerima bayaran.
 
-Projek ini dibina dan diselenggara oleh [Sasa Teguh](https://sasateguh.com/ms), studio di Malaysia. Kami membina laman web yang ditemui di Google dan dalam jawapan AI, dan memasang sistem seperti ini untuk perniagaan.
-
-Kenapa bayarkit wujud dan apa yang ditemui semasa sandbox gateway diukur: [kajian kes bayarkit](https://sasateguh.com/ms/work/bayarkit).
-
-[Tempah panggilan](https://sasateguh.com/ms/book) · hello@sasateguh.com · [Lagi daripada Sasa Teguh](https://github.com/sasateguh)
+[Halaman hubungi](https://sasateguh.com/ms/contact) · E-mel: [admin@sasateguh.com](mailto:admin@sasateguh.com) · WhatsApp: [017-762 9379](https://wa.me/60177629379)
+<!-- /support:help -->
