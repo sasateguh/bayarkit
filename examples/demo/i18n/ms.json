@@ -2,7 +2,8 @@
   "lang": "ms",
   "otherLang": {
     "label": "English",
-    "prefix": "/en"
+    "prefix": "/en",
+    "short": "EN"
   },
   "title": "Demo bayarkit",
   "tagline": "Satu antara muka untuk gateway pembayaran Malaysia. Pesanan hanya ditanda dibayar bila gateway sendiri mengesahkannya.",
@@ -13,7 +14,8 @@
     "amount": "Jumlah (RM)",
     "submit": "Teruskan ke pembayaran",
     "measured": "diukur pada sandbox",
-    "docs": "dari dokumen rasmi"
+    "docs": "dari dokumen rasmi",
+    "tag": "Gateway palsu"
   },
   "errors": {
     "amount": "Masukkan jumlah dalam ringgit, contohnya 1.00.",
@@ -21,7 +23,8 @@
     "gateway": "Gateway tidak dikenali.",
     "refused": "Gateway menolak: {message}",
     "order": "Pesanan tidak ditemui. Pesanan demo disimpan dalam memori dan hilang bila pelayan dimulakan semula.",
-    "busy": "Demo sedang penuh. Cuba lagi sebentar lagi."
+    "busy": "Demo sedang penuh. Cuba lagi sebentar lagi.",
+    "notFound": "Halaman ini tidak wujud. Mula semula dari halaman utama demo."
   },
   "pay": {
     "banner": "Halaman bayaran SIMULASI · {gateway} palsu · tiada wang bergerak",
@@ -91,5 +94,24 @@
   "links": {
     "caseStudy": "Kajian kes",
     "caseStudyUrl": "https://sasateguh.com/ms/work/bayarkit"
+  },
+  "skip": "Langkau ke demo",
+  "theme": {
+    "label": "Tema dan bahasa",
+    "system": "Ikut peranti saya",
+    "light": "Tema cerah",
+    "dark": "Tema gelap"
+  },
+  "home": {
+    "heading": "Dibayar hanya bila gateway sendiri mengesahkannya.",
+    "checksHeading": "Setiap callback melalui empat semakan",
+    "checks": {
+      "received": "Callback hanyalah dakwaan. Sesiapa pun boleh menghantarnya ke kedai anda.",
+      "signature": "Ditandatangani dengan kunci gateway? Callback palsu berhenti di sini.",
+      "query": "bayarkit bertanya terus kepada gateway sama ada bayaran ini benar-benar dibuat.",
+      "match": "Bayaran itu mesti untuk rujukan dan jumlah pesanan ini, bukan pesanan lain yang lebih murah."
+    },
+    "verdict": "Hanya selepas keempat-empatnya lulus, pesanan dikira dibayar. Cuba setiap senario untuk melihat satu gagal.",
+    "lead": "Satu antara muka untuk gateway pembayaran Malaysia, dalam TypeScript dan PHP. Pilih gateway, bayar bil palsu, dan lihat apa yang bayarkit semak sebelum mempercayai callback."
   }
 }

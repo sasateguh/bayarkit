@@ -7,6 +7,8 @@
 **/.env
 php
 docs
+# The demo's offer config is the one file under docs/ the image needs.
+!docs/support.json
 skills
 coverage
 .claude

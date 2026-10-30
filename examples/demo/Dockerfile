@@ -12,7 +12,8 @@ RUN npm run build && npm prune --omit=dev --ignore-scripts
 FROM node:22.23.4-alpine
 # npm, npx, corepack and yarn are never run here (CMD is node): removed so their bundled dependencies are not shipped.
 RUN rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
-ENV NODE_ENV=production HOST=0.0.0.0 PORT=4317
+# COOKIE_SECURE: the hosted demo is served over HTTPS, so the theme cookie is marked Secure.
+ENV NODE_ENV=production HOST=0.0.0.0 PORT=4317 COOKIE_SECURE=1
 WORKDIR /app
 COPY --from=build /app/package.json ./
 # @bayarkit/testing's index re-exports the conformance suite, which imports vitest (its peer dependency): keep it.
@@ -20,6 +21,9 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages ./packages
 COPY gateways/registry.json ./gateways/registry.json
 COPY scripts/smoke ./scripts/smoke
+# The "need help installing?" offer shown on every page: one config and the module that checks it.
+COPY docs/support.json ./docs/support.json
+COPY tools/support.mjs ./tools/support.mjs
 COPY examples/demo ./examples/demo
 USER node
 EXPOSE 4317

@@ -7,11 +7,13 @@
  *
  * Gateways come from gateways/registry.json (every entry with an adapter); each one is built by the same setup file the
  * packed-tarball smoke test uses (scripts/smoke/<id>.mjs), so the demo cannot drift from what the gate checks.
- * All text lives in i18n/<lang>.json. Orders are kept in memory, capped, and vanish on restart.
+ * All text lives in i18n/<lang>.json; the "need help installing?" offer in docs/support.json; the page frame (header,
+ * theme switch, offer seal, footer, fonts) in shell.mjs. Orders are kept in memory, capped, and vanish on restart.
  */
 import { randomBytes } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { Agent, request as httpRequest } from 'node:http'
+import { fileURLToPath } from 'node:url'
 import {
   checkoutResponse,
   confirmPayment,
@@ -21,6 +23,8 @@ import {
   toSen,
 } from '@bayarkit/core'
 import * as testing from '@bayarkit/testing'
+import { loadSupport, supportFor } from '../../tools/support.mjs'
+import { esc, FONTS, ICONS, shell, themeFrom, themeRoute } from './shell.mjs'
 
 const here = new URL('./', import.meta.url)
 const root = new URL('../../', import.meta.url)
@@ -39,6 +43,8 @@ const CUSTOMER = { name: 'Pelanggan Demo', email: 'demo@example.com', phone: '01
 const CHOICES = ['pay', 'decline', 'forge', 'swap']
 // Served with every response. `no-transform`: behind Cloudflare, without it CF injects its analytics beacon into HTML.
 const NO_CACHE = 'no-store, no-transform'
+// Fonts never change under the same name (a new font = a new file name), so browsers may keep them for a week.
+const FONT_CACHE = 'public, max-age=604800, no-transform'
 // Sent with every page and the stylesheet. Nothing is embedded, framed or loaded from elsewhere, so all of it is the strictest value.
 const SECURITY = {
   'x-content-type-options': 'nosniff',
@@ -53,12 +59,6 @@ const SECURITY = {
 
 /** Display name without the parenthesised company ("iPay88 (NTT DATA …)" → "iPay88"); the registry keeps the full one. */
 const shortName = (g, lang) => String(g.label[lang] ?? g.label.en).replace(/\s*\(.*\)\s*$/, '')
-
-const esc = (s) =>
-  String(s).replace(
-    /[&<>"']/g,
-    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
-  )
 
 /** `t('order.heading', { reference })` → the string with `{reference}` filled in, HTML-escaped. */
 function translator(lang) {
@@ -104,8 +104,16 @@ function agentFetch(agent) {
   }
 }
 
-/** Start every fake + adapter listed in the registry. */
-export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
+/**
+ * Start every fake + adapter listed in the registry. `support` replaces docs/support.json (tests); a config that
+ * fails its checks stops the demo before any fake starts. `cookieSecure` adds Secure to the theme cookie (HTTPS hosts).
+ */
+export async function startDemo({
+  perGeneration = PER_GENERATION,
+  support,
+  cookieSecure = process.env.COOKIE_SECURE === '1',
+} = {}) {
+  const offerConfig = loadSupport(fileURLToPath(root), support)
   const registry = JSON.parse(readFileSync(new URL('gateways/registry.json', root), 'utf8'))
   async function startGeneration() {
     const set = new Map()
@@ -178,17 +186,20 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
   /** A relative 303: the Host header never decides where a visitor is sent. */
   const seeOther = (path) => new Response(null, { status: 303, headers: { location: path } })
 
-  function page(lang, title, body, status = 200) {
-    const t = translator(lang)
-    const prefix = lang === 'en' ? '/en' : ''
-    const other = LANGS[lang].otherLang
-    const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>${title} · ${t('title')}</title><meta name="description" content="${t('tagline')}">
-<meta property="og:title" content="${t('title')}"><meta property="og:description" content="${t('tagline')}"><link rel="stylesheet" href="/demo.css"></head><body>
-<header class="top"><a class="brand" href="${prefix}/">bayarkit</a><a class="lang" href="${other.prefix}/" hreflang="${lang === 'en' ? 'ms' : 'en'}">${esc(other.label)}</a></header>
-<main>${body}</main><footer class="foot"><p>${t('footer')}</p><p class="links"><a href="https://github.com/sasateguh/bayarkit">GitHub</a>
-<a href="${t('links.caseStudyUrl')}">${t('links.caseStudy')}</a><a href="https://www.npmjs.com/package/@bayarkit/core">npm</a></p></footer></body></html>`
+  /**
+   * A whole page in the shell. `ctx` is the request's language, translator, theme and path (see `handle`); `kind`
+   * names the page for the stylesheet (home, pay, order, error).
+   */
+  function page(ctx, title, body, status = 200, kind = 'error') {
+    const { lang } = ctx
+    const html = shell({
+      ...ctx,
+      other: LANGS[lang].otherLang,
+      offer: supportFor(offerConfig, lang),
+      title,
+      body,
+      kind,
+    })
     return new Response(html, {
       status,
       headers: {
@@ -196,14 +207,14 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
         'cache-control': NO_CACHE,
         'x-robots-tag': 'noindex',
         'content-security-policy':
-          "default-src 'none'; style-src 'self'; img-src 'self' data:; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
+          "default-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
         ...SECURITY,
       },
     })
   }
 
-  function home(lang, error = '', values = {}) {
-    const t = translator(lang)
+  function home(ctx, error = '', values = {}) {
+    const { lang, t } = ctx
     const prefix = lang === 'en' ? '/en' : ''
     const options = [...gateways.values()]
       .map(
@@ -211,30 +222,41 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
           `<option value="${g.id}"${values.gateway === g.id ? ' selected' : ''}>${esc(shortName(g, lang))} · ${t(g.evidence === 'measured' ? 'form.measured' : 'form.docs')}</option>`,
       )
       .join('')
+    // The four checks, in the order confirmPayment runs them; the same step names the order page uses.
+    const checks = ['received', 'signature', 'query', 'match']
+      .map(
+        (step, i) =>
+          `<li class="check"><span class="n" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span><div><h3>${t(`order.steps.${step}`)}</h3><p>${t(`home.checks.${step}`)}</p></div></li>`,
+      )
+      .join('')
     return page(
-      lang,
+      ctx,
       t('form.heading'),
-      `<section class="intro"><h1>${t('title')}</h1><p class="lead">${t('tagline')}</p>
-<p class="note">${t('simulatedNote')}</p></section>
-<form class="card" method="post" action="${prefix}/checkout">
-<h2>${t('form.heading')}</h2>${error ? `<p class="error" role="alert">${error}</p>` : ''}
+      `<div class="home"><section class="intro"><h1>${t('home.heading')}</h1><p class="lead">${t('home.lead')}</p></section>
+<form class="slip" method="post" action="${prefix}/checkout" aria-labelledby="slip-h">
+<div class="slip-head"><h2 id="slip-h">${t('form.heading')}</h2><span class="slip-tag">${t('form.tag')}</span></div>
+<div class="slip-body">${error ? `<p class="error" role="alert">${error}</p>` : ''}
 <label for="gateway">${t('form.gateway')}</label><select id="gateway" name="gateway">${options}</select>
-<label for="amount">${t('form.amount')}</label><input id="amount" name="amount" inputmode="decimal" autocomplete="off" value="${esc(values.amount ?? '1.00')}" required>
-<button type="submit">${t('form.submit')}</button></form>`,
+<label for="amount">${t('form.amount')}</label><div class="money"><span class="cur" aria-hidden="true">RM</span><input id="amount" name="amount" inputmode="decimal" autocomplete="off" value="${esc(values.amount ?? '1.00')}" required></div>
+<button type="submit">${t('form.submit')}${ICONS.arrow}</button>
+<p class="note">${t('simulatedNote')}</p></div></form>
+<section class="rail" aria-labelledby="rail-h"><h2 id="rail-h">${t('home.checksHeading')}</h2>
+<ol class="checks">${checks}</ol><p class="verdict"><span class="stamp">${t('order.paid')}</span><span>${t('home.verdict')}</span></p></section></div>`,
       error ? 400 : 200,
+      'home',
     )
   }
 
   /** 503 while the demo cannot make room (rotation failing): refusing keeps memory bounded. */
-  function busy(lang) {
-    const t = translator(lang)
-    const response = page(lang, t('errors.busy'), `<p class="card error">${t('errors.busy')}</p>`, 503)
+  function busy(ctx) {
+    const { t } = ctx
+    const response = page(ctx, t('errors.busy'), `<p class="card error">${t('errors.busy')}</p>`, 503)
     response.headers.set('retry-after', String(RETRY_AFTER_MS / 1000))
     return response
   }
 
-  async function checkout(lang, request) {
-    const t = translator(lang)
+  async function checkout(ctx, request) {
+    const { lang, t } = ctx
     const form = await request.formData().catch(() => null)
     const values = { gateway: String(form?.get('gateway') ?? ''), amount: String(form?.get('amount') ?? '') }
     // Rotation is decided BEFORE a set is taken, in synchronous code, so parallel checkouts see each other: a full set
@@ -243,7 +265,7 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
     for (;;) {
       const count = started.get(gateways) ?? 0
       if (count >= perGeneration && !rotating && !coolingDown()) startRotation()
-      if (count >= 2 * perGeneration && !rotating && coolingDown()) return busy(lang)
+      if (count >= 2 * perGeneration && !rotating && coolingDown()) return busy(ctx)
       if (!rotating || count < 2 * perGeneration) break
       await rotating
     }
@@ -253,11 +275,11 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
     const g = generation.get(values.gateway)
     // Counted now, not after createPayment: parallel checkouts must see each other in the check above.
     if (g) started.set(generation, (started.get(generation) ?? 0) + 1)
-    if (!g) return home(lang, t('errors.gateway'), values)
+    if (!g) return home(ctx, t('errors.gateway'), values)
     const amount = /^\s*\d{1,7}(\.\d{1,2})?\s*$/.test(values.amount) ? toSen(values.amount) : Number.NaN
-    if (!Number.isInteger(amount)) return home(lang, t('errors.amount'), values)
+    if (!Number.isInteger(amount)) return home(ctx, t('errors.amount'), values)
     const min = g.gateway.info.minimumAmount
-    if (amount < min) return home(lang, t('errors.minimum', { min: toRinggit(min) }), values)
+    if (amount < min) return home(ctx, t('errors.minimum', { min: toRinggit(min) }), values)
     // Unguessable, and within the shortest reference limit of any adapter (eGHL: 20 characters).
     const reference = `DEMO${randomBytes(8).toString('hex').toUpperCase()}`
     let payment
@@ -272,7 +294,7 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
       })
     } catch (e) {
       const message = e instanceof GatewayError ? e.message : 'error'
-      return home(lang, t('errors.refused', { message }), values)
+      return home(ctx, t('errors.refused', { message }), values)
     }
     orders.set(reference, {
       reference,
@@ -286,8 +308,8 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
     return seeOther(`${lang === 'en' ? '/en' : ''}/pay/${reference}`)
   }
 
-  function payPage(lang, order) {
-    const t = translator(lang)
+  function payPage(ctx, order) {
+    const { lang, t } = ctx
     const prefix = lang === 'en' ? '/en' : ''
     const label = shortName(order.gateway, lang)
     // What a real checkout route would return for this payment: shows whether the gateway takes a redirect or a form.
@@ -296,7 +318,7 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
     const action = (name) =>
       `<button class="choice ${name}" name="action" value="${name}"><strong>${t(`pay.actions.${name}.label`)}</strong><span>${t(`pay.actions.${name}.hint`)}</span></button>`
     return page(
-      lang,
+      ctx,
       t('pay.heading', { amount: `RM${toRinggit(order.amount)}` }),
       `<p class="banner">${t('pay.banner', { gateway: label })}</p>
 <section class="card"><h1>${t('pay.heading', { amount: `RM${toRinggit(order.amount)}` })}</h1>
@@ -305,18 +327,21 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
 <dt>${t('pay.method')}</dt><dd>${method}</dd></dl>
 <form method="post" action="${prefix}/pay/${esc(order.reference)}"><p class="choose">${t('pay.choose')}</p>
 <div class="choices">${CHOICES.map(action).join('')}</div></form></section>`,
+      200,
+      'pay',
     )
   }
 
   /** The simulated gateway acts, then delivers its callback to our own callback route over a real Request. */
-  async function pay(lang, order, request) {
+  async function pay(ctx, order, request) {
+    const { lang } = ctx
     const form = await request.formData().catch(() => null)
     const choice = String(form?.get('action') ?? '')
     const orderPath = `${lang === 'en' ? '/en' : ''}/order/${order.reference}`
     // One choice per order: "forge" marks the fake paid, so a later "decline" would (correctly) confirm as paid and
     // show a scenario the visitor did not pick. Another scenario = another order.
     if (order.choice) return seeOther(orderPath)
-    if (!CHOICES.includes(choice)) return payPage(lang, order)
+    if (!CHOICES.includes(choice)) return payPage(ctx, order)
     order.choice = choice
     const { fake, gateway } = order.gateway
     let cb
@@ -335,7 +360,7 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
         .catch(() => null)
       if (!other) {
         order.choice = null
-        return payPage(lang, order)
+        return payPage(ctx, order)
       }
       started.set(order.generation, (started.get(order.generation) ?? 0) + 1)
       fake.markPaid(other.id)
@@ -371,8 +396,8 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
     return new Response('OK')
   }
 
-  function orderPage(lang, order) {
-    const t = translator(lang)
+  function orderPage(ctx, order) {
+    const { lang, t } = ctx
     const prefix = lang === 'en' ? '/en' : ''
     const r = order.result
     const status = !r ? 'waiting' : r.ok ? 'paid' : 'notPaid'
@@ -395,13 +420,13 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
         ([step, s]) =>
           `<li class="step ${s}"><span class="mark" aria-hidden="true"></span><span>${t(`order.steps.${step}`)}${
             step === 'query' && r?.payment
-              ? `<small>${t('order.gatewaySays', { status: translator(lang)(`order.status.${r.payment.status}`) })}</small>`
+              ? `<small>${t('order.gatewaySays', { status: t(`order.status.${r.payment.status}`) })}</small>`
               : ''
           }</span><span class="state">${t(`order.stepState.${s}`)}</span></li>`,
       )
       .join('')
     return page(
-      lang,
+      ctx,
       t('order.heading', { reference: order.reference }),
       `<section class="card"><p class="status ${status}">${t(status === 'waiting' ? 'order.waiting' : `order.${status}`)}</p>
 <h1>${t('order.heading', { reference: order.reference })}</h1>
@@ -410,6 +435,8 @@ export async function startDemo({ perGeneration = PER_GENERATION } = {}) {
 ${r && !r.ok ? `<details><summary>${t('order.detail')}</summary><p><code>${esc(r.detail)}</code></p></details>` : ''}
 <p class="actions"><a class="button" href="${prefix}/">${t('order.again')}</a>
 <a href="https://github.com/sasateguh/bayarkit/blob/main/packages/core/src/confirm.ts">${t('order.code')}</a></p></section>`,
+      200,
+      'order',
     )
   }
 
@@ -418,26 +445,39 @@ ${r && !r.ok ? `<details><summary>${t('order.detail')}</summary><p><code>${esc(r
     const lang = url.pathname === '/en' || url.pathname.startsWith('/en/') ? 'en' : 'ms'
     const path = lang === 'en' ? url.pathname.slice(3) || '/' : url.pathname
     const t = translator(lang)
+    // What every page needs to draw its frame. `here` is where the theme switch returns: the page itself for a GET,
+    // the home page after a POST (a form answer cannot be fetched again).
+    const ctx = {
+      lang,
+      t,
+      theme: themeFrom(request.headers.get('cookie')),
+      here: request.method === 'GET' ? url.pathname : lang === 'en' ? '/en/' : '/',
+    }
     if (request.method === 'GET' && url.pathname === '/demo.css')
       return new Response(CSS, {
         headers: { 'content-type': 'text/css; charset=utf-8', 'cache-control': NO_CACHE, ...SECURITY },
       })
+    if (request.method === 'GET' && FONTS.has(url.pathname))
+      return new Response(FONTS.get(url.pathname), {
+        headers: { 'content-type': 'font/woff2', 'cache-control': FONT_CACHE, ...SECURITY },
+      })
+    if (request.method === 'GET' && path === '/theme') return themeRoute(url, { secure: cookieSecure })
     if (request.method === 'GET' && url.pathname === '/healthz')
       return new Response('ok', { headers: { 'content-type': 'text/plain', 'cache-control': NO_CACHE } })
-    if (request.method === 'GET' && path === '/') return home(lang)
-    if (request.method === 'POST' && path === '/checkout') return checkout(lang, request)
+    if (request.method === 'GET' && path === '/') return home(ctx)
+    if (request.method === 'POST' && path === '/checkout') return checkout(ctx, request)
     const m = /^\/(pay|order|callback)\/([A-Za-z0-9]{1,40})$/.exec(path)
     const order = m ? orders.get(m[2]) : undefined
     if (m && !order)
-      return page(lang, t('errors.order'), `<p class="card error">${t('errors.order')}</p>`, 404)
+      return page(ctx, t('errors.order'), `<p class="card error">${t('errors.order')}</p>`, 404)
     if (m?.[1] === 'pay' && request.method === 'GET')
       return order.choice
         ? seeOther(`${lang === 'en' ? '/en' : ''}/order/${order.reference}`)
-        : payPage(lang, order)
-    if (m?.[1] === 'pay' && request.method === 'POST') return pay(lang, order, request)
-    if (m?.[1] === 'order' && request.method === 'GET') return orderPage(lang, order)
+        : payPage(ctx, order)
+    if (m?.[1] === 'pay' && request.method === 'POST') return pay(ctx, order, request)
+    if (m?.[1] === 'order' && request.method === 'GET') return orderPage(ctx, order)
     if (m?.[1] === 'callback' && request.method === 'POST') return callback(order, request)
-    return new Response('Not found', { status: 404, headers: { 'content-type': 'text/plain' } })
+    return page(ctx, t('errors.notFound'), `<p class="card error">${t('errors.notFound')}</p>`, 404)
   }
 
   return {

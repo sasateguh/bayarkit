@@ -2,7 +2,8 @@
   "lang": "en",
   "otherLang": {
     "label": "Bahasa Melayu",
-    "prefix": ""
+    "prefix": "",
+    "short": "BM"
   },
   "title": "bayarkit demo",
   "tagline": "One interface for Malaysian payment gateways. An order is marked paid only when the gateway itself confirms it.",
@@ -13,7 +14,8 @@
     "amount": "Amount (RM)",
     "submit": "Continue to payment",
     "measured": "measured on the sandbox",
-    "docs": "from the official docs"
+    "docs": "from the official docs",
+    "tag": "Fake gateways"
   },
   "errors": {
     "amount": "Enter an amount in ringgit, for example 1.00.",
@@ -21,7 +23,8 @@
     "gateway": "Unknown gateway.",
     "refused": "The gateway refused: {message}",
     "order": "Order not found. Demo orders live in memory and are gone when the server restarts.",
-    "busy": "The demo is full right now. Please try again shortly."
+    "busy": "The demo is full right now. Please try again shortly.",
+    "notFound": "This page does not exist. Start again from the demo home page."
   },
   "pay": {
     "banner": "SIMULATED payment page · fake {gateway} · no money moves",
@@ -91,5 +94,24 @@
   "links": {
     "caseStudy": "Case study",
     "caseStudyUrl": "https://sasateguh.com/work/bayarkit"
+  },
+  "skip": "Skip to the demo",
+  "theme": {
+    "label": "Theme and language",
+    "system": "Match my device",
+    "light": "Light theme",
+    "dark": "Dark theme"
+  },
+  "home": {
+    "heading": "Paid only when the gateway itself confirms it.",
+    "checksHeading": "Every callback goes through four checks",
+    "checks": {
+      "received": "A callback is only a claim. Anyone can send one to your shop.",
+      "signature": "Signed with the gateway's key? A forged callback stops here.",
+      "query": "bayarkit asks the gateway directly whether this payment was made.",
+      "match": "The payment must be for this order's reference and amount, not a cheaper one."
+    },
+    "verdict": "Only after all four does the order count as paid. Try each scenario to watch one fail.",
+    "lead": "One interface for Malaysian payment gateways, in TypeScript and PHP. Choose a gateway, pay a fake bill, and see what bayarkit checks before it believes a callback."
   }
 }
