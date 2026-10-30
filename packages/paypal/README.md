@@ -3,7 +3,7 @@
 PayPal Orders v2 (approve, then capture) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian and global payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
-**Evidence:** Measured on the sandbox, 30 Oct 2026: buyer approval, captures in USD and MYR, real webhooks verified by PayPal's postback, full and partial refunds; paid only when the capture is COMPLETED.
+**Evidence:** Measured on the sandbox, 30 Oct 2026: buyer approval, captures in USD and MYR, real webhooks verified by PayPal's postback, full and partial refunds; paid only when the capture is `COMPLETED`.
 
 ```bash
 npm install @bayarkit/core @bayarkit/paypal
@@ -58,7 +58,7 @@ If you would rather not wire up a payment gateway yourself, Sasa Teguh, the stud
 PayPal Orders v2 (lulus, kemudian tangkap) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia dan global, dan cara bersemak untuk
 mengesahkan bayaran.
 
-**Bukti:** Diukur pada sandbox, 30 Okt 2026: kelulusan pembeli, tangkapan dalam USD dan MYR, webhook sebenar disahkan melalui postback PayPal, bayaran balik penuh dan separa; dibayar hanya bila tangkapan COMPLETED.
+**Bukti:** Diukur pada sandbox, 30 Okt 2026: kelulusan pembeli, tangkapan dalam USD dan MYR, webhook sebenar disahkan melalui postback PayPal, bayaran balik penuh dan separa; dibayar hanya bila tangkapan `COMPLETED`.
 
 ```bash
 npm install @bayarkit/core @bayarkit/paypal
