@@ -3,7 +3,7 @@
 PayPal Orders v2 (approve, then capture) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian and global payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
-**Evidence:** Official PayPal REST docs and OpenAPI files; paid only when the capture is COMPLETED, webhooks verified by PayPal's postback; not yet measured on the sandbox.
+**Evidence:** Measured on the sandbox, 30 Oct 2026: buyer approval, captures in USD and MYR, real webhooks verified by PayPal's postback, full and partial refunds; paid only when the capture is COMPLETED.
 
 ```bash
 npm install @bayarkit/core @bayarkit/paypal
@@ -20,7 +20,7 @@ const payment = await gateway.createPayment({ reference, amount, description, cu
 return checkoutResponse(payment) // a 303 redirect, or a self-submitting form when the gateway wants a POST
 
 // Return route: the buyer approved on PayPal, and nothing has moved yet. Capture it (safe to retry)
-// with the payment.id you saved at checkout: what PayPal appends to the return URL is not documented.
+// with the payment.id you saved at checkout (PayPal appends ?token=<order id>&PayerID=…; do not trust the query).
 await gateway.capturePayment(order.paymentId)
 
 // Callback route: never mark an order paid from the callback body or the return URL alone.
@@ -52,7 +52,7 @@ The full contract, with a source for every fact: [gateways/paypal/spec.md](https
 PayPal Orders v2 (lulus, kemudian tangkap) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia dan global, dan cara bersemak untuk
 mengesahkan bayaran.
 
-**Bukti:** Dokumen rasmi PayPal REST dan fail OpenAPI; dibayar hanya bila tangkapan COMPLETED, webhook disahkan melalui postback PayPal; belum diukur pada sandbox.
+**Bukti:** Diukur pada sandbox, 30 Okt 2026: kelulusan pembeli, tangkapan dalam USD dan MYR, webhook sebenar disahkan melalui postback PayPal, bayaran balik penuh dan separa; dibayar hanya bila tangkapan COMPLETED.
 
 ```bash
 npm install @bayarkit/core @bayarkit/paypal

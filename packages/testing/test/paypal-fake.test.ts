@@ -211,7 +211,10 @@ describe('fake PayPal (OAuth, Orders v2, refunds, webhook postback)', () => {
     fake.nextCapture(pending.id, 'PENDING')
     fake.approve(pending.id)
     const p = (await capture(pending.id)).json.purchase_units[0]?.payments?.captures[0]
-    expect(p).toMatchObject({ status: 'PENDING', status_details: { reason: 'PENDING_REVIEW' } })
+    expect(p).toMatchObject({
+      status: 'PENDING',
+      status_details: { reason: 'RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION' },
+    })
   })
 
   describe('refunds (POST /v2/payments/captures/{id}/refund, spec §6)', () => {
@@ -314,6 +317,29 @@ describe('fake PayPal (OAuth, Orders v2, refunds, webhook postback)', () => {
       ) as Event
       expect(other).toMatchObject({ event_type: 'PAYMENT.CAPTURE.DENIED', resource: { status: 'DECLINED' } })
       expect(() => fake.callbackFor('NOPE')).toThrow()
+    })
+
+    it('a PAYMENT.CAPTURE.REFUNDED event carries the refund, which names no order (measured)', async () => {
+      const o = await create()
+      fake.markPaid(o.id)
+      const captureId = fake.order(o.id)?.purchase_units[0]?.payments?.captures[0]?.id
+      const refunded = await call('POST', `/v2/payments/captures/${captureId}/refund`, {
+        amount: { currency_code: 'USD', value: '5.00' },
+      })
+      const event = JSON.parse(
+        fake.callbackFor(o.id, { event_type: 'PAYMENT.CAPTURE.REFUNDED' }).rawBody ?? '',
+      ) as Event & { resource_type: string }
+      expect(event.resource_type).toBe('refund')
+      expect(event.resource).toMatchObject({
+        id: refunded.json.id,
+        status: 'COMPLETED',
+        custom_id: 'ORDER1',
+        amount: { currency_code: 'USD', value: '5.00' },
+      })
+      expect(event.resource).not.toHaveProperty('supplementary_data')
+      expect(event.resource).not.toHaveProperty('capture_id')
+      const up = (event.resource.links as { rel: string; href: string }[]).find((l) => l.rel === 'up')
+      expect(up?.href).toMatch(new RegExp(`/v2/payments/captures/${captureId}$`))
     })
 
     it('verify-webhook-signature: SUCCESS only for the raw event as sent, with this webhook id (spec §5.1)', async () => {

@@ -21,20 +21,25 @@
  * - the buyer: `approve()` = `APPROVED` (nothing captured). `markPaid()` = approved AND captured, the state an app
  *   reaches after its own capture call, because the shared conformance suite expects `markPaid` to mean paid.
  *   `nextCapture(id, 'DECLINED' | 'PENDING')` makes the next capture end like the card-testing guide's declined card
- *   (order `COMPLETED`, capture `DECLINED`) or an unheld currency (capture `PENDING`) [§3];
- * - capture: only an `APPROVED` order [§4];
- * - issue names the official OpenAPI files do not show are the fake's own: `ORDER_NOT_APPROVED`,
- *   `ORDER_ALREADY_CAPTURED`, `DECIMAL_PRECISION`, `AMOUNT_NOT_POSITIVE`, `REFUND_CURRENCY_MISMATCH`,
- *   `INVALID_RESOURCE_ID` (PayPal lists its issues on a page that renders in JavaScript; UNCONFIRMED #3). The HTTP
- *   status and `name` follow the errors page; an adapter must not depend on the issue text;
+ *   (order `COMPLETED`, capture `DECLINED`) or an unheld currency (capture `PENDING`, reason
+ *   `RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION`, as measured with JPY) [§3];
+ * - capture: only an `APPROVED` order [§4]; the sandbox answers 422 `ORDER_NOT_APPROVED` before approval and
+ *   `ORDER_ALREADY_CAPTURED` for a second capture without the first `PayPal-Request-Id` (measured);
+ * - issue names the official OpenAPI files do not show are the fake's own: `DECIMAL_PRECISION`,
+ *   `AMOUNT_NOT_POSITIVE`, `REFUND_CURRENCY_MISMATCH`, `INVALID_RESOURCE_ID` (PayPal lists its issues on a page that
+ *   renders in JavaScript). The HTTP status and `name` follow the errors page; an adapter must not depend on the
+ *   issue text;
  * - refunds: `POST /v2/payments/captures/{id}/refund` on a `COMPLETED`/`PARTIALLY_REFUNDED` capture, empty body =
  *   what remains, `amount` = partial in the capture's currency, above what remains = 422 `REFUND_AMOUNT_EXCEEDED`.
- *   A refund is `COMPLETED` at once (UNCONFIRMED #7) unless `nextRefund(captureId, 'PENDING')` [§6];
+ *   A refund is `COMPLETED` at once, as measured, unless `nextRefund(captureId, 'PENDING')` [§6];
  * - webhooks: `callbackFor` sends a `PAYMENT.CAPTURE.COMPLETED` event (resource = a capture with `custom_id` and
- *   `supplementary_data.related_ids.order_id`) with the five `PAYPAL-*` headers [§5]. The signature is the fake's own
- *   HMAC, so `POST /v1/notifications/verify-webhook-signature` answers `SUCCESS` only for an event this fake sent, with
- *   the same headers, this fake's `webhookId`, and `webhook_event` spliced in BYTE FOR BYTE as delivered (the event is
- *   indented, so re-serialising it fails as the docs warn). Anything else is `FAILURE` (UNCONFIRMED #5) [§5.1].
+ *   `supplementary_data.related_ids.order_id`) with the five `PAYPAL-*` headers [§5]. With `event_type:
+ *   'PAYMENT.CAPTURE.REFUNDED'` the resource is the order's latest refund, which names no order (measured). The
+ *   signature is the fake's own HMAC, so `POST /v1/notifications/verify-webhook-signature` answers `SUCCESS` only for
+ *   an event this fake sent, with the same headers, this fake's `webhookId`, and `webhook_event` spliced in BYTE FOR
+ *   BYTE as delivered. Anything else is `FAILURE`, as measured for a changed value and another webhook id [§5.1].
+ *   The sandbox also accepted a whitespace-only change; the fake stays stricter (the event is indented, so
+ *   re-serialising it fails) because re-serialising can change more than whitespace.
  */
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
@@ -477,7 +482,9 @@ export async function startFakePayPal(opts: {
     const capture: PayPalCapture = {
       id: captureId,
       status: outcome ?? 'COMPLETED',
-      ...(outcome === 'PENDING' ? { status_details: { reason: 'PENDING_REVIEW' } } : {}),
+      ...(outcome === 'PENDING'
+        ? { status_details: { reason: 'RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION' } }
+        : {}),
       amount: { ...unit.amount },
       ...(unit.custom_id ? { custom_id: unit.custom_id } : {}),
       ...(unit.invoice_id ? { invoice_id: unit.invoice_id } : {}),
@@ -668,7 +675,25 @@ export async function startFakePayPal(opts: {
         resource_version: '2.0',
         event_type: event_type ?? 'PAYMENT.CAPTURE.COMPLETED',
         summary: `Payment completed for ${resource.amount?.value} ${resource.amount?.currency_code}`,
-        resource,
+        resource: resource as Body,
+      }
+      if (event_type === 'PAYMENT.CAPTURE.REFUNDED') {
+        // Measured: the resource is the refund (the order's latest), with no order id; `up` links the capture.
+        const latest = unit?.payments?.refunds?.at(-1)
+        const captureId = real?.id ?? paypalId()
+        const { capture_id: _, ...refund }: Body = latest ?? {
+          id: paypalId(),
+          status: 'COMPLETED' as const,
+          amount: unit?.amount,
+          ...(unit?.custom_id ? { custom_id: unit.custom_id } : {}),
+          create_time: now,
+          update_time: now,
+          links: [{ href: `${url}/v2/payments/captures/${captureId}`, rel: 'up', method: 'GET' }],
+        }
+        event.resource_type = 'refund'
+        const money = obj(refund.amount)
+        event.summary = `A ${money.currency_code} ${money.value} capture payment was refunded`
+        event.resource = { ...refund, ...fields }
       }
       // Indented, so a handler that re-serialises the parsed JSON posts different bytes and verification fails.
       const rawBody = JSON.stringify(event, null, 2)

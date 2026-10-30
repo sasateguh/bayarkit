@@ -18,8 +18,9 @@ All notable changes to this project are documented here. The format follows
   fixed at 1, because the checkout otherwise lets the buyer pick 1 to 100.
 - `@bayarkit/paypal` and `Bayarkit\Gateways\PayPal`: PayPal Orders v2. `capturePayment` captures an approved order
   (safe to retry); `getPayment` only reads, and an order is paid only when its capture is `COMPLETED`. Webhooks are
-  verified by PayPal's `verify-webhook-signature`. Refunds. Written from the official docs; not yet measured on the
-  sandbox.
+  verified by PayPal's `verify-webhook-signature`. Refunds. Measured on the sandbox: a sandbox buyer approving, captures
+  in USD and MYR (JPY, a currency the account did not hold, stayed `PENDING`), real webhooks verified, full and partial
+  refunds.
 - Refunds, an optional capability: `refundPayment({ paymentId, amount })` returns a `RefundRecord` (`pending`,
   `succeeded`, `failed`, `unknown`); an amount above what is left is refused before any request
   (`checkRefundAmount`). PHP: `Bayarkit\Refunds`, `RefundInput`, `RefundRecord`. The conformance suite runs its refund

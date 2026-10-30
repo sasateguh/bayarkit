@@ -238,6 +238,13 @@ describe('paypal: against the fake', () => {
     expect(
       await gw.verifyCallback(fake.callbackFor(created.id, { event_type: 'CUSTOMER.DISPUTE.CREATED' })),
     ).toBeNull()
+    // Measured: a refund event's resource is the refund, which carries no order id.
+    const paid = await gw.createPayment(sampleInput())
+    fake.markPaid(paid.id)
+    await gw.refundPayment({ paymentId: paid.id, amount: 100 })
+    expect(
+      await gw.verifyCallback(fake.callbackFor(paid.id, { event_type: 'PAYMENT.CAPTURE.REFUNDED' })),
+    ).toBeNull()
   })
 
   it('refunds by capture id, reports PENDING as pending, and counts earlier refunds against what is left', async () => {

@@ -12,8 +12,35 @@ PayPal server SDKs (custom licence) were not used.
 > from the **capture** (`COMPLETED`), never from the order status, and `APPROVED` (buyer said yes, nothing captured
 > yet) is never paid.
 
-Nothing in this file has been measured on the sandbox yet. Facts the docs leave open are marked **UNCONFIRMED** and
-listed at the end, for the sandbox run.
+Facts the docs leave open are marked **UNCONFIRMED** and listed at the end; the sandbox run below answers most of them.
+
+## Measured on the sandbox (30 October 2026)
+
+A sandbox REST app with a business account and a personal (buyer) account, through `@bayarkit/paypal` (and
+`Bayarkit\Gateways\PayPal`), the buyer logging in and approving on PayPal's page in a browser, and a temporary webhook
+added through the API (deleted afterwards):
+
+| Fact | Result |
+| --- | --- |
+| Token | `expires_in` 32400 (9 hours) |
+| New order with `experience_context` | `PAYER_ACTION_REQUIRED`, link `rel: payer-action` on `www.sandbox.paypal.com/checkoutnow` |
+| Buyer approves | order `APPROVED` (`payment_source.paypal.account_status: VERIFIED`); the buyer lands on `return_url` with `?token=<order id>&PayerID=<payer id>`; `CHECKOUT.ORDER.APPROVED` arrives within a second |
+| Capture before approval | 422 `UNPROCESSABLE_ENTITY`, issue `ORDER_NOT_APPROVED` |
+| Capture USD 10.50 and USD 20.00 | order `COMPLETED`, capture `COMPLETED`, `custom_id` copied, PayPal fee 71 and 106 cents |
+| Capture MYR 10.00 | capture `COMPLETED` on this business account (fee 253 sen) |
+| Capture JPY 500 (a currency the account does not hold) | order `COMPLETED`, capture `PENDING` with `status_details.reason: RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION`; event `PAYMENT.CAPTURE.PENDING` |
+| Capture again with the same `PayPal-Request-Id` | the first capture again (same capture id) |
+| Capture again without it | 422, issue `ORDER_ALREADY_CAPTURED` |
+| Events after a capture | `PAYMENT.CAPTURE.COMPLETED` (or `.PENDING`) about 15 s later, with `supplementary_data.related_ids.order_id`; `CHECKOUT.ORDER.COMPLETED` (subscribed) never arrived |
+| Webhook headers | `PAYPAL-AUTH-ALGO: SHA256withRSA`, `PAYPAL-AUTH-VERSION`, `PAYPAL-CERT-URL`, `PAYPAL-TRANSMISSION-ID`, `-SIG`, `-TIME` |
+| `verify-webhook-signature` | `SUCCESS` for the event as received; `FAILURE` for one changed value and for another (well-formed) webhook id; `SUCCESS` for a whitespace-only change; `SUCCESS` for an event 7 minutes old (no replay window) |
+| Retries (endpoint answered 500) | same event id, body, transmission id, time and signature; about 28 s, then about 2 minutes later |
+| Refund full and partial (500 then 1500 of 2000) | `COMPLETED` at once; capture `PARTIALLY_REFUNDED`, then `REFUNDED`; the order stays `COMPLETED` |
+| `PAYMENT.CAPTURE.REFUNDED` | `resource_type: refund`, the resource is the refund (`custom_id`, `amount`, `links` with `rel: up` to the capture) and has no order id |
+
+Through the adapters: `confirmPayment` (TS) and `Confirm::payment` (PHP) answered `ok` on `PAYMENT.CAPTURE.COMPLETED`,
+`mismatch` for the amount plus one and for MYR instead of USD, and `not_paid` on `CHECKOUT.ORDER.APPROVED` before the
+capture and on `PAYMENT.CAPTURE.PENDING`. A one-byte change to the event verified as `null`, and so did a refund event.
 
 ---
 
@@ -56,7 +83,7 @@ same app reference after the first one expired.
 | --- | --- |
 | `200`/`201` with `id` (the order id) and `status`. | OpenAPI `orders.create` responses |
 | With `payment_source.paypal.experience_context`, the new order is `PAYER_ACTION_REQUIRED` and the buyer link is `links[]` with `rel: "payer-action"` (`https://www.sandbox.paypal.com/checkoutnow?token=<order id>` in the samples). Without a `payment_source` the order is `CREATED` and the link is `rel: "approve"`. The adapter accepts either. | https://developer.paypal.com/whats-an-order.md (sample responses) |
-| After approval the buyer goes to `return_url`. What PayPal appends to it is **UNCONFIRMED**; the adapter does not rely on it (the app keeps the order id). | whats-an-order page |
+| After approval the buyer goes to `return_url`. The docs do not say what PayPal appends to it (measured: `token` = the order id, and `PayerID`); the adapter does not rely on it (the app keeps the order id). | whats-an-order page; measured |
 | The order must be captured within a window: the guide says the order "will remain in the `CREATED` state for only 3 hours", the OpenAPI text for `links` says 6 hours to redirect plus 6 hours to approve and capture. The two disagree. | whats-an-order page; OpenAPI `order.links` |
 
 ## 3. `GET /v2/checkout/orders/{id}` (read) and order status
@@ -159,7 +186,13 @@ or decimals.
 | --- | --- |
 | Sandbox buyer and business accounts are created in the developer dashboard; card checkouts can be forced to fail by putting a code in the card holder name, e.g. `CCREJECT-REFUSED` (`0500`, `DO_NOT_HONOR`), `CCREJECT-IF` (insufficient funds), `CCREJECT-EC` (expired). | https://developer.paypal.com/sandbox-testing/card-testing.md |
 
-## UNCONFIRMED summary (for the sandbox run)
+## UNCONFIRMED summary (answered by the sandbox run above, 30 October 2026)
+
+Answers: 1. MYR captured on the business account used; JPY, which it did not hold, stayed `PENDING` with
+`RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION`. 2. Not measured (it takes hours). 3. `ORDER_NOT_APPROVED`, and
+`ORDER_ALREADY_CAPTURED` without the request id. 4. Yes. 5. `FAILURE` for both, not an HTTP error. 6. Only
+`PAYMENT.CAPTURE.COMPLETED`, about 15 s after the capture response. 7. `COMPLETED` at once; `PARTIALLY_REFUNDED`. 8.
+`token` and `PayerID`. 9. 32400 s. The questions as they were:
 
 1. Whether the owner's sandbox business account (country) can be paid in MYR, or only in USD; and whether a currency
    it does not hold leaves the capture `PENDING` with `RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION`.

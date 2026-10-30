@@ -7,7 +7,7 @@ description: Integrate PayPal Orders v2 payments (from Malaysia) safely. Use whe
 
 ## Use the bayarkit adapter
 
-Install `@bayarkit/core` and `@bayarkit/paypal`. Evidence: **written from the official docs, not yet measured on the sandbox**.
+Install `@bayarkit/core` and `@bayarkit/paypal`. Evidence: **measured on the PayPal Orders v2 sandbox**.
 
 ```ts
 import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'
@@ -17,7 +17,7 @@ const gateway = paypal({ clientId, clientSecret, webhookId, currency: 'USD' })
 const payment = await gateway.createPayment({ reference, amount /* USD smallest unit */, description, customer, returnUrl, callbackUrl })
 return checkoutResponse(payment) // a 303 redirect, or a self-submitting page when the gateway wants a POST form
 // Return route: the buyer approved on PayPal, and nothing has moved yet. Capture it (safe to retry)
-// with the payment.id you saved at checkout: what PayPal appends to the return URL is not documented.
+// with the payment.id you saved at checkout (PayPal appends ?token=<order id>&PayerID=…; do not trust the query).
 await gateway.capturePayment(order.paymentId)
 // then, in the callback route:
 const result = await confirmPayment(gateway, await readCallback(request), { reference, amount, currency: 'USD' })

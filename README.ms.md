@@ -7,7 +7,7 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 [English](README.md) · **[Cuba demo](https://bayarkit.sasateguh.com/)** (gateway palsu, tiada wang)
 
 > **Status:** 0.2.2. Enam belas gateway dalam TypeScript; Paddle dan PayPal ada dalam repositori ini tetapi belum di npm.
-> toyyibPay, Billplz, Bayarcash, Stripe dan Paddle diukur pada sandbox masing-masing; yang lain ditulis daripada
+> toyyibPay, Billplz, Bayarcash, Stripe, Paddle dan PayPal diukur pada sandbox masing-masing; yang lain ditulis daripada
 > sumber rasmi dan belum dijalankan terhadap gateway sebenar (jadual menyatakan sumbernya). PHP/Laravel meliputi toyyibPay, CHIP,
 > Paddle dan PayPal.
 
@@ -28,24 +28,24 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 ## Gateway
 
 <!-- gateways:table (generated from gateways/registry.json by `node tools/rujukan.mjs skills`) -->
-| Gateway                                        | Pakej                 | Bukti                                                                                                                                                                             |
-| ---------------------------------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| toyyibPay                                      | `@bayarkit/toyyibpay` | Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian; pertanyaan status dengan dan tanpa `userSecretKey` diukur semula 27 Okt 2026               |
-| Bayarcash (juga di belakang BCL.my)            | `@bayarkit/bayarcash` | Diukur pada sandbox, 27 Okt 2026: satu bayaran FPX berjaya dan satu gagal melalui adapter (URL return, pertanyaan status, portal); callback pelayan-ke-pelayan tidak diperhatikan |
-| Billplz                                        | `@bayarkit/billplz`   | Diukur pada sandbox, 27 Okt 2026: satu bayaran berjaya dan satu gagal, dengan callback sebenar dan ubah hala disahkan oleh adapter                                                |
-| CHIP (CHIP Collect)                            | `@bayarkit/chip`      | OpenAPI rasmi CHIP Collect; belum diukur dalam mod ujian                                                                                                                          |
-| Stripe (Malaysia): kad + FPX                   | `@bayarkit/stripe`    | Diukur dalam mod ujian, 27 Okt 2026: satu bayaran kad dan satu FPX melalui adapter dengan webhook sebenar (API `2026-09-30.endive`), dan satu bayaran FPX yang gagal              |
-| senangPay (di platform DOKU)                   | `@bayarkit/senangpay` | Rujukan API rasmi DOKU Malaysia (Checkout, Signature `HMACSHA256=`) dan Soalan Lazim DOKU senangPay; belum diukur pada sandbox                                                    |
-| iPay88 (NTT DATA Payment Services Malaysia)    | `@bayarkit/ipay88`    | Alat tandatangan dan skrip HMAC rasmi pada hos gateway (tiga vektor), enquiry.asp diuji secara langsung; tiada dokumen API awam; belum diukur                                     |
-| Fiuu (dahulu Razer Merchant Services / MOLPay) | `@bayarkit/fiuu`      | PDF spesifikasi API rasmi v13.97 (vektor ujian vcode rasmi), plugin WooCommerce dan SDK PHP; belum diukur pada sandbox                                                            |
-| 2C2P (PGW Payment API v4.x)                    | `@bayarkit/2c2p`      | Dokumen pembangun rasmi (Payment Token + JWT HS256, tiga vektor ujian JWT rasmi); belum diukur pada sandbox                                                                       |
-| Razorpay Curlec                                | `@bayarkit/curlec`    | Dokumen rasmi (Payment Links + Orders, tiga tandatangan, kelima-lima vektor ujian rasmi); belum diukur dalam mod ujian                                                            |
-| HitPay                                         | `@bayarkit/hitpay`    | Dokumen rasmi (OpenAPI, Payment Requests, kedua-dua tandatangan webhook) dan SDK PHP rasmi; belum diukur pada sandbox                                                             |
-| Gkash                                          | `@bayarkit/gkash`     | Dokumen rasmi (vektor ujian tandatangan SHA-512), plugin WooCommerce dan SDK gkashmy; belum diukur pada staging                                                                   |
-| Xendit (Malaysia): Payment Sessions            | `@bayarkit/xendit`    | Dokumen rasmi (Payment Sessions, payment request v3, webhook `x-callback-token`: token statik, bukan tandatangan) dan skil agen Xendit; belum diukur dalam mod ujian              |
-| eGHL (ADAPTIS e-Commerce)                      | `@bayarkit/eghl`      | Kod awam rasmi eGHL (kelas hash, QUERY merchant-api, vektor ujian HashValue2 Omnipay; tiada panduan API awam); belum diukur pada hos ujian                                        |
-| Paddle Billing (penjual rasmi, tiada MYR)      | `@bayarkit/paddle`    | Diukur pada sandbox, 30 Okt 2026: kad dibayar dan ditolak, webhook bertandatangan sebenar, bayaran balik penuh dan separa; caj dalam USD atau mata wang Paddle lain, bukan MYR    |
-| PayPal Orders v2 (lulus, kemudian tangkap)     | `@bayarkit/paypal`    | Dokumen rasmi PayPal REST dan fail OpenAPI; dibayar hanya bila tangkapan COMPLETED, webhook disahkan melalui postback PayPal; belum diukur pada sandbox                           |
+| Gateway                                        | Pakej                 | Bukti                                                                                                                                                                                                      |
+| ---------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| toyyibPay                                      | `@bayarkit/toyyibpay` | Diukur pada sandbox, 10 Okt 2026, termasuk satu bayaran FPX sebenar dengan bank ujian; pertanyaan status dengan dan tanpa `userSecretKey` diukur semula 27 Okt 2026                                        |
+| Bayarcash (juga di belakang BCL.my)            | `@bayarkit/bayarcash` | Diukur pada sandbox, 27 Okt 2026: satu bayaran FPX berjaya dan satu gagal melalui adapter (URL return, pertanyaan status, portal); callback pelayan-ke-pelayan tidak diperhatikan                          |
+| Billplz                                        | `@bayarkit/billplz`   | Diukur pada sandbox, 27 Okt 2026: satu bayaran berjaya dan satu gagal, dengan callback sebenar dan ubah hala disahkan oleh adapter                                                                         |
+| CHIP (CHIP Collect)                            | `@bayarkit/chip`      | OpenAPI rasmi CHIP Collect; belum diukur dalam mod ujian                                                                                                                                                   |
+| Stripe (Malaysia): kad + FPX                   | `@bayarkit/stripe`    | Diukur dalam mod ujian, 27 Okt 2026: satu bayaran kad dan satu FPX melalui adapter dengan webhook sebenar (API `2026-09-30.endive`), dan satu bayaran FPX yang gagal                                       |
+| senangPay (di platform DOKU)                   | `@bayarkit/senangpay` | Rujukan API rasmi DOKU Malaysia (Checkout, Signature `HMACSHA256=`) dan Soalan Lazim DOKU senangPay; belum diukur pada sandbox                                                                             |
+| iPay88 (NTT DATA Payment Services Malaysia)    | `@bayarkit/ipay88`    | Alat tandatangan dan skrip HMAC rasmi pada hos gateway (tiga vektor), enquiry.asp diuji secara langsung; tiada dokumen API awam; belum diukur                                                              |
+| Fiuu (dahulu Razer Merchant Services / MOLPay) | `@bayarkit/fiuu`      | PDF spesifikasi API rasmi v13.97 (vektor ujian vcode rasmi), plugin WooCommerce dan SDK PHP; belum diukur pada sandbox                                                                                     |
+| 2C2P (PGW Payment API v4.x)                    | `@bayarkit/2c2p`      | Dokumen pembangun rasmi (Payment Token + JWT HS256, tiga vektor ujian JWT rasmi); belum diukur pada sandbox                                                                                                |
+| Razorpay Curlec                                | `@bayarkit/curlec`    | Dokumen rasmi (Payment Links + Orders, tiga tandatangan, kelima-lima vektor ujian rasmi); belum diukur dalam mod ujian                                                                                     |
+| HitPay                                         | `@bayarkit/hitpay`    | Dokumen rasmi (OpenAPI, Payment Requests, kedua-dua tandatangan webhook) dan SDK PHP rasmi; belum diukur pada sandbox                                                                                      |
+| Gkash                                          | `@bayarkit/gkash`     | Dokumen rasmi (vektor ujian tandatangan SHA-512), plugin WooCommerce dan SDK gkashmy; belum diukur pada staging                                                                                            |
+| Xendit (Malaysia): Payment Sessions            | `@bayarkit/xendit`    | Dokumen rasmi (Payment Sessions, payment request v3, webhook `x-callback-token`: token statik, bukan tandatangan) dan skil agen Xendit; belum diukur dalam mod ujian                                       |
+| eGHL (ADAPTIS e-Commerce)                      | `@bayarkit/eghl`      | Kod awam rasmi eGHL (kelas hash, QUERY merchant-api, vektor ujian HashValue2 Omnipay; tiada panduan API awam); belum diukur pada hos ujian                                                                 |
+| Paddle Billing (penjual rasmi, tiada MYR)      | `@bayarkit/paddle`    | Diukur pada sandbox, 30 Okt 2026: kad dibayar dan ditolak, webhook bertandatangan sebenar, bayaran balik penuh dan separa; caj dalam USD atau mata wang Paddle lain, bukan MYR                             |
+| PayPal Orders v2 (lulus, kemudian tangkap)     | `@bayarkit/paypal`    | Diukur pada sandbox, 30 Okt 2026: kelulusan pembeli, tangkapan dalam USD dan MYR, webhook sebenar disahkan melalui postback PayPal, bayaran balik penuh dan separa; dibayar hanya bila tangkapan COMPLETED |
 <!-- /gateways:table -->
 
 Sudah dikaji tetapi belum ada adapter: Adyen dan Airwallex (spesifikasi dalam [gateways/README.md](gateways/README.md)). Satu
@@ -177,7 +177,12 @@ const result = await confirmPayment(gateway, await readCallback(request), {
 - `webhookId` ialah id webhook yang anda tambah pada aplikasi REST PayPal anda. `verifyCallback` meminta PayPal
   mengesahkan setiap acara (`verify-webhook-signature`), jadi ia async; jika PayPal tidak dapat dicapai,
   `confirmPayment` menjawab `gateway_error` (cuba semula), bukan `invalid_signature`.
-- MYR hanya berfungsi untuk akaun PayPal Malaysia.
+- MYR hanya berfungsi untuk akaun PayPal Malaysia. Mata wang yang tidak dipegang akaun anda membiarkan tangkapan
+  `PENDING` sehingga anda menerimanya di PayPal, jadi `confirmPayment` menjawab `not_paid`.
+- Hantar hanya acara `PAYMENT.CAPTURE.*` ke `confirmPayment` (dan `CHECKOUT.ORDER.APPROVED` ke langkah tangkap anda).
+  Acara bayaran balik membawa bayaran balik itu, yang tidak menamakan pesanan, jadi ia tidak disahkan sebagai callback
+  bayaran.
+- PayPal mengulang webhook dengan id acara yang sama; buang pendua ikut `raw.event_id`.
 
 Kedua-dua adapter boleh membuat bayaran balik: `await gateway.refundPayment({ paymentId, amount })` dengan amaun tidak
 melebihi baki (disemak sebelum memanggil gateway). Ia memulangkan `pending`, `succeeded`, `failed` atau `unknown`.

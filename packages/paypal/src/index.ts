@@ -2,9 +2,19 @@
  * PayPal Orders v2 adapter: one-time orders (intent CAPTURE), capture, webhooks and refunds over raw REST (no PayPal
  * SDK, zero runtime dependencies).
  *
- * Written from the official docs only, read 29 October 2026 (`gateways/paypal/spec.md`, a source next to every fact):
- * developer.paypal.com and the OpenAPI files in paypal/paypal-rest-api-specifications. NOT yet measured on the sandbox:
- * `evidence.kind` stays `docs` until it is.
+ * Written from the official docs, read 29 October 2026 (`gateways/paypal/spec.md`, a source next to every fact):
+ * developer.paypal.com and the OpenAPI files in paypal/paypal-rest-api-specifications. Measured on the sandbox
+ * 30 October 2026 (spec "Measured"): a sandbox buyer approving on PayPal, captures in USD, MYR and JPY, real webhooks
+ * verified by the postback, full and partial refunds. The adapter needed no change; what the docs left open:
+ * - A capture in a currency the account does not hold (JPY) is `PENDING` with
+ *   `RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION` and sends `PAYMENT.CAPTURE.PENDING`, so `confirmPayment` says
+ *   `not_paid`. MYR captured `COMPLETED` on the sandbox business account used.
+ * - Only `PAYMENT.CAPTURE.*` arrives after a capture (about 15 s later); `CHECKOUT.ORDER.COMPLETED` never did. A
+ *   `PAYMENT.CAPTURE.REFUNDED` event carries the refund, which names no order, so it verifies as `null`: send refund
+ *   events elsewhere, not to `confirmPayment`.
+ * - Refunds were `COMPLETED` at once; the capture becomes `PARTIALLY_REFUNDED`, then `REFUNDED`.
+ * - A retried webhook is the same delivery (same body, transmission id, time and signature) and still verifies;
+ *   so does an event several minutes old. Deduplicate on the event id.
  *
  * - Auth: OAuth 2.0 client credentials (`POST /v1/oauth2/token`, HTTP Basic). The token is cached until a minute
  *   before `expires_in` runs out and fetched again then, or once when PayPal answers 401 to a cached one. Neither the
@@ -104,9 +114,10 @@ export const info: GatewayInfo = {
   minimumAmount: 1,
   currency: 'USD',
   evidence: {
-    kind: 'docs',
-    date: '2026-10-29',
-    source: 'developer.paypal.com + paypal-rest-api-specifications (not yet measured on the sandbox)',
+    kind: 'measured',
+    date: '2026-10-30',
+    source:
+      'PayPal sandbox: buyer approval, captures (USD, MYR, JPY pending), real webhooks, refunds; developer.paypal.com',
   },
 }
 

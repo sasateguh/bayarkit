@@ -8,8 +8,8 @@ Your checkout and callback code stay the same when you switch gateways; only the
 [Bahasa Melayu](README.ms.md) · **[Try the demo](https://bayarkit.sasateguh.com/en)** (fake gateways, no money)
 
 > **Status:** 0.2.2. Sixteen gateways in TypeScript; Paddle and PayPal are in this repository but not on npm yet.
-> toyyibPay, Billplz, Bayarcash, Stripe and Paddle are measured on their sandboxes; the others are written from
-> official sources and have not yet run against a real gateway (the table says which source). PHP/Laravel covers toyyibPay,
+> toyyibPay, Billplz, Bayarcash, Stripe, Paddle and PayPal are measured on their sandboxes; the others are written
+> from official sources and have not yet run against a real gateway (the table says which source). PHP/Laravel covers toyyibPay,
 > CHIP, Paddle and PayPal.
 
 ## Why
@@ -27,24 +27,24 @@ Your checkout and callback code stay the same when you switch gateways; only the
 ## Gateways
 
 <!-- gateways:table (generated from gateways/registry.json by `node tools/rujukan.mjs skills`) -->
-| Gateway                                          | Package               | Evidence                                                                                                                                                                     |
-| ------------------------------------------------ | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| toyyibPay                                        | `@bayarkit/toyyibpay` | Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment; the status query with and without `userSecretKey` re-measured 27 Oct 2026                      |
-| Bayarcash (also behind BCL.my)                   | `@bayarkit/bayarcash` | Measured on the sandbox, 27 Oct 2026: a paid and a failed FPX payment through the adapter (return URL, status query, portal); the server-to-server callback was not observed |
-| Billplz                                          | `@bayarkit/billplz`   | Measured on the sandbox, 27 Oct 2026: a paid and a failed payment, with the real callback and the redirect verified by the adapter                                           |
-| CHIP (CHIP Collect)                              | `@bayarkit/chip`      | Official CHIP Collect OpenAPI; not yet measured in test mode                                                                                                                 |
-| Stripe (Malaysia): card + FPX                    | `@bayarkit/stripe`    | Measured in test mode, 27 Oct 2026: a card and an FPX payment through the adapter with a real webhook (API `2026-09-30.endive`), and a failed FPX payment                    |
-| senangPay (on the DOKU platform)                 | `@bayarkit/senangpay` | Official DOKU Malaysia API Reference (Checkout, `HMACSHA256=` Signature) and the senangPay DOKU FAQ; not yet measured on the sandbox                                         |
-| iPay88 (NTT DATA Payment Services Malaysia)      | `@bayarkit/ipay88`    | Official signature tools and HMAC script on the gateway host (three vectors), enquiry.asp probed live; no public API docs; not yet measured                                  |
-| Fiuu (formerly Razer Merchant Services / MOLPay) | `@bayarkit/fiuu`      | Official API spec PDF v13.97 (the official vcode test vector), WooCommerce plugin and PHP SDK; not yet measured on the sandbox                                               |
-| 2C2P (PGW Payment API v4.x)                      | `@bayarkit/2c2p`      | Official developer docs (Payment Token + HS256 JWT, three official JWT test vectors); not yet measured on the sandbox                                                        |
-| Razorpay Curlec                                  | `@bayarkit/curlec`    | Official docs (Payment Links + Orders, three signatures, all five official test vectors); not yet measured in test mode                                                      |
-| HitPay                                           | `@bayarkit/hitpay`    | Official docs (OpenAPI, Payment Requests, both webhook signatures) and official PHP SDK; not yet measured on the sandbox                                                     |
-| Gkash                                            | `@bayarkit/gkash`     | Official docs (SHA-512 signature test vectors), WooCommerce plugin and gkashmy SDKs; not yet measured on staging                                                             |
-| Xendit (Malaysia): Payment Sessions              | `@bayarkit/xendit`    | Official docs (Payment Sessions, v3 payment requests, `x-callback-token` webhooks: a static token, not a signature) and Xendit's agent skill; not yet measured in test mode  |
-| eGHL (ADAPTIS e-Commerce)                        | `@bayarkit/eghl`      | Official eGHL public code (hash class, merchant-api QUERY, Omnipay HashValue2 test vector; no public API guide exists); not yet measured on the test host                    |
-| Paddle Billing (merchant of record, no MYR)      | `@bayarkit/paddle`    | Measured on the sandbox, 30 Oct 2026: card paid and declined, real signed webhooks, full and partial refunds; charges in USD or another Paddle currency, never MYR           |
-| PayPal Orders v2 (approve, then capture)         | `@bayarkit/paypal`    | Official PayPal REST docs and OpenAPI files; paid only when the capture is COMPLETED, webhooks verified by PayPal's postback; not yet measured on the sandbox                |
+| Gateway                                          | Package               | Evidence                                                                                                                                                                                      |
+| ------------------------------------------------ | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| toyyibPay                                        | `@bayarkit/toyyibpay` | Measured on the sandbox, 10 Oct 2026, including a real test-bank FPX payment; the status query with and without `userSecretKey` re-measured 27 Oct 2026                                       |
+| Bayarcash (also behind BCL.my)                   | `@bayarkit/bayarcash` | Measured on the sandbox, 27 Oct 2026: a paid and a failed FPX payment through the adapter (return URL, status query, portal); the server-to-server callback was not observed                  |
+| Billplz                                          | `@bayarkit/billplz`   | Measured on the sandbox, 27 Oct 2026: a paid and a failed payment, with the real callback and the redirect verified by the adapter                                                            |
+| CHIP (CHIP Collect)                              | `@bayarkit/chip`      | Official CHIP Collect OpenAPI; not yet measured in test mode                                                                                                                                  |
+| Stripe (Malaysia): card + FPX                    | `@bayarkit/stripe`    | Measured in test mode, 27 Oct 2026: a card and an FPX payment through the adapter with a real webhook (API `2026-09-30.endive`), and a failed FPX payment                                     |
+| senangPay (on the DOKU platform)                 | `@bayarkit/senangpay` | Official DOKU Malaysia API Reference (Checkout, `HMACSHA256=` Signature) and the senangPay DOKU FAQ; not yet measured on the sandbox                                                          |
+| iPay88 (NTT DATA Payment Services Malaysia)      | `@bayarkit/ipay88`    | Official signature tools and HMAC script on the gateway host (three vectors), enquiry.asp probed live; no public API docs; not yet measured                                                   |
+| Fiuu (formerly Razer Merchant Services / MOLPay) | `@bayarkit/fiuu`      | Official API spec PDF v13.97 (the official vcode test vector), WooCommerce plugin and PHP SDK; not yet measured on the sandbox                                                                |
+| 2C2P (PGW Payment API v4.x)                      | `@bayarkit/2c2p`      | Official developer docs (Payment Token + HS256 JWT, three official JWT test vectors); not yet measured on the sandbox                                                                         |
+| Razorpay Curlec                                  | `@bayarkit/curlec`    | Official docs (Payment Links + Orders, three signatures, all five official test vectors); not yet measured in test mode                                                                       |
+| HitPay                                           | `@bayarkit/hitpay`    | Official docs (OpenAPI, Payment Requests, both webhook signatures) and official PHP SDK; not yet measured on the sandbox                                                                      |
+| Gkash                                            | `@bayarkit/gkash`     | Official docs (SHA-512 signature test vectors), WooCommerce plugin and gkashmy SDKs; not yet measured on staging                                                                              |
+| Xendit (Malaysia): Payment Sessions              | `@bayarkit/xendit`    | Official docs (Payment Sessions, v3 payment requests, `x-callback-token` webhooks: a static token, not a signature) and Xendit's agent skill; not yet measured in test mode                   |
+| eGHL (ADAPTIS e-Commerce)                        | `@bayarkit/eghl`      | Official eGHL public code (hash class, merchant-api QUERY, Omnipay HashValue2 test vector; no public API guide exists); not yet measured on the test host                                     |
+| Paddle Billing (merchant of record, no MYR)      | `@bayarkit/paddle`    | Measured on the sandbox, 30 Oct 2026: card paid and declined, real signed webhooks, full and partial refunds; charges in USD or another Paddle currency, never MYR                            |
+| PayPal Orders v2 (approve, then capture)         | `@bayarkit/paypal`    | Measured on the sandbox, 30 Oct 2026: buyer approval, captures in USD and MYR, real webhooks verified by PayPal's postback, full and partial refunds; paid only when the capture is COMPLETED |
 <!-- /gateways:table -->
 
 Researched but without an adapter yet: Adyen and Airwallex (specs in [gateways/README.md](gateways/README.md)). An adapter is
@@ -174,7 +174,11 @@ const result = await confirmPayment(gateway, await readCallback(request), {
 - `webhookId` is the id of the webhook you add to your PayPal REST app. `verifyCallback` asks PayPal to verify each
   event (`verify-webhook-signature`), so it is async; if PayPal cannot be reached, `confirmPayment` answers
   `gateway_error` (retry), not `invalid_signature`.
-- MYR works only for a Malaysian PayPal account.
+- MYR works only for a Malaysian PayPal account. A currency your account does not hold leaves the capture `PENDING`
+  until you accept it in PayPal, so `confirmPayment` says `not_paid`.
+- Send only `PAYMENT.CAPTURE.*` events to `confirmPayment` (and `CHECKOUT.ORDER.APPROVED` to your capture). A
+  refund event carries the refund, which names no order, so it does not verify as a payment callback.
+- PayPal retries a webhook with the same event id; deduplicate on `raw.event_id`.
 
 Both adapters can refund: `await gateway.refundPayment({ paymentId, amount })` with an amount up to what is left
 (checked before calling the gateway). It returns `pending`, `succeeded`, `failed` or `unknown`. Other adapters do not
