@@ -44,9 +44,12 @@ The full contract with a source for every fact: `gateways/paypal/spec.md` in the
 1. Amounts are integers in the currency's smallest unit (cents). Never compare floating-point amounts.
 2. Never mark an order paid from the return URL or the callback body alone: verify the signature, ask the gateway again,
    then match reference, amount and currency exactly (`confirmPayment` does all three).
-3. Gateways retry callbacks: marking an order paid must be idempotent.
+3. Gateways retry callbacks, and two customers can pay at once: mark an order paid in one transaction that locks the
+   order row, with a unique index on the gateway's payment id, and retry on deadlock (README, "After confirmPayment").
 4. Use one reference per payment attempt, so a late callback from an old attempt cannot match a new one.
 5. Errors and logs never contain keys or secrets.
+6. Save the environment and a fingerprint of the key that created each payment, verify its callback with those
+   credentials, and keep an old key configured until its last bill expires.
 
 ## Official sources
 

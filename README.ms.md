@@ -197,6 +197,40 @@ Adapter lain belum melaksanakan bayaran balik.
 | Rujukan, amaun (sen), mata wang  | bayaran sebenar untuk pesanan lain atau amaun lain                        | `mismatch`          |
 | Gateway tidak dapat dihubungi    | — (cuba semula kemudian)                                                  | `gateway_error`     |
 
+## Selepas `confirmPayment`: dua pepijat yang ujian biasa tidak jumpa
+
+`confirmPayment` membuktikan gateway memegang rekod dibayar untuk pesanan ini. Menulis fakta itu ke pangkalan data anda
+ialah kod anda, dan dua perkara boleh salah di situ yang ujian dengan seorang pelanggan tidak pernah tunjukkan.
+
+**Dua penulisan tiba serentak.** Dua pelanggan membayar pada saat yang sama, atau gateway menghantar semula callback
+semasa halaman kembali masih mengesahkan bil yang sama. Di MySQL itu deadlock dan satu transaksi diundurkan; di SQLite
+penulis kedua menunggu sehingga had masa sibuk, kemudian gagal dengan "database is locked". Tanda pesanan dibayar dalam
+satu transaksi yang mengunci baris pesanan, simpan indeks unik pada id bayaran gateway, dan ulang transaksi bila
+pangkalan data melaporkan deadlock. Penulis kedua kemudian sama ada menunggu dan mendapati pesanan sudah dibayar, atau
+terlanggar indeks unik. Satu bayaran, satu baris, satu emel.
+
+```sql
+create unique index payments_gateway_id on payments (gateway, gateway_payment_id);
+begin;
+select * from orders where id = $1 for update;   -- kunci; jalankan confirmPayment di sini
+insert into payments (gateway, gateway_payment_id, order_id, amount) values (...);
+update orders set status = 'paid' where id = $1;
+commit;
+```
+
+Laravel: `DB::transaction(function () { $order = Order::lockForUpdate()->findOrFail($id); /* … */ }, 3)` mengulang
+tiga kali bila deadlock. Uji: hantar callback dibayar yang sama dua kali serentak, kemudian dua callback dibayar yang
+berbeza serentak, dan jangkakan satu baris `payments` bagi setiap bayaran.
+
+**Kunci bertukar semasa bil masih terbuka.** Peniaga menukar kunci gateway, atau beralih dari sandbox ke live, semasa
+pelanggan berada di halaman bayaran. Bil dicipta di bawah kunci lama atau hos lama; callback, atau semakan semula anda,
+disahkan dengan yang baharu dan gagal. Wang sudah masuk, pesanan kekal belum dibayar. Simpan, di sebelah `payment.id`,
+persekitaran dan cap jari kunci yang mencipta bil itu (8 aksara heks pertama `sha256(secret)` memadai), bina adapter
+untuk callback itu daripada kredensial yang disimpan dan bukan daripada tetapan semasa, dan kekalkan kunci lama selagi
+bil seperti itu masih boleh dibayar: bil Billplz luput 30 hari selepas dicipta, bil toyyibPay hidup sehingga
+`billExpiryDate`. Halaman tetapan yang membenarkan peniaga menukar kunci patut menyatakan berapa bil masih terbuka
+sebelum ia menyimpan.
+
 ## toyyibPay: dokumen lawan sandbox
 
 Diukur pada `dev.toyyibpay.com`, 10 Oktober 2026:

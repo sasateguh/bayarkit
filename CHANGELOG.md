@@ -34,6 +34,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- README, "After `confirmPayment`": two bugs a single-customer test never finds. Concurrent payments (one
+  transaction, a lock on the order row, a unique index on the gateway's payment id, a retry on deadlock) and a key
+  rotated while a bill is open (save the environment and a key fingerprint with the payment, verify with those
+  credentials, keep the old key until its last bill expires). The generated skills carry the same two rules.
 - Every README (the repository, the PHP package and each npm package) ends with a "Need help installing?" section in
   English and Malay, generated from one file, `docs/support.json`, by `node tools/rujukan.mjs skills`. It replaces the
   "Work with Sasa Teguh" section and names three contacts: the contact page, admin@sasateguh.com and WhatsApp. The

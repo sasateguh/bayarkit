@@ -13,7 +13,13 @@ for p in core testing "${GATEWAYS[@]}"; do (cd "packages/$p" && npm pack --silen
 mkdir -p "$tmp/setups" && cp scripts/smoke/*.mjs "$tmp/setups/"
 cd "$tmp"
 npm init -y >/dev/null
-npm install --silent --no-audit --no-fund ./bayarkit-*.tgz vitest@5.0.5 >/dev/null
+# --legacy-peer-deps: npm 10 (bundled with Node 22) crashes in its peer-set resolver ("Cannot read properties of null
+# (reading 'edgesOut')") on vitest's optional peers since vitest 5.1.0 (2 Nov 2026); npm 12 does not. Peer resolution
+# is not what this smoke test checks, so vitest's one required peer (vite) is named explicitly, in the range vitest
+# declares. The install log is printed only when the install fails.
+vite_range="$(npm view vitest@5.0.5 peerDependencies.vite)"
+npm install --no-audit --no-fund --legacy-peer-deps ./bayarkit-*.tgz vitest@5.0.5 "vite@${vite_range}" > install.log 2>&1 \
+  || { echo "smoke-pack: npm install failed:" >&2; cat install.log >&2; exit 1; }
 cat > smoke.mjs <<'JS'
 import { checkoutResponse, confirmPayment } from '@bayarkit/core'
 import * as testing from '@bayarkit/testing'
@@ -51,7 +57,8 @@ trap 'rm -rf "$tmp" "$cli"; kill "${pid:-0}" 2>/dev/null || true' EXIT
 cp "$tmp"/bayarkit-core-*.tgz "$tmp"/bayarkit-testing-*.tgz "$cli"/
 cd "$cli"
 npm init -y >/dev/null
-npm install --silent --no-audit --no-fund ./bayarkit-core-*.tgz ./bayarkit-testing-*.tgz >/dev/null
+npm install --no-audit --no-fund --legacy-peer-deps ./bayarkit-core-*.tgz ./bayarkit-testing-*.tgz > install.log 2>&1 \
+  || { echo "smoke-pack: npm install (cli) failed:" >&2; cat install.log >&2; exit 1; }
 [ ! -d node_modules/vitest ] || { echo "vitest was installed although it is an optional peer"; exit 1; }
 ./node_modules/.bin/bayarkit-fake stripe > fake.out &
 pid=$!

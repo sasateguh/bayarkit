@@ -53,6 +53,8 @@ export function paymentRoutes(gateway: Gateway, orders: Map<string, Order>) {
           : [...orders.values()].find((o) => o.paymentId === verified.id)
       if (!order) return new Response('unknown order', { status: 404 })
       if (order.status === 'paid') return new Response('OK') // gateways retry; answer the same way
+      // With a database: this lookup, the confirm and the update go in one transaction that locks the order row,
+      // with a unique index on payment.id and a retry on deadlock (README, "After confirmPayment").
       const result = await confirmPayment(gateway, cb, { reference: order.reference, amount: order.amount })
       if (result.ok) order.status = 'paid'
       // Log result.reason / result.detail when !ok; never mark paid from the return URL.

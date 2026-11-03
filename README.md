@@ -193,6 +193,40 @@ implement refunds yet.
 | Reference, amount (sen), currency | a real payment for another order or another amount             | `mismatch`          |
 | Gateway unreachable               | nothing: retry later                                           | `gateway_error`     |
 
+## After `confirmPayment`: two bugs a normal test never finds
+
+`confirmPayment` proves the gateway holds a paid record for this order. Writing that fact to your database is your
+code, and two things go wrong there that a test with one customer never shows.
+
+**Two writes land at once.** Two customers pay in the same second, or the gateway retries a callback while the return
+page is still confirming the same bill. On MySQL that is a deadlock and one transaction is rolled back; on SQLite the
+second writer waits for the busy timeout, then fails with "database is locked". Mark an order paid inside one
+transaction that locks the order row, keep a unique index on the gateway's payment id, and retry the transaction when
+the database reports a deadlock. The second writer then either waits and finds the order already paid, or hits the
+unique index. One payment, one row, one email.
+
+```sql
+create unique index payments_gateway_id on payments (gateway, gateway_payment_id);
+begin;
+select * from orders where id = $1 for update;   -- the lock; run confirmPayment here
+insert into payments (gateway, gateway_payment_id, order_id, amount) values (...);
+update orders set status = 'paid' where id = $1;
+commit;
+```
+
+Laravel: `DB::transaction(function () { $order = Order::lockForUpdate()->findOrFail($id); /* … */ }, 3)` retries
+three times on a deadlock. Test it: send the same paid callback twice at the same time, then two different paid
+callbacks at the same time, and expect one `payments` row per payment.
+
+**The key changes while a bill is open.** A merchant rotates the gateway secret, or switches sandbox to live, while a
+customer is on the payment page. The bill was created under the old key or the old host; the callback, or your
+re-check, is verified with the new one and fails. The money is in, the order stays unpaid. Save, next to `payment.id`,
+the environment and a fingerprint of the key that created the bill (the first 8 hex characters of `sha256(secret)` is
+enough), build the adapter for that callback from those saved credentials rather than from the current settings, and
+keep the old key configured for as long as such a bill can still be paid: Billplz bills expire 30 days after creation,
+toyyibPay bills live until their `billExpiryDate`. A settings page that lets a merchant change the key should say how
+many bills are still open before it saves.
+
 ## toyyibPay: docs vs the sandbox
 
 Measured on `dev.toyyibpay.com`, 10 October 2026:
