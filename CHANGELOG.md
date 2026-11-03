@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-03
+
 ### Added
 
 - The demo is hosted at https://bayarkit.sasateguh.com, built from `examples/demo/Dockerfile` (non-root, read-only
@@ -34,6 +36,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- `scripts/npm-trust.sh` takes package names, and `NPM_TRUST_PLACEHOLDER=y` answers its question in advance: a new
+  adapter's trust costs one 2FA approval per step, not one per package.
 - README, "After `confirmPayment`": two bugs a single-customer test never finds. Concurrent payments (one
   transaction, a lock on the order row, a unique index on the gateway's payment id, a retry on deadlock) and a key
   rotated while a bill is open (save the environment and a key fingerprint with the payment, verify with those
@@ -233,6 +237,7 @@ that failed first.
   valid signature — a callback that cannot exist. The conformance suite now requires every fake's form/JSON body to say
   what its fields say, tampered or not.
 
+[0.3.0]: https://github.com/sasateguh/bayarkit/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/sasateguh/bayarkit/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/sasateguh/bayarkit/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/sasateguh/bayarkit/compare/v0.1.0...v0.2.0

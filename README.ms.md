@@ -6,7 +6,7 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 
 [English](README.md) · **[Cuba demo](https://bayarkit.sasateguh.com/)** (gateway palsu, tiada wang)
 
-> **Status:** 0.2.2. Enam belas gateway dalam TypeScript; Paddle dan PayPal ada dalam repositori ini tetapi belum di npm.
+> **Status:** 0.3.0. Enam belas gateway dalam TypeScript, semuanya di npm.
 > toyyibPay, Billplz, Bayarcash, Stripe, Paddle dan PayPal diukur pada sandbox masing-masing; yang lain ditulis daripada
 > sumber rasmi dan belum dijalankan terhadap gateway sebenar (jadual menyatakan sumbernya). PHP/Laravel meliputi toyyibPay, CHIP,
 > Paddle dan PayPal.
@@ -104,10 +104,10 @@ seumpamanya) ada dalam [examples/web-standard/checkout.ts](examples/web-standard
 pengendali yang sama, tanpa diubah, terhadap gateway palsu setiap gateway. Untuk guna Bayarcash, gantikan panggilan
 `toyyibpay(...)` dengan `bayarcash({ token, secretKey, portalKey, environment: 'sandbox' })`.
 
-Untuk CHIP, guna `chip({ secretKey, brandId, publicKey, environment: 'test' })`. CHIP ada satu hos sahaja: kunci rahsia mod ujian membuat
+Untuk CHIP, guna `chip({ secretKey, brandId, publicKey, environment: 'test' })`. CHIP ada satu hos sahaja: `secretKey` mod ujian membuat
 pembelian ujian. Callback ditandatangani dengan kunci RSA CHIP atas badan mentah, jadi bacalah dengan `readCallback`
 (bukan badan yang sudah dihurai). Dapatkan kunci awam sekali dengan
-`await chip({ secretKey, brandId, environment: 'test' }).fetchPublicKey()` (kunci rahsia yang sama), simpan, dan hantar sebagai `publicKey`;
+`await chip({ secretKey, brandId, environment: 'test' }).fetchPublicKey()` (`secretKey` yang sama), simpan, dan hantar sebagai `publicKey`;
 tanpanya setiap callback ditolak. CHIP menolak `callbackUrl` yang ada port, walaupun `:443`.
 `environment` wajib (`'test'` dengan kunci ujian, `'live'` dengan kunci hidup): pembelian daripada mod yang satu lagi,
 atau yang tidak menyatakan modnya, ditolak, jadi bayaran ujian tidak mengesahkan pesanan sebenar.
@@ -195,7 +195,7 @@ Adapter lain belum melaksanakan bayaran balik.
 | Tandatangan callback             | callback palsu atau diubah                                                | `invalid_signature` |
 | Pertanyaan baharu kepada gateway | callback yang dihantar semula, callback sebelum bayaran, kunci yang bocor | `not_paid`          |
 | Rujukan, amaun (sen), mata wang  | bayaran sebenar untuk pesanan lain atau amaun lain                        | `mismatch`          |
-| Gateway tidak dapat dihubungi    | — (cuba semula kemudian)                                                  | `gateway_error`     |
+| Gateway tidak dapat dihubungi    | tiada: cuba semula kemudian                                               | `gateway_error`     |
 
 ## Selepas `confirmPayment`: dua pepijat yang ujian biasa tidak jumpa
 

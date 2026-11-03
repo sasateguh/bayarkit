@@ -7,6 +7,9 @@
 # Trusted publishing cannot create a package that does not exist yet. If npm refuses a package for that reason, the
 # script asks before publishing a 0.0.0 placeholder (name only, no code) and then sets the trust. A trust that sees no
 # publish within 2 days expires, so tag v0.1.0 soon after. Ends with `npm logout`, which revokes the login token.
+#
+# Every call needs a 2FA approval, so for a new adapter name only the new packages: `npm-trust.sh @bayarkit/x [...]`.
+# NPM_TRUST_PLACEHOLDER=y answers the placeholder question in advance (a terminal that nobody is watching).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 npm11=(npx -y npm@11)
@@ -25,10 +28,12 @@ JSON
 }
 
 echo "npm user: $("${npm11[@]}" whoami)"
-allow_placeholder=""
+allow_placeholder="${NPM_TRUST_PLACEHOLDER:-}"
+only=("$@")
 failed=()
 for d in packages/*/; do
   name="$(node -p "require('./${d}package.json').name")"
+  if [ ${#only[@]} -gt 0 ] && ! printf '%s\n' "${only[@]}" | grep -qx "$name"; then continue; fi
   trust=(trust github "$name" --file release.yml --repo "$repo" --env npm --allow-publish --yes)
   echo "── $name"
   if "${npm11[@]}" "${trust[@]}"; then echo "✓ $name"; continue; fi

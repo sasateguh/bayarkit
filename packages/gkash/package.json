@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/gkash",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Gkash for Node.js and TypeScript: create payments, verify callbacks and confirm each payment with a fresh status query. Zero dependencies, part of bayarkit.",
   "keywords": [
     "payment",
@@ -48,6 +48,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.2.2"
+    "@bayarkit/core": "0.3.0"
   }
 }
