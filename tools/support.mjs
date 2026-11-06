@@ -13,7 +13,7 @@ export const LANGS = ['en', 'ms']
 /** The only contact channels the offer may name. A guard, not content: change it together with the policy. */
 const ALLOWED = {
   page: { en: 'https://sasateguh.com/contact', ms: 'https://sasateguh.com/ms/contact' },
-  email: 'admin@sasateguh.com',
+  email: 'hello@sasateguh.com',
   whatsapp: { display: '017-762 9379', url: 'https://wa.me/60177629379' },
 }
 const ALLOWED_URLS = new Set([...Object.values(ALLOWED.page), ALLOWED.whatsapp.url])

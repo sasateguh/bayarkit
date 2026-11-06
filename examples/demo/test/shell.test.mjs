@@ -81,7 +81,7 @@ describe('demo seal (docs/support.json)', () => {
     try {
       const html = await (await off.handle(new Request(`${base}/`))).text()
       expect(seal(html)).toBeNull()
-      expect(html).not.toContain('admin@sasateguh.com')
+      expect(html).not.toContain('hello@sasateguh.com')
       expect(html).not.toContain('wa.me')
     } finally {
       await off.close()

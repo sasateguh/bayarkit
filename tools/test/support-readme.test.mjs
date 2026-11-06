@@ -12,7 +12,7 @@ const config = (enabled = true) => ({
   enabled,
   contact: {
     page: { en: 'https://sasateguh.com/contact', ms: 'https://sasateguh.com/ms/contact' },
-    email: 'admin@sasateguh.com',
+    email: 'hello@sasateguh.com',
     whatsapp: { display: '017-762 9379', url: 'https://wa.me/60177629379' },
   },
   labels: {
@@ -40,7 +40,7 @@ describe('support section in Markdown', () => {
     expect(en).toContain('Frozen body EN.')
     expect(links(en)).toEqual([
       'https://sasateguh.com/contact',
-      'mailto:admin@sasateguh.com',
+      'mailto:hello@sasateguh.com',
       'https://wa.me/60177629379',
     ])
     const ms = supportSection(config(), 'ms')
@@ -79,7 +79,7 @@ describe('support section in Markdown', () => {
       const text = readFileSync(`${root}${file}`, 'utf8')
       expect(text.split(OPEN).length, file).toBe(2)
       expect(text.split(CLOSE).length, file).toBe(2)
-      expect(text, file).not.toMatch(/hello@sasateguh|sasateguh\.com\/(ms\/)?book/)
+      expect(text, file).not.toMatch(/admin@sasateguh|sasateguh\.com\/(ms\/)?book/)
     }
   })
 })
@@ -102,13 +102,13 @@ describe('support section in package READMEs', () => {
   it('switched off: no section in any package README', () => {
     for (const [path, text] of readmes(config(false))) {
       expect(text, path).not.toContain('Frozen heading')
-      expect(text, path).not.toContain('admin@sasateguh.com')
+      expect(text, path).not.toContain('hello@sasateguh.com')
     }
   })
 
   it('a config that may not be published stops the generator', () => {
     const bad = config()
-    bad.readme.en.body = 'Write to hello@sasateguh.com'
+    bad.readme.en.body = 'Write to admin@sasateguh.com'
     expect(() => packageFiles(root, registry, bad)).toThrow(/cannot be published/)
   })
 })

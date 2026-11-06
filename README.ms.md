@@ -1,4 +1,11 @@
-# bayarkit
+<p align="center"><img src="https://raw.githubusercontent.com/sasateguh/bayarkit/main/brand/logo-512.png" width="112" height="112" alt="bayarkit"></p>
+
+<h1 align="center">bayarkit</h1>
+
+<p align="center"><a href="https://github.com/sasateguh/bayarkit/actions/workflows/ci.yml"><img src="https://github.com/sasateguh/bayarkit/actions/workflows/ci.yml/badge.svg" alt="CI"></a> <a href="https://www.npmjs.com/package/@bayarkit/core"><img src="https://img.shields.io/npm/v/@bayarkit/core" alt="npm"></a> <a href="https://github.com/sasateguh/bayarkit/blob/main/LICENSE"><img src="https://img.shields.io/badge/licence-MIT-blue" alt="Licence: MIT"></a></p>
+
+<p align="center"><b>Satu antara muka untuk gateway pembayaran Malaysia, dan bayaran ditanda dibayar hanya selepas disemak.</b> · <i>One interface for Malaysian payment gateways, and a payment marked paid only after it is checked.</i><br>
+<a href="https://bayarkit.sasateguh.com/">demo</a> · <a href="https://www.npmjs.com/package/@bayarkit/core">npm</a> · <a href="https://packagist.org/packages/bayarkit/bayarkit">Packagist</a> · <a href="README.md">English</a> · Dibina di Malaysia oleh <a href="https://aimanmalib.com">Aiman Malib</a> · <a href="https://sasateguh.com">Sasa Teguh</a></p>
 
 Satu antara muka untuk gateway pembayaran Malaysia (serta Paddle dan PayPal untuk menjual ke luar negara), dalam TypeScript
 dan PHP/Laravel, dan cara bersemak untuk mengesahkan bayaran: tandatangan callback, pertanyaan baharu kepada gateway, dan padanan tepat rujukan, amaun dan mata wang.
@@ -355,5 +362,5 @@ MIT. Lihat [LICENSE](LICENSE). Isu keselamatan: lihat [SECURITY.md](SECURITY.md)
 
 Jika anda tidak mahu menyambung gateway pembayaran sendiri, Sasa Teguh, studio yang menyelenggara bayarkit, boleh memasangnya di laman atau aplikasi anda dan mengujinya pada sandbox gateway sebelum anda mula menerima bayaran.
 
-[Halaman hubungi](https://sasateguh.com/ms/contact) · E-mel: [admin@sasateguh.com](mailto:admin@sasateguh.com) · WhatsApp: [017-762 9379](https://wa.me/60177629379)
+[Halaman hubungi](https://sasateguh.com/ms/contact) · E-mel: [hello@sasateguh.com](mailto:hello@sasateguh.com) · WhatsApp: [017-762 9379](https://wa.me/60177629379)
 <!-- /support:help -->

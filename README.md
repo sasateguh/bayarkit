@@ -1,4 +1,11 @@
-# bayarkit
+<p align="center"><img src="https://raw.githubusercontent.com/sasateguh/bayarkit/main/brand/logo-512.png" width="112" height="112" alt="bayarkit"></p>
+
+<h1 align="center">bayarkit</h1>
+
+<p align="center"><a href="https://github.com/sasateguh/bayarkit/actions/workflows/ci.yml"><img src="https://github.com/sasateguh/bayarkit/actions/workflows/ci.yml/badge.svg" alt="CI"></a> <a href="https://www.npmjs.com/package/@bayarkit/core"><img src="https://img.shields.io/npm/v/@bayarkit/core" alt="npm"></a> <a href="https://github.com/sasateguh/bayarkit/blob/main/LICENSE"><img src="https://img.shields.io/badge/licence-MIT-blue" alt="Licence: MIT"></a></p>
+
+<p align="center"><b>One interface for Malaysian payment gateways, and a payment marked paid only after it is checked.</b> · <i>Satu antara muka untuk gateway pembayaran Malaysia, dan bayaran ditanda dibayar hanya selepas disemak.</i><br>
+<a href="https://bayarkit.sasateguh.com/en">demo</a> · <a href="https://www.npmjs.com/package/@bayarkit/core">npm</a> · <a href="https://packagist.org/packages/bayarkit/bayarkit">Packagist</a> · <a href="README.ms.md">Bahasa Melayu</a> · Built in Malaysia by <a href="https://aimanmalib.com">Aiman Malib</a> · <a href="https://sasateguh.com">Sasa Teguh</a></p>
 
 One interface for Malaysian payment gateways (plus Paddle and PayPal for selling abroad), in TypeScript and PHP/Laravel,
 and a checked way to confirm a payment:
@@ -345,5 +352,5 @@ MIT. See [LICENSE](LICENSE). Security issues: see [SECURITY.md](SECURITY.md).
 
 If you would rather not wire up a payment gateway yourself, Sasa Teguh, the studio that maintains bayarkit, can install it on your site or app and test it against the gateway sandbox before you go live.
 
-[Contact page](https://sasateguh.com/contact) · Email: [admin@sasateguh.com](mailto:admin@sasateguh.com) · WhatsApp: [017-762 9379](https://wa.me/60177629379)
+[Contact page](https://sasateguh.com/contact) · Email: [hello@sasateguh.com](mailto:hello@sasateguh.com) · WhatsApp: [017-762 9379](https://wa.me/60177629379)
 <!-- /support:help -->

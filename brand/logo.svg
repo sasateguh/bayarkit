@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-labelledby="t">
+  <title id="t">bayarkit</title>
+  <defs>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".16"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c1f26"/>
+      <stop offset="1" stop-color="#121418"/>
+    </linearGradient>
+  </defs>
+  <!-- ink tile shared with Codr and MyPII: the Sasa Teguh open-source family -->
+  <rect x="16" y="16" width="224" height="224" rx="56" fill="url(#tile)"/>
+  <rect x="17" y="17" width="222" height="222" rx="55" fill="none" stroke="url(#rim)" stroke-width="2"/>
+  <!-- mark: three gateways joining one interface, ending in a confirmed payment -->
+  <g fill="none" stroke="#f4f4f1" stroke-width="12" stroke-linecap="round">
+    <path d="M56 84 C104 84 108 128 140 128"/>
+    <path d="M56 128 H140"/>
+    <path d="M56 172 C104 172 108 128 140 128"/>
+  </g>
+  <g fill="#f4f4f1"><circle cx="56" cy="84" r="11"/><circle cx="56" cy="128" r="11"/><circle cx="56" cy="172" r="11"/></g>
+  <circle cx="170" cy="128" r="32" fill="#e8b04a"/>
+  <path d="M155 129 L166 140 L186 118" fill="none" stroke="#15171c" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -11,7 +11,7 @@ const valid = () => ({
   enabled: true,
   contact: {
     page: { en: 'https://sasateguh.com/contact', ms: 'https://sasateguh.com/ms/contact' },
-    email: 'admin@sasateguh.com',
+    email: 'hello@sasateguh.com',
     whatsapp: { display: '017-762 9379', url: 'https://wa.me/60177629379' },
   },
   labels: {
@@ -51,7 +51,7 @@ describe('docs/support.json', () => {
       expect(s.seal).toBe(valid().demo[lang].seal)
       expect(s.links.map((l) => l.href)).toEqual([
         valid().contact.page[lang],
-        'mailto:admin@sasateguh.com',
+        'mailto:hello@sasateguh.com',
         'https://wa.me/60177629379',
       ])
       expect(s.links.map((l) => l.label)).toEqual(Object.values(valid().labels[lang]))
@@ -79,7 +79,7 @@ describe('docs/support.json', () => {
   })
 
   it.each([
-    ['another email address', (c) => (c.contact.email = 'hello@sasateguh.com')],
+    ['another email address', (c) => (c.contact.email = 'admin@sasateguh.com')],
     ['a Gmail address', (c) => (c.contact.email = 'sasateguh@gmail.com')],
     ['another WhatsApp link', (c) => (c.contact.whatsapp.url = 'https://wa.me/60191234567')],
     ['another WhatsApp number shown', (c) => (c.contact.whatsapp.display = '019-123 4567')],
@@ -91,7 +91,7 @@ describe('docs/support.json', () => {
   })
 
   it.each([
-    ['another email', 'Write to hello@sasateguh.com'],
+    ['another email', 'Write to admin@sasateguh.com'],
     ['a mailto link', 'mailto:someone@example.com'],
     ['another wa.me link', 'https://wa.me/60123456789'],
     ['a Gmail mention', 'or our gmail'],

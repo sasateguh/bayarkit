@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The "Need help installing?" offer in the READMEs and the demo now names hello@sasateguh.com, the studio's public address,
+  instead of admin@sasateguh.com. The contact guard in `tools/support.mjs` accepts only the new address.
+- The repository README opens with the Sasa Teguh open-source header: logo (`brand/`), CI, npm and licence badges, and links to
+  the demo, npm, Packagist and the Malay README.
+
 ## [0.3.0] - 2026-11-03
 
 ### Added
