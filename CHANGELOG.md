@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-11-06
+
 ### Changed
 
 - The "Need help installing?" offer in the READMEs and the demo now names hello@sasateguh.com, the studio's public address,
@@ -244,6 +246,7 @@ that failed first.
   valid signature — a callback that cannot exist. The conformance suite now requires every fake's form/JSON body to say
   what its fields say, tampered or not.
 
+[0.3.1]: https://github.com/sasateguh/bayarkit/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/sasateguh/bayarkit/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/sasateguh/bayarkit/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/sasateguh/bayarkit/compare/v0.2.0...v0.2.1

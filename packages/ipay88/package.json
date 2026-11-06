@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/ipay88",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "iPay88 for Node.js and TypeScript: create payments, verify callbacks and confirm each payment with a fresh status query. Zero dependencies, part of bayarkit.",
   "keywords": [
     "payment",
@@ -48,6 +48,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.3.0"
+    "@bayarkit/core": "0.3.1"
   }
 }
