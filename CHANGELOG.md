@@ -26,6 +26,11 @@ All notable changes to this project are documented here. The format follows
 - HitPay: the spec notes that the OpenAPI dropped the `add_admin_fee` create/update option and DOKU QRIS from the
   `generate_qr` methods, and added coupon endpoints (unused here). Neither option is sent; a new test pins that. No change
   in behaviour.
+- Adyen and Airwallex (spec and skill only, no adapter): the Adyen spec records the Node SDK's stricter HMAC checks
+  (a malformed hex key is an error, the Base64 signature is compared as the exact string) and that `/payments`
+  now rejects `shopperTaxInfo` (not part of Hosted Checkout or Pay by Link). The Airwallex spec lists the API-key
+  scopes the OpenAPI now attaches to each payment operation, and that Checkout Sessions is labelled Beta but still
+  absent from the OpenAPI.
 
 ## [0.3.1] - 2026-11-06
 

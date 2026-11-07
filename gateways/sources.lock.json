@@ -25,9 +25,9 @@
   },
   "adyen/checkout-openapi-v72": {
     "url": "https://raw.githubusercontent.com/Adyen/adyen-openapi/HEAD/json/CheckoutService-v72.json",
-    "sha256": "557713f9bc59b062a163f2e778c937d55d36c12ad94254f79d7f2d35b74948f5",
-    "chars": 737943,
-    "since": "2026-10-23"
+    "sha256": "25b2228a050a1c268a4a01013bf9068fab2eb7d552d26db5af216840dc5f60c6",
+    "chars": 735175,
+    "since": "2026-11-07"
   },
   "adyen/hosted-checkout-md": {
     "url": "https://docs.adyen.com/standard/integration/hosted-checkout.md",
@@ -37,9 +37,9 @@
   },
   "adyen/node-hmac-spec": {
     "url": "https://raw.githubusercontent.com/Adyen/adyen-node-api-library/HEAD/src/__tests__/hmacValidator.spec.ts",
-    "sha256": "408619715992428f9f5dbcc15404ba2d95da9c335029770bb2b7d5017d478318",
-    "chars": 8956,
-    "since": "2026-10-23"
+    "sha256": "89cc8b36e12427a8cffafcd50fb2e84874a9db39d409c6f3d7d626ff04755558",
+    "chars": 13321,
+    "since": "2026-11-07"
   },
   "adyen/verify-hmac-md": {
     "url": "https://docs.adyen.com/development-resources/webhooks/secure-webhooks/verify-hmac-signatures.md",
@@ -61,9 +61,9 @@
   },
   "airwallex/openapi": {
     "url": "https://raw.githubusercontent.com/airwallex/airwallex-openapi/HEAD/openapi/client-api/latest/airwallex-openapi-latest.json",
-    "sha256": "ea238cb04abfc82c9ec683ba7b9800ae79701a34acff5ba22a87b48024aeb7f7",
-    "chars": 3967455,
-    "since": "2026-10-23"
+    "sha256": "a01647345a67dafc613bfe9abd29548677555723a09245c9da565181a61f3563",
+    "chars": 4031153,
+    "since": "2026-11-07"
   },
   "airwallex/webhooks-md": {
     "url": "https://www.airwallex.com/docs/developer-tools/webhooks/listen-for-webhook-events.md",
