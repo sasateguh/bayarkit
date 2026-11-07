@@ -91,9 +91,9 @@
   },
   "billplz/api-docs": {
     "url": "https://support.billplz.com/api",
-    "sha256": "9af18b17fff414441d6350520acf3df0e065f7ffc5f58346132c56ee4959a8b6",
-    "chars": 100480,
-    "since": "2026-10-23"
+    "sha256": "9a4efc69b93d09a4bc657696e913a7563c7a9065eb4a363f4f9aa4d2605ec236",
+    "chars": 100334,
+    "since": "2026-11-07"
   },
   "billplz/woocommerce-signing": {
     "url": "https://raw.githubusercontent.com/Billplz/Billplz-for-WooCommerce/HEAD/includes/helpers/billplz_wpconnect.php",
