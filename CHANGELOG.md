@@ -31,6 +31,12 @@ All notable changes to this project are documented here. The format follows
   now rejects `shopperTaxInfo` (not part of Hosted Checkout or Pay by Link). The Airwallex spec lists the API-key
   scopes the OpenAPI now attaches to each payment operation, and that Checkout Sessions is labelled Beta but still
   absent from the OpenAPI.
+- `rujukan` (maintainer tool, not published): `check --only` accepts one source (`<gateway>/<source>`) so a reviewed
+  page is accepted alone; `check` prints the backlog (`backlog: N pending, oldest <date> <key>`) and the daily alert
+  says how many changes wait, since when and what to do. Fingerprints no longer move on front-matter edit dates
+  (`last_modified:` and similar named keys) or on layout markers (`[tab]`, `[accordion]`, `[card]`, bold `**`); words,
+  numbers and dates in the body are still compared. Every source that waited for review has been read and either
+  recorded in its spec or accepted as cosmetic; as of 2026-11-07 nothing is pending.
 
 ## [0.3.1] - 2026-11-06
 
