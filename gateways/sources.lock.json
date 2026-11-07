@@ -379,15 +379,15 @@
   },
   "stripe/checkout-create": {
     "url": "https://docs.stripe.com/api/checkout/sessions/create.md",
-    "sha256": "3b9b5d9fb65b71e05056c95a7d085f20a5be05a3b69b86899059ded4b9c14e03",
-    "chars": 20096,
-    "since": "2026-10-23"
+    "sha256": "cf35aa0a35c1b31850be582ebb945a47abbde28cdc6efd61b2f7cb63a8de2605",
+    "chars": 21793,
+    "since": "2026-11-07"
   },
   "stripe/checkout-object": {
     "url": "https://docs.stripe.com/api/checkout/sessions/object.md",
-    "sha256": "7f43eed6342dd80c7f1bf38d15f25605b4738f098f64b5c699ccabfe29b3b439",
-    "chars": 19058,
-    "since": "2026-10-23"
+    "sha256": "eebdc2623e6d43aec5395387aa913773b54ed20216c46685ff94fa04e31f2b9e",
+    "chars": 19249,
+    "since": "2026-11-07"
   },
   "stripe/fpx": {
     "url": "https://docs.stripe.com/payments/fpx/accept-a-payment.md?payment-ui=checkout",
@@ -397,9 +397,9 @@
   },
   "stripe/webhook-signature": {
     "url": "https://docs.stripe.com/webhooks/signature.md",
-    "sha256": "44a7b62ce0ae34159a636659cd395ad21c993898545d0bab402367d7092170f6",
-    "chars": 26146,
-    "since": "2026-10-23"
+    "sha256": "c36fa8f84ac20e5d8f18dcb5d9647ad30e1db039a6913e18183ad05fb30e6513",
+    "chars": 27491,
+    "since": "2026-11-07"
   },
   "toyyibpay/api-reference": {
     "url": "https://toyyibpay.com/apireference/",

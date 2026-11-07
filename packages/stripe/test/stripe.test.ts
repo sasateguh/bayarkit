@@ -187,6 +187,14 @@ describe('stripe: Checkout Session requests (create doc + endive changelog)', ()
     expect((await gw.createPayment(input)).id).toBe(created.id)
   })
 
+  it('never sends payment_method_collection (subscription mode only in the create and object docs)', async () => {
+    const gw = stripe({ ...keys, baseUrl: fake.url })
+    await gw.createPayment(sampleInput())
+    const sent = fake.requests.at(-1)
+    expect(sent?.body.mode).toBe('payment')
+    expect(sent?.keys.some((k) => k.startsWith('payment_method_collection'))).toBe(false)
+  })
+
   it('defaults the idempotency key to the reference', async () => {
     const gw = stripe({ ...keys, baseUrl: fake.url })
     const input = sampleInput()
