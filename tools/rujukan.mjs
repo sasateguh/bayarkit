@@ -2,7 +2,9 @@
 /**
  * rujukan — keep bayarkit aware of every gateway's official documentation.
  *
- *   node tools/rujukan.mjs check [--update] [--only <id>]   fetch every official source, compare with sources.lock.json
+ *   node tools/rujukan.mjs check [--update] [--only <id>[/<source>]]   fetch every official source, compare with
+ *                                                          sources.lock.json; prints a `backlog:` summary line
+ *   node tools/rujukan.mjs alert [--failed]                the cron alert the last check calls for (empty = none)
  *   node tools/rujukan.mjs lint                            offline: registry ↔ adapters ↔ specs ↔ generated skills agree
  *   node tools/rujukan.mjs skills [--check]                generate skills/<id>/SKILL.md, README tables and every
  *                                                          package's package.json metadata + README (tools/pakej.mjs)
@@ -16,7 +18,15 @@
  * the toyyibPay, Bayarcash SDK, Billplz and Stripe sources, so a change is a change, not page noise.
  */
 import { createHash } from 'node:crypto'
-import { existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -77,69 +87,192 @@ async function fetchSource(source) {
   return text
 }
 
-async function check(args) {
-  const registry = readJson(REGISTRY)
-  const lock = readJson(LOCK, {})
-  // Private state, never in the repo: when each source was last checked, and which changes were already reported.
-  mkdirSync(SNAPSHOTS, { recursive: true })
-  const statePath = join(SNAPSHOTS, 'state.json')
-  const state = readJson(statePath, { checked: {}, reported: {} })
-  const only = args.includes('--only') ? args[args.indexOf('--only') + 1] : null
-  const update = args.includes('--update')
+/** `check` exits 0 (no change), 2 (newly changed) or 3 (a source failed): cron and its log depend on these. */
+const USAGE = 64
+const DAY_MS = 86_400_000
+/** A backlog this old earns a reminder even without a new change, at most once per this many days. */
+const REMIND_AFTER_DAYS = 7
+
+const daysBetween = (from, to) => Math.round((Date.parse(to) - Date.parse(from)) / DAY_MS)
+const dayOf = (ms) => new Date(ms).toISOString().slice(0, 10)
+
+/** `--only` takes a gateway (`bayarcash`) or one source (`bayarcash/sdk-checksum`). */
+export function selectSources(registry, only) {
+  const picked = []
+  for (const gw of registry.gateways)
+    for (const source of gw.sources ?? []) {
+      const key = `${gw.id}/${source.id}`
+      if (!only || only === gw.id || only === key) picked.push({ gw, source, key })
+    }
+  return picked
+}
+
+/**
+ * Fetch, compare and record, with the fetcher and today's date passed in so tests run offline. Mutates `lock` and
+ * `state`; returns the lines to print. `state.since[key]` is the day an unreviewed change was first seen; it survives
+ * further changes to the same source and goes when the change is accepted (or the page reverts to the reviewed text).
+ */
+export async function runCheck({ sources, lock, state, update, fetchText, snapshots, day }) {
+  state.checked ??= {}
+  state.reported ??= {}
+  state.since ??= {}
+  // Changes reported before `since` existed: the reviewed copy was written when the change was first seen.
+  for (const key of Object.keys(state.reported)) {
+    if (state.since[key] || !lock[key]) continue
+    const [gw, src] = key.split('/')
+    const was = join(snapshots, gw, `${src}.${lock[key].sha256.slice(0, 12)}.txt`)
+    state.since[key] = existsSync(was) ? dayOf(statSync(was).mtimeMs) : day
+  }
   const fresh = []
   const pending = []
   const failed = []
-  for (const gw of registry.gateways) {
-    if (only && gw.id !== only) continue
-    for (const source of gw.sources ?? []) {
-      const key = `${gw.id}/${source.id}`
-      let text
-      try {
-        text = await fetchSource(source)
-      } catch (e) {
-        failed.push(`${key}: ${e.message}`)
-        continue
-      }
-      const hash = fingerprint(text)
-      const before = lock[key]
-      const dir = join(SNAPSHOTS, gw.id)
-      mkdirSync(dir, { recursive: true })
-      const latest = join(dir, `${source.id}.txt`)
-      if (!before || update) {
-        if (!before || before.sha256 !== hash) {
-          lock[key] = { url: source.url, sha256: hash, chars: text.length, since: today() }
-          console.log(`${before ? '✓ accepted' : '+ new'} ${key} (${source.url})`)
-        }
-        delete state.reported[key]
-      } else if (before.sha256 !== hash) {
-        // Keep the text the lock describes next to the new one, privately, so a human can read what changed.
-        const was = join(dir, `${source.id}.${before.sha256.slice(0, 12)}.txt`)
-        if (existsSync(latest) && !existsSync(was)) writeFileSync(was, readFileSync(latest))
-        const line = `${key} (${source.url}): compare ${was} with ${latest}`
-        if (state.reported[key] === hash) pending.push(line)
-        else {
-          fresh.push(line)
-          state.reported[key] = hash
-        }
-      }
-      // While a change is unreviewed, `latest` keeps the newest text and `was` keeps the reviewed one.
-      writeFileSync(latest, text)
-      state.checked[key] = today()
+  for (const { gw, source, key } of sources) {
+    let text
+    try {
+      text = await fetchText(source)
+    } catch (e) {
+      failed.push(`${key}: ${e.message}`)
+      continue
     }
+    const hash = fingerprint(text)
+    const before = lock[key]
+    const dir = join(snapshots, gw.id)
+    mkdirSync(dir, { recursive: true })
+    const latest = join(dir, `${source.id}.txt`)
+    if (!before || update || before.sha256 === hash) {
+      if (!before || before.sha256 !== hash) {
+        lock[key] = { url: source.url, sha256: hash, chars: text.length, since: day }
+        console.log(`${before ? '✓ accepted' : '+ new'} ${key} (${source.url})`)
+      }
+      delete state.reported[key]
+      delete state.since[key]
+    } else {
+      // Keep the text the lock describes next to the new one, privately, so a human can read what changed.
+      const was = join(dir, `${source.id}.${before.sha256.slice(0, 12)}.txt`)
+      if (existsSync(latest) && !existsSync(was)) writeFileSync(was, readFileSync(latest))
+      const line = `${key} (${source.url}): compare ${was} with ${latest}`
+      if (state.reported[key] === hash) pending.push(line)
+      else {
+        fresh.push(line)
+        state.reported[key] = hash
+      }
+      state.since[key] ??= day
+    }
+    // While a change is unreviewed, `latest` keeps the newest text and `was` keeps the reviewed one.
+    writeFileSync(latest, text)
+    state.checked[key] = day
   }
+  state.last = { day, fresh: fresh.map((l) => l.slice(0, l.indexOf(' '))), failed }
+  return { fresh, pending, failed }
+}
+
+/** Every unreviewed change, oldest first (also the ones `--only` skipped this time). */
+export function backlog(state) {
+  return Object.entries(state.since ?? {})
+    .map(([key, since]) => ({ key, since }))
+    .sort((a, b) => a.since.localeCompare(b.since) || a.key.localeCompare(b.key))
+}
+
+/** One machine-readable line for logs and scripts. */
+export function backlogLine(state) {
+  const all = backlog(state)
+  return all.length
+    ? `backlog: ${all.length} pending, oldest ${all[0].since} ${all[0].key}`
+    : 'backlog: 0 pending'
+}
+
+const BULAN = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis']
+const tarikh = (d) => `${Number(d.slice(8, 10))} ${BULAN[Number(d.slice(5, 7)) - 1]}`
+
+/**
+ * The cron alert (Malay, like every alert on the maintainer's phone), or '' when nothing should be sent. Sent when the
+ * last check saw a new change, or when the oldest unreviewed change is a week old and no alert went out for a week;
+ * a sent alert records `state.reminded`. `failed: true` gives the separate "could not read" alert instead.
+ */
+export function alertText(state, { day, root, snapshots, failed = false }) {
+  const last = state.last ?? { fresh: [], failed: [] }
+  if (failed) {
+    if (!last.failed.length) return ''
+    return [
+      `bayarkit rujukan: ${last.failed.length} sumber dokumen rasmi tidak boleh dibaca:`,
+      ...last.failed.slice(0, 5),
+      'Kenapa penting: perubahan pada sumber ini tidak dikesan sehingga ia boleh dibaca semula.',
+      'Buat: semak URL/mustContain dalam gateways/registry.json (laman pindah, disekat, atau kini JavaScript).',
+    ].join('\n')
+  }
+  const all = backlog(state)
+  if (!all.length) return ''
+  const newly = last.day === day ? last.fresh : []
+  const overdue = daysBetween(all[0].since, day) >= REMIND_AFTER_DAYS
+  const quiet = !state.reminded || daysBetween(state.reminded, day) >= REMIND_AFTER_DAYS
+  if (!newly.length && !(overdue && quiet)) return ''
+  state.reminded = day
+  const waiting = all.length - newly.length
+  return [
+    `bayarkit: dokumen rasmi gateway — ${newly.length} baharu berubah, ${waiting} menunggu semakan (tertua ${tarikh(all[0].since)}: ${all[0].key}, ${daysBetween(all[0].since, day)} hari).`,
+    ...(newly.length ? [`Baharu: ${newly.join(', ')}`] : []),
+    'Kenapa penting: pakej awam ikut dokumen lama sehingga disemak.',
+    `Buat: cd ${root} && baca beza ${snapshots}/<gw>/<src>.<sha>.txt vs <src>.txt →`,
+    '  sebenar = spec + palsu (ujian merah) + adapter; kosmetik = node tools/rujukan.mjs check --update --only <gw>/<src>. Jangan --update buta (D16).',
+  ].join('\n')
+}
+
+const statePathOf = () => join(SNAPSHOTS, 'state.json')
+const readState = () => readJson(statePathOf(), { checked: {}, reported: {} })
+const tilde = (p) => (p.startsWith(`${homedir()}/`) ? `~${p.slice(homedir().length)}` : p)
+
+async function check(args) {
+  const registry = readJson(REGISTRY)
+  const lock = readJson(LOCK, {})
+  const at = args.indexOf('--only')
+  const only = at >= 0 ? args[at + 1] : null
+  const sources = selectSources(registry, only)
+  if (at >= 0 && !sources.length) {
+    console.log(`--only ${only ?? ''}: no such gateway or <gateway>/<source> in gateways/registry.json`)
+    return USAGE
+  }
+  // Private state, never in the repo: when each source was last checked, and which changes were already reported.
+  mkdirSync(SNAPSHOTS, { recursive: true })
+  const state = readState()
+  const { fresh, pending, failed } = await runCheck({
+    sources,
+    lock,
+    state,
+    update: args.includes('--update'),
+    fetchText: fetchSource,
+    snapshots: SNAPSHOTS,
+    day: today(),
+  })
   writeJson(LOCK, Object.fromEntries(Object.entries(lock).sort(([a], [b]) => a.localeCompare(b))))
-  writeJson(statePath, state)
+  writeJson(statePathOf(), state)
   for (const line of fresh) console.log(`△ CHANGED ${line}`)
   for (const line of pending) console.log(`… still unreviewed ${line}`)
   for (const line of failed) console.log(`✗ ${line}`)
   console.log(`${fresh.length} newly changed, ${pending.length} awaiting review, ${failed.length} failed`)
+  console.log(backlogLine(state))
   if (fresh.length || pending.length) {
     console.log(
-      'Review: re-read the spec, fake and adapter against the new docs, then `check --update --only <id>`.',
+      'Review: re-read the spec, fake and adapter against the new docs, then `check --update --only <gateway>/<source>`.',
     )
   }
   if (failed.length) return 3
   return fresh.length ? 2 : 0
+}
+
+/** Prints the alert the last `check` calls for (nothing = send nothing); cron passes it on. */
+function alert(args) {
+  const state = readState()
+  const text = alertText(state, {
+    day: today(),
+    root: tilde(ROOT),
+    snapshots: tilde(SNAPSHOTS),
+    failed: args.includes('--failed'),
+  })
+  if (text) {
+    writeJson(statePathOf(), state)
+    console.log(text)
+  }
+  return 0
 }
 
 /** Offline consistency: the gate runs this. */
@@ -437,9 +570,11 @@ function skills(args) {
 const invoked = process.argv[1] && existsSync(process.argv[1]) ? realpathSync(process.argv[1]) : ''
 if (invoked && realpathSync(fileURLToPath(import.meta.url)) === invoked) {
   const [command, ...args] = process.argv.slice(2)
-  const commands = { check, lint, skills }
+  const commands = { check, alert, lint, skills }
   if (!commands[command]) {
-    console.log('usage: node tools/rujukan.mjs check [--update] [--only id] | lint | skills [--check]')
+    console.log(
+      'usage: node tools/rujukan.mjs check [--update] [--only id[/source]] | alert [--failed] | lint | skills [--check]',
+    )
     process.exit(64)
   }
   process.exitCode = await commands[command](args)
