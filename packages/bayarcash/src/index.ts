@@ -1,7 +1,7 @@
 /**
  * Bayarcash API v3 adapter (BCL.my runs on Bayarcash too).
  *
- * Written from the official documentation (api.webimpian.support/bayarcash) and the official PHP SDK
+ * Written from the official documentation (api-reference.bayarcash.com, formerly api.webimpian.support/bayarcash) and the official PHP SDK
  * (webimpian/bayarcash-php-sdk: ChecksumGenerator, CallbackVerifications), then MEASURED on the sandbox 27 Oct 2026
  * (FPX mock bank: one paid and one failed payment through this adapter). Measured, unlike the docs:
  * - a transaction names its portal by NAME (`portal`), not by key, so the portal check compares names (GET /portals);
@@ -9,7 +9,8 @@
  *   `GET /payment-intents/{id}` (answered with 201) gives its status and attempts;
  * - return-URL parameters carry `payment_intent_id` and `datetime` too; the checksum covers the nine fields below.
  * Not observed: the sandbox mock bank sent no server-to-server callback in six minutes, so the 13 callback fields are
- * still the SDK's.
+ * still the SDK's (the API reference lists the same 13). Direct Debit callbacks (also `record_type: transaction`)
+ * sign other fields, so they fail the checksum here: Direct Debit is not supported.
  *
  * - checksum = HMAC-SHA256(API secret key, values sorted by field NAME, joined with `|`);
  * - amount = ringgit with two decimals ("25.00"), the same string in the JSON body and in the checksum;

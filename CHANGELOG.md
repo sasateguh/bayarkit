@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Bayarcash: the tracked documentation is now the new API reference (api-reference.bayarcash.com; the old address only
+  points there). The spec records the callback retry schedule, and that Direct Debit callbacks (not supported) are
+  rejected because they are signed over other fields. No change in behaviour.
+
 ## [0.3.1] - 2026-11-06
 
 ### Changed

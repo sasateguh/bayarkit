@@ -72,16 +72,16 @@
     "since": "2026-11-07"
   },
   "bayarcash/api-docs": {
-    "url": "https://api.webimpian.support/bayarcash/llms-full.txt",
-    "sha256": "d510335f21a88086378c13db7cc8d83766a966d3f2b54f2976f7b6c5c87b62a2",
-    "chars": 79733,
-    "since": "2026-10-23"
+    "url": "https://api-reference.bayarcash.com/llms-full.txt",
+    "sha256": "96c7399c46001bc53e5a1c9f872ba49986820ec9b4722925995954662ea041df",
+    "chars": 43363,
+    "since": "2026-11-07"
   },
   "bayarcash/sdk-callback": {
     "url": "https://raw.githubusercontent.com/webimpian/bayarcash-php-sdk/HEAD/src/Actions/CallbackVerifications.php",
-    "sha256": "ae51bda95e0b6f82a22f1b0a19d1b68c2dbf5d6672491f28f3486eb568129e42",
-    "chars": 5631,
-    "since": "2026-10-23"
+    "sha256": "acb0a1d8f865249615f4dfb0369dafadf08d781fd8084ef5f2222a5261fc24ee",
+    "chars": 5764,
+    "since": "2026-11-07"
   },
   "bayarcash/sdk-checksum": {
     "url": "https://raw.githubusercontent.com/webimpian/bayarcash-php-sdk/HEAD/src/Actions/ChecksumGenerator.php",

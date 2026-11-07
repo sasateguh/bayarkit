@@ -52,6 +52,28 @@ describe('bayarcash: checksum rules from the official SDK', () => {
     ).toBeNull()
   })
 
+  it('rejects a Direct Debit deduction callback (also record_type "transaction", signed over other fields)', () => {
+    // Direct Debit is not supported: its deduction callback signs batch_number, mandate_id, cycle, … and,
+    // when present, payment_gateway_id. A correctly signed one must still not pass as a checkout payment.
+    const gw = bayarcash({ ...keys, environment: 'sandbox' })
+    const fields: Record<string, string> = {
+      record_type: 'transaction',
+      batch_number: 'B1',
+      mandate_id: 'M1',
+      mandate_reference_number: 'MR1',
+      transaction_id: 'trx_dd_1',
+      datetime: '2026-11-07 10:00:00',
+      reference_number: 'R1',
+      amount: '25.00',
+      status: '3',
+      status_description: 'Approved',
+      cycle: '1',
+      payment_gateway_id: '2',
+    }
+    const signed = { ...fields, checksum: checksum(keys.secretKey, fields) }
+    expect(gw.verifyCallback({ fields: signed, rawBody: '', headers: {} })).toBeNull()
+  })
+
   it('requires payer name and email, which are part of the signed payload', async () => {
     const gw = bayarcash({ ...keys, environment: 'sandbox', baseUrl: 'http://127.0.0.1:9' })
     await expect(gw.createPayment(sampleInput({ customer: { name: 'A' } }))).rejects.toThrow(

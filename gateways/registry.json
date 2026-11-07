@@ -61,9 +61,9 @@
       "sources": [
         {
           "id": "api-docs",
-          "title": "Bayarcash API documentation (full Markdown export)",
-          "url": "https://api.webimpian.support/bayarcash/llms-full.txt",
-          "mustContain": ["payment-intents", "checksum", "order_number"]
+          "title": "Bayarcash API v3 reference (full Markdown export)",
+          "url": "https://api-reference.bayarcash.com/llms-full.txt",
+          "mustContain": ["payment-intents", "checksum", "order_number", "transactionCallback"]
         },
         {
           "id": "sdk-checksum",
