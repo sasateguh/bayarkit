@@ -23,6 +23,9 @@ All notable changes to this project are documented here. The format follows
 - senangPay: the spec notes the DOKU notification sample now shows `Authorization: Basic …`. Notifications are verified
   by their `Signature` only; a new test pins that the `Authorization` header is neither needed nor trusted. No change in
   behaviour.
+- HitPay: the spec notes that the OpenAPI dropped the `add_admin_fee` create/update option and DOKU QRIS from the
+  `generate_qr` methods, and added coupon endpoints (unused here). Neither option is sent; a new test pins that. No change
+  in behaviour.
 
 ## [0.3.1] - 2026-11-06
 

@@ -166,6 +166,13 @@ describe('hitpay: contradictions in the official materials (spec §6)', () => {
     })
   })
 
+  it('create sends neither add_admin_fee (dropped from the OpenAPI 2026-11-07) nor generate_qr', async () => {
+    await gw.createPayment(sampleInput())
+    const body = fake.requests.at(-1)?.body ?? {}
+    expect(body).not.toHaveProperty('add_admin_fee')
+    expect(body).not.toHaveProperty('generate_qr')
+  })
+
   it("§6.4: the fake also takes the OpenAPI's JSON body, and refuses a request without X-Requested-With", async () => {
     const json = await fetch(`${fake.url}/v1/payment-requests`, {
       method: 'POST',

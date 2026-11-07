@@ -223,9 +223,9 @@
   },
   "hitpay/openapi": {
     "url": "https://docs.hitpayapp.com/openapi.json",
-    "sha256": "0f7f6e5df411f9d1223e25124b9495a5678c374cfd4717a681ba99c4e1dc4492",
-    "chars": 362290,
-    "since": "2026-10-23"
+    "sha256": "8a287f28864fdbaeedea34edc0e36d3a92f0cc13d7bd17001234998a3ab2d4af",
+    "chars": 381964,
+    "since": "2026-11-07"
   },
   "hitpay/php-sdk-client": {
     "url": "https://raw.githubusercontent.com/hit-pay/php-sdk/HEAD/src/Client.php",
