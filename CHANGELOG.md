@@ -17,6 +17,12 @@ All notable changes to this project are documented here. The format follows
 - CHIP: the spec records the clarified callback schedule (at most 8 attempts in total, the last about 36 hours after the
   first) and notes that the SHA-512 signatures and rate limits newly documented for CHIP Send do not apply to Collect. A new
   test (TypeScript and PHP) pins that a Collect callback signed over SHA-512 does not verify. No change in behaviour.
+- Gkash: the spec records that the official mobile SDKs now bind cards for recurring charges (`recurringType`, `epKey`,
+  a host-to-host submit). The request and callback signatures are unchanged and `epkey` is not covered by them; recurring
+  is not supported here. A new test pins that recurring callback fields decide nothing. No change in behaviour.
+- senangPay: the spec notes the DOKU notification sample now shows `Authorization: Basic …`. Notifications are verified
+  by their `Signature` only; a new test pins that the `Authorization` header is neither needed nor trusted. No change in
+  behaviour.
 
 ## [0.3.1] - 2026-11-06
 

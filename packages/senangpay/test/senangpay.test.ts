@@ -185,6 +185,16 @@ describe('senangpay: notifications (Global signature over the raw body)', () => 
     expect(gw.verifyCallback({ ...cb, headers: without })).not.toBeNull()
   })
 
+  it('the notification Authorization header (Basic or bare Base64) is neither needed nor trusted; Signature decides', () => {
+    const cb = fake.callbackFor(id)
+    const basic = `Basic ${Buffer.from('doku_ak_test_x').toString('base64')}`
+    for (const authorization of [basic, basic.slice(6), undefined]) {
+      const headers = { ...cb.headers, ...(authorization ? { authorization } : {}) }
+      expect(gw.verifyCallback({ ...cb, headers })).not.toBeNull()
+      expect(gw.verifyCallback({ ...cb, headers: { ...headers, signature: 'HMACSHA256=AAAA' } })).toBeNull()
+    }
+  })
+
   it('reads a failed notification as failed and never as paid', () => {
     const v = gw.verifyCallback(fake.callbackFor(id, { status: 'FAILED' }))
     expect(v?.claimedStatus).toBe('failed')

@@ -407,6 +407,15 @@ describe('gkash: callbacks', () => {
     )
     expect(cb?.raw.description).toBe('00 - Approved')
   })
+
+  it('recurring fields (epkey, SubscriptionRemID, SubscriptionCount) are outside the signature and decide nothing', () => {
+    const recurring = { epkey: 'EP-1', SubscriptionRemID: '1', SubscriptionCount: '12' }
+    const a = docGateway().verifyCallback(form({ ...DOC_CALLBACK, ...recurring }))
+    const b = docGateway().verifyCallback(form({ ...DOC_CALLBACK, ...recurring, epkey: 'EP-OTHER' }))
+    expect(a).toMatchObject({ reference: DOC_CART, claimedStatus: 'paid' })
+    expect(b).toMatchObject({ id: a?.id, reference: a?.reference, claimedStatus: a?.claimedStatus })
+    expect(b?.raw.epkey).toBe('EP-OTHER')
+  })
 })
 
 describe('gkash: the signature upper-cases everything, so references are upper-case only', () => {

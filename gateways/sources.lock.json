@@ -193,21 +193,21 @@
   },
   "gkash/android-hosts": {
     "url": "https://raw.githubusercontent.com/gkashmy/gkash-android-sdk/HEAD/gkash-android-sdk/src/main/java/com/gkash/gkashandroidsdk/GkashPayment.java",
-    "sha256": "e8ce7658f356852b5d8f855e179af974582b73fda6461fd58e713a8eb524415e",
-    "chars": 4310,
-    "since": "2026-10-23"
+    "sha256": "5b5cbfe2284694e7721021425ebe0aedcd5eb8bfd67d2f27dbecc5260927cb43",
+    "chars": 4549,
+    "since": "2026-11-07"
   },
   "gkash/android-response-sig": {
     "url": "https://raw.githubusercontent.com/gkashmy/gkash-android-sdk/HEAD/gkash-android-sdk/src/main/java/com/gkash/gkashandroidsdk/PaymentResponse.java",
-    "sha256": "514a876a301a56d013b28d543fc534d01d0f8a370da18a77e49a5801164ed9bc",
-    "chars": 1260,
-    "since": "2026-10-23"
+    "sha256": "887d609b14dc6d878e8b7bc7dc90f5ea165067849c99acddb7bd22bc09091091",
+    "chars": 1281,
+    "since": "2026-11-07"
   },
   "gkash/ios-request-sig": {
     "url": "https://raw.githubusercontent.com/gkashmy/gkash-ios-sdk/HEAD/GkashPayment/PaymentRequest.swift",
-    "sha256": "62b4c71447d949a19d5d8aa2d98c1b10b400fa9e0fb72e1f5afd84b6ed801a85",
-    "chars": 4245,
-    "since": "2026-10-23"
+    "sha256": "20f21e263aba9dd6977c58a320a5e353837759594e8a4eb559df77b077134f51",
+    "chars": 6632,
+    "since": "2026-11-07"
   },
   "gkash/woo-gkash-plugin": {
     "url": "https://plugins.svn.wordpress.org/woo-gkash/trunk/wc-gkash.php",
@@ -355,9 +355,9 @@
   },
   "senangpay/doku-notification-global": {
     "url": "https://doku-developers.apidog.io/sample-notification-global-44767704e0.md",
-    "sha256": "e09476b3601b16addb01ae8195687935d09b13d0ce5daa5e20c884133de9aeec",
-    "chars": 7883,
-    "since": "2026-10-23"
+    "sha256": "5155970d3c196dd972cb32f5501b96f889739beaeb7daef6663047c359f3b03c",
+    "chars": 7879,
+    "since": "2026-11-07"
   },
   "senangpay/doku-signature": {
     "url": "https://doku-developers.apidog.io/generating-signature-2466482m0.md",
@@ -373,9 +373,9 @@
   },
   "senangpay/senangpay-doku-faq": {
     "url": "https://senangpay.com/doku-migration-faq/",
-    "sha256": "47e77dc599c772e8126f24dda8eb5057a7f18d085df1337e62650d656f8b4ec5",
-    "chars": 19621,
-    "since": "2026-10-23"
+    "sha256": "9a3831e47c48f5a2ec19bf0cb466edce3b6b4e699d0447d236ce3d8abd4a7f4e",
+    "chars": 19521,
+    "since": "2026-11-07"
   },
   "stripe/checkout-create": {
     "url": "https://docs.stripe.com/api/checkout/sessions/create.md",
