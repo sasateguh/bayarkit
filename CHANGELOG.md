@@ -11,6 +11,9 @@ All notable changes to this project are documented here. The format follows
 - Bayarcash: the tracked documentation is now the new API reference (api-reference.bayarcash.com; the old address only
   points there). The spec records the callback retry schedule, and that Direct Debit callbacks (not supported) are
   rejected because they are signed over other fields. No change in behaviour.
+- Stripe: the spec notes the newer monthly API release `2026-10-28.endive` (the adapter keeps its measured default
+  `2026-09-30.endive`; `apiVersion` opts in), that `payment_method_collection` is subscription-only (never sent), and the
+  new webhook permissions section (signature verification unchanged). No change in behaviour.
 
 ## [0.3.1] - 2026-11-06
 
