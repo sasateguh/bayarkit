@@ -103,15 +103,15 @@
   },
   "chip/llms": {
     "url": "https://docs.chip-in.asia/llms.txt",
-    "sha256": "8dea968a8bc2b01ec484401c65c6feff2570002916f144a59b3d8cad0a0664e1",
-    "chars": 1886,
-    "since": "2026-10-23"
+    "sha256": "146fbcbf0311714e7a522c55bb9f1bd8442c091d3bf5f6b952b99d3124eb0b5f",
+    "chars": 2520,
+    "since": "2026-11-07"
   },
   "chip/openapi": {
     "url": "https://docs.chip-in.asia/openapi/chip-collect.yaml",
-    "sha256": "ce9a3258d97bef251f2431441b316117db74d1e85971dbf964aa69925ab75eca",
-    "chars": 146377,
-    "since": "2026-10-23"
+    "sha256": "72800bcf991d02207cf0a8964d2d8cf2b20385291eddbd7cbb9e6b674ea8c480",
+    "chars": 146610,
+    "since": "2026-11-07"
   },
   "curlec/checkout-integration-steps": {
     "url": "https://curlec.com/docs/payments/payment-gateway/web-integration/standard/integration-steps.md",

@@ -14,6 +14,9 @@ All notable changes to this project are documented here. The format follows
 - Stripe: the spec notes the newer monthly API release `2026-10-28.endive` (the adapter keeps its measured default
   `2026-09-30.endive`; `apiVersion` opts in), that `payment_method_collection` is subscription-only (never sent), and the
   new webhook permissions section (signature verification unchanged). No change in behaviour.
+- CHIP: the spec records the clarified callback schedule (at most 8 attempts in total, the last about 36 hours after the
+  first) and notes that the SHA-512 signatures and rate limits newly documented for CHIP Send do not apply to Collect. A new
+  test (TypeScript and PHP) pins that a Collect callback signed over SHA-512 does not verify. No change in behaviour.
 
 ## [0.3.1] - 2026-11-06
 

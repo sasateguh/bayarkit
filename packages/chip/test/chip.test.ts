@@ -1,4 +1,4 @@
-import { generateKeyPairSync } from 'node:crypto'
+import { generateKeyPairSync, sign } from 'node:crypto'
 import { confirmPayment, GatewayError } from '@bayarkit/core'
 import { gatewayConformance, sampleInput, startFakeChip } from '@bayarkit/testing'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -86,6 +86,23 @@ describe('chip: rules from the official OpenAPI', () => {
     const created = await g.createPayment(sampleInput())
     expect(gw.verifyCallback(other.callbackFor(created.id))).toBeNull()
     await other.close()
+  })
+
+  it('verifies SHA-256 only: a SHA-512 signature (the CHIP Send webhook scheme) does not verify', async () => {
+    const own = generateKeyPairSync('rsa', { modulusLength: 2048 })
+    const pem = own.publicKey.export({ type: 'spki', format: 'pem' }).toString()
+    const g = chip({ ...keys, environment: 'test', publicKey: pem, baseUrl: fake.url })
+    const created = await g.createPayment(sampleInput())
+    const cb = fake.callbackFor(created.id)
+    const signed = (alg: string) => ({
+      ...cb,
+      headers: {
+        ...cb.headers,
+        'x-signature': sign(alg, Buffer.from(cb.rawBody), own.privateKey).toString('base64'),
+      },
+    })
+    expect(g.verifyCallback(signed('sha256'))).toMatchObject({ id: created.id })
+    expect(g.verifyCallback(signed('sha512'))).toBeNull()
   })
 
   it('refuses a callbackUrl with an explicit port before calling CHIP (even :443)', async () => {
