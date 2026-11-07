@@ -65,7 +65,33 @@ export function normalise(body, contentType = '', url = '') {
     // Plain split/join, no regex built from data.
     for (const prefix of ['](', 'href="', "href='"]) s = s.split(`${prefix}${origin}/`).join(`${prefix}/`)
   }
-  return s.replace(/\s+/g, ' ').trim()
+  return stripNoise(s.replace(/\s+/g, ' ').trim())
+}
+
+/** Front-matter keys whose value is only the page's edit date (Adyen rewrites `last_modified` on every docs deploy). */
+const STAMP_KEYS = new Set(['last_modified:', 'lastmod:', 'date_modified:', 'updated:'])
+const ISO_DATE = /^"?\d{4}-\d{2}-\d{2}(?:T[\d:.]+(?:Z|[+-]\d{2}:?\d{2})?)?"?$/
+/** Docs-site layout markers (Curlec, HitPay, 6 Nov 2026: `**Sandbox**` became `> [tab] Sandbox`) and blockquote `>`. */
+const LAYOUT_TOKENS = new Set(['>', '[tab]', '[/tab]', '[accordion]', '[/accordion]', '[card]', '[/card]'])
+
+/**
+ * Named noise only, on whitespace-collapsed text, so the result is the same whether the input is a fresh page or a
+ * stored copy (idempotent; D16 proofs compare the two): a front-matter edit date, layout markers, a lone blockquote
+ * `>` and `**bold**` delimiters. Words, numbers, `>=`/`->`, `/**` and `**kwargs` stay. No pattern comes from data.
+ */
+function stripNoise(s) {
+  let tokens = s.split(' ')
+  if (tokens[0] === '---') {
+    const end = tokens.indexOf('---', 1)
+    if (end > 0)
+      for (let i = end - 2; i > 0; i--)
+        if (STAMP_KEYS.has(tokens[i]) && ISO_DATE.test(tokens[i + 1])) tokens.splice(i, 2)
+  }
+  tokens = tokens.filter((t) => !LAYOUT_TOKENS.has(t))
+  return tokens
+    .join(' ')
+    .replace(/\*\*(?=\S)((?:[^*]|\*(?!\*))*?\S)\*\*/g, '$1')
+    .trim()
 }
 
 const fingerprint = (text) => createHash('sha256').update(text).digest('hex')
@@ -77,7 +103,7 @@ async function fetchSource(source) {
     signal: AbortSignal.timeout(30_000),
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  // No per-source ignore patterns: none was needed (12/12 sources stable), and regexes from data invite ReDoS.
+  // No per-source ignore patterns (regexes from data invite ReDoS): `normalise` drops only the named noise above.
   const text = normalise(await res.text(), res.headers.get('content-type') ?? '', source.url)
   if (text.length < 200) throw new Error(`only ${text.length} characters of text (JavaScript-rendered page?)`)
   // A shell page (JavaScript-rendered docs, a login wall, a GitBook landing page) can be long and still say nothing.

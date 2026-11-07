@@ -1,27 +1,27 @@
 {
   "2c2p/backend-notification": {
     "url": "https://developer.2c2p.com/docs/api-payment-response-backend.md",
-    "sha256": "50114fb61eb389001adc5ed57e8b9848d6989f9a44ce7ef320647586428fafee",
-    "chars": 1784,
-    "since": "2026-10-23"
+    "sha256": "eb5624f4b5db98af4049fb5493fcd0906fd310f4416242ac8b416eda5b64e92f",
+    "chars": 1752,
+    "since": "2026-11-07"
   },
   "2c2p/jwt-guide": {
     "url": "https://developer.2c2p.com/docs/json-web-tokens-jwt.md",
-    "sha256": "8deb4857f44c4cf5fd38de61fd80289560c36644ad7f80dd1622922be9164618",
-    "chars": 1739,
-    "since": "2026-10-23"
+    "sha256": "b14ed810213422beebd670993cadc376904f84e48e42785a5af5a43172589f22",
+    "chars": 1719,
+    "since": "2026-11-07"
   },
   "2c2p/payment-token-params": {
     "url": "https://developer.2c2p.com/docs/api-payment-token-request-parameter.md",
-    "sha256": "0d4d67a5b9c80e22588370914015e5ac50c7dabebb1e570dd91c8c2824bf7ad0",
-    "chars": 78808,
-    "since": "2026-10-23"
+    "sha256": "559b426078fc43b334bd2547dfe1c6a84cdffc64add0e696b9699b8ce4cc8697",
+    "chars": 78766,
+    "since": "2026-11-07"
   },
   "2c2p/sandbox-setup": {
     "url": "https://developer.2c2p.com/docs/sandbox-setup.md",
-    "sha256": "8aa15aa38aa497f21b269a3e7e30e2acf005bce7b278d70c5489942dd5a894ae",
-    "chars": 5393,
-    "since": "2026-10-23"
+    "sha256": "9160f9f26968db48f338c698a5b1dc9b71b3f095b372cbc9f56d326de2ea885e",
+    "chars": 5349,
+    "since": "2026-11-07"
   },
   "adyen/checkout-openapi-v72": {
     "url": "https://raw.githubusercontent.com/Adyen/adyen-openapi/HEAD/json/CheckoutService-v72.json",
@@ -31,9 +31,9 @@
   },
   "adyen/hosted-checkout-md": {
     "url": "https://docs.adyen.com/standard/integration/hosted-checkout.md",
-    "sha256": "e3edf2417c97105d9ce962a0e2d7baa2707d0e66a026f7e528434e071890f2eb",
-    "chars": 43104,
-    "since": "2026-10-23"
+    "sha256": "5bb876a397e3fae20822e60d64f5c37a1428135023fa4a082e938fed4d8a7f02",
+    "chars": 42849,
+    "since": "2026-11-07"
   },
   "adyen/node-hmac-spec": {
     "url": "https://raw.githubusercontent.com/Adyen/adyen-node-api-library/HEAD/src/__tests__/hmacValidator.spec.ts",
@@ -43,9 +43,9 @@
   },
   "adyen/verify-hmac-md": {
     "url": "https://docs.adyen.com/development-resources/webhooks/secure-webhooks/verify-hmac-signatures.md",
-    "sha256": "ecf5230c26e13dc66d9067d8cebade95bfe4649a53cdc50b7dbb4ab14cb51963",
-    "chars": 16109,
-    "since": "2026-10-23"
+    "sha256": "d60356564d8a3264b8c107ff2dd4c917abd69727202c67c9ee6ba563e5ca020b",
+    "chars": 15998,
+    "since": "2026-11-07"
   },
   "airwallex/ai-payments-notes": {
     "url": "https://www.airwallex.com/docs/developer-tools/ai-agent-payments-integration.md",
@@ -55,9 +55,9 @@
   },
   "airwallex/fpx-md": {
     "url": "https://www.airwallex.com/docs/payments/payment-methods/apac/fpx.md",
-    "sha256": "e9d54a8e5fab6e619e622375637a3be9481ef6447686e279b5f8b5d99d0b4744",
-    "chars": 3623,
-    "since": "2026-10-23"
+    "sha256": "c585148f4ae264e8168962e88a1329513f75ed833328b86b92057d3af6e0375e",
+    "chars": 3605,
+    "since": "2026-11-07"
   },
   "airwallex/openapi": {
     "url": "https://raw.githubusercontent.com/airwallex/airwallex-openapi/HEAD/openapi/client-api/latest/airwallex-openapi-latest.json",
@@ -67,9 +67,9 @@
   },
   "airwallex/webhooks-md": {
     "url": "https://www.airwallex.com/docs/developer-tools/webhooks/listen-for-webhook-events.md",
-    "sha256": "34f35f5d8fce31270997a83d9f9542ce154d32c4b8d5a1028e748b074d820d56",
-    "chars": 11435,
-    "since": "2026-10-23"
+    "sha256": "20b68088bfb690ba54a4b6138442d1fc3d858d418f61b0909da2b2b7a2e94c13",
+    "chars": 11317,
+    "since": "2026-11-07"
   },
   "bayarcash/api-docs": {
     "url": "https://api.webimpian.support/bayarcash/llms-full.txt",
@@ -115,9 +115,9 @@
   },
   "curlec/checkout-integration-steps": {
     "url": "https://curlec.com/docs/payments/payment-gateway/web-integration/standard/integration-steps.md",
-    "sha256": "835c87dc73655614b345ec7c0928ecf65a1c05c07e4b5740585dc0ea61cddf8a",
-    "chars": 39460,
-    "since": "2026-10-23"
+    "sha256": "7d9139354099397181b749ebce68fc94ca0f516e6f0531dc4777d5202c753ef6",
+    "chars": 36234,
+    "since": "2026-11-07"
   },
   "curlec/node-sdk-utils": {
     "url": "https://raw.githubusercontent.com/razorpay/razorpay-node/HEAD/lib/utils/razorpay-utils.js",
@@ -127,15 +127,15 @@
   },
   "curlec/orders-create": {
     "url": "https://curlec.com/docs/api/orders/create.md",
-    "sha256": "45f0384a61ad0f5a09e1f58d69137a8f0e61356d5ce88aa09e79df7238c3f901",
-    "chars": 12811,
-    "since": "2026-10-23"
+    "sha256": "c066870770ad0cc76f122e3bece2cd7d4ef13a9001f74107602beffd185a1e17",
+    "chars": 12223,
+    "since": "2026-11-07"
   },
   "curlec/webhooks-validate": {
     "url": "https://curlec.com/docs/webhooks/validate-test.md",
-    "sha256": "713af2155d1d1075bba6e3b76c10d0cee360494849b7b315b6169732203c64da",
-    "chars": 7280,
-    "since": "2026-10-23"
+    "sha256": "97dc1d3f5e5646a3dbf6768bd1c8a8b30841a45e3df9e5e2ffe01246a57eb186",
+    "chars": 7200,
+    "since": "2026-11-07"
   },
   "eghl/eghl-hash-lib": {
     "url": "https://bitbucket.org/eghl/eghl_hash/raw/HEAD/eGHL_HASH.php",
@@ -163,15 +163,15 @@
   },
   "fiuu/fiuu-api-spec-readme": {
     "url": "https://raw.githubusercontent.com/FiuuPayment/Documentation-Fiuu_API_Spec/HEAD/README.md",
-    "sha256": "7f2865c3e907d1dcc9613dec65fccb987b3342668a6da1149fd80e87a9434e12",
-    "chars": 2578,
-    "since": "2026-10-23"
+    "sha256": "c7f28c0d2742e5e0d0fba9f07a8d5e6c76b5bc038e2b4b05b7f5fd736a52115f",
+    "chars": 2574,
+    "since": "2026-11-07"
   },
   "fiuu/fiuu-cheatsheet": {
     "url": "https://raw.githubusercontent.com/FiuuPayment/Cheatsheet-BestPractices-Fiuu_API/HEAD/README.md",
-    "sha256": "2a8352b7dbeecdb91ccada4dc2d294de76e72cca1af2c3cc0059034522215f2c",
-    "chars": 17465,
-    "since": "2026-10-23"
+    "sha256": "55db4afaced1c21b904f52767ded6d1cd3554953600fc7257843dcc0c8a5c6eb",
+    "chars": 17425,
+    "since": "2026-11-07"
   },
   "fiuu/fiuu-php-sdk": {
     "url": "https://raw.githubusercontent.com/FiuuPayment/SDK-Fiuu_PHP/HEAD/src/lib/Payment.php",
@@ -181,9 +181,9 @@
   },
   "fiuu/fiuu-woocommerce-gateway": {
     "url": "https://raw.githubusercontent.com/FiuuPayment/Shopping-Cart-Plugins-Fiuu_WooCommerce/HEAD/WooCommerce/woocommerce_rms_normal/class-gateway.php",
-    "sha256": "e27d0b6ada7730156887e2e5c6d3c4e88c37d08a74f6120ca24b27bd0487ec53",
-    "chars": 33277,
-    "since": "2026-10-23"
+    "sha256": "ebb426c22655e8c5929c458ba94deb4d692e431728fc86d71a7d2ec57428152f",
+    "chars": 33275,
+    "since": "2026-11-07"
   },
   "fiuu/spec-pdf-listing": {
     "url": "https://api.github.com/repos/FiuuPayment/Documentation-Fiuu_API_Spec/contents",
@@ -217,9 +217,9 @@
   },
   "hitpay/online-payments-md": {
     "url": "https://docs.hitpayapp.com/apis/guide/online-payments.md",
-    "sha256": "701c2bf6add9628107a63fc0b70e1c0aca14db5628086a90c3e4ce7419ae86fd",
-    "chars": 13268,
-    "since": "2026-10-23"
+    "sha256": "ba8477fbaa403d799450b6b68c91593049445e80b371cca42c1a3c19750e2d36",
+    "chars": 13022,
+    "since": "2026-11-07"
   },
   "hitpay/openapi": {
     "url": "https://docs.hitpayapp.com/openapi.json",
@@ -235,9 +235,9 @@
   },
   "hitpay/webhooks-md": {
     "url": "https://docs.hitpayapp.com/apis/guide/events.md",
-    "sha256": "5813d6300eac6d97125582f733a18e17feed3b809679a66c8753dc99e07788c1",
-    "chars": 41457,
-    "since": "2026-10-23"
+    "sha256": "bce43278d09e4a95e0769aeb3978e916b81c72a7ee2d203e2d5a8186c669604f",
+    "chars": 41373,
+    "since": "2026-11-07"
   },
   "ipay88/hmac-sha512-js": {
     "url": "https://payment.ipay88.com.my/epayment/Security/hmac-sha512.js",
@@ -259,93 +259,93 @@
   },
   "paddle/adjustment-create": {
     "url": "https://developer.paddle.com/api-reference/adjustments/create-adjustment.md",
-    "sha256": "44330f37e6797427bd39ee60dd3530f947f5c56b24316eaf7bbc23a366466da3",
-    "chars": 16834,
-    "since": "2026-10-29"
+    "sha256": "7fdb4c85f6452ac5cdf4e77c2b5f1a9db388c6b437e156bbc4567a22b8d4bb35",
+    "chars": 16820,
+    "since": "2026-11-07"
   },
   "paddle/currencies": {
     "url": "https://developer.paddle.com/concepts/sell/supported-currencies.md",
-    "sha256": "36851d1d10cf2256f35dd8ea34fe2bdfbcdae9ac0353866595830097cc6d4aab",
-    "chars": 4316,
-    "since": "2026-10-29"
+    "sha256": "9860e0bb7e53b7c5c6abd6933eacab87c84200c5ad97856a77eb82dc6cd5602e",
+    "chars": 4300,
+    "since": "2026-11-07"
   },
   "paddle/node-sdk-webhooks": {
     "url": "https://raw.githubusercontent.com/PaddleHQ/paddle-node-sdk/HEAD/src/notifications/helpers/webhooks-validator.ts",
-    "sha256": "86337c7641fca9c0d9b9a9be8d8dbde416703a2fdde11819c736893d0ded1e64",
-    "chars": 1280,
-    "since": "2026-10-29"
+    "sha256": "bbb15b49a8e65f73f24c9f87c8d725b1f5aa0e87dd228199558719ac89f1e609",
+    "chars": 1278,
+    "since": "2026-11-07"
   },
   "paddle/sandbox": {
     "url": "https://developer.paddle.com/sdks/sandbox.md",
-    "sha256": "d14a2eb616ff9f78ed8159a8315a669d6fd2d68a2f9a429695f6b4b94f024923",
-    "chars": 7202,
-    "since": "2026-10-29"
+    "sha256": "e3e8450cfc7071d4cc711b53c9b1cd52aaf5c4cd06a475f1faad71d27c983284",
+    "chars": 7148,
+    "since": "2026-11-07"
   },
   "paddle/transaction-create": {
     "url": "https://developer.paddle.com/api-reference/transactions/create-transaction.md",
-    "sha256": "08fc72c8f1be9d9606328529d42b466d6ec14b225d79df2413ca000a2ba72d91",
-    "chars": 152031,
-    "since": "2026-10-29"
+    "sha256": "241eb274c62958b26c9fefcfc33546db962651c9de827542f9edc094cd908665",
+    "chars": 152017,
+    "since": "2026-11-07"
   },
   "paddle/transaction-get": {
     "url": "https://developer.paddle.com/api-reference/transactions/get-transaction.md",
-    "sha256": "712b737fb2a1183d183589f79b79f4f960dd86c82a2c8590a06e7abdfc8e844d",
-    "chars": 100579,
-    "since": "2026-10-29"
+    "sha256": "955464e6e0b728efb23cde247e047628fcd05eecc1235175bcf758f5d28118fa",
+    "chars": 100565,
+    "since": "2026-11-07"
   },
   "paddle/webhook-signature": {
     "url": "https://developer.paddle.com/webhooks/about/signature-verification.md",
-    "sha256": "9de4ea90f61870b17ef13bf060a80069d7e03c6c14cca5b84f36f8811f4777d3",
-    "chars": 33482,
-    "since": "2026-10-29"
+    "sha256": "5ded0805c6b6c175b1c4e14eb8bab422080cdd732af321511d032294fa8ae652",
+    "chars": 33440,
+    "since": "2026-11-07"
   },
   "paypal/authentication": {
     "url": "https://developer.paypal.com/api/rest/authentication.md",
-    "sha256": "9984ba76e9435ad77983054ac85e03af818c534acd86fa417418b06751f4fd43",
-    "chars": 3068,
-    "since": "2026-10-29"
+    "sha256": "37b650f0ff0fe3d6226508721463da4259c521f2c963316898afa34805a00d9f",
+    "chars": 3022,
+    "since": "2026-11-07"
   },
   "paypal/card-testing": {
     "url": "https://developer.paypal.com/sandbox-testing/card-testing.md",
-    "sha256": "975f2c3f6bf1ed0a4d8793a86ed63cdbc497ce9088e82245ac8354331495cdc7",
-    "chars": 12330,
-    "since": "2026-10-29"
+    "sha256": "2a5f951ac7e6f1547a1321ae7f8d565c0fb1f712478047651fd75f14d3ff636d",
+    "chars": 12274,
+    "since": "2026-11-07"
   },
   "paypal/currencies": {
     "url": "https://developer.paypal.com/reference/currency-codes.md",
-    "sha256": "516c43f366781b3d2c44b4cb7645eb121b7e5d325a5b26faced225d2a60f8ff2",
-    "chars": 3107,
-    "since": "2026-10-29"
+    "sha256": "eba41ebabfd562f6cd88e361b6bfaa372442952a7a23d2a677c9a9bbea54116b",
+    "chars": 3095,
+    "since": "2026-11-07"
   },
   "paypal/idempotency": {
     "url": "https://developer.paypal.com/reference/guidelines/idempotency.md",
-    "sha256": "56c6f6706aa689d903410fd874bdde3708c89f3c9bd722eb00d18a6914c74794",
-    "chars": 3844,
-    "since": "2026-10-29"
+    "sha256": "ef5ad920e8ce53470289b02ad2473b493326d495131c3d8d3c5bb0e3831c428f",
+    "chars": 3820,
+    "since": "2026-11-07"
   },
   "paypal/orders-guide": {
     "url": "https://developer.paypal.com/whats-an-order.md",
-    "sha256": "926303e76398933e5d119c1acdb82e86d6812d20c5de0add2d0a35f50d7891a4",
-    "chars": 41231,
-    "since": "2026-10-29"
+    "sha256": "5f2076904431605af0bde8e1c0c7bd8e037d2a7bad2d63de2275032a5a47b94a",
+    "chars": 41021,
+    "since": "2026-11-07"
   },
   "paypal/orders-openapi": {
     "url": "https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/HEAD/openapi/checkout_orders_v2.json",
-    "sha256": "2fcf75a067d242ff9fa7a0fae8de21fa5596072f5b883e6163e228d0fbdbb0f0",
-    "chars": 446376,
-    "since": "2026-10-29"
+    "sha256": "68b83e1ea92df556c759566c2a638308db21b1eedae3c3cd7f22460e241d5975",
+    "chars": 446352,
+    "since": "2026-11-07"
   },
   "paypal/payments-openapi": {
     "url": "https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/HEAD/openapi/payments_payment_v2.json",
-    "sha256": "a7fe2780d705b9d3fe5758c89865f3c381f5fb295d9df6843348a7c21fe3e58f",
-    "chars": 218814,
-    "since": "2026-10-29"
+    "sha256": "b7ae2c43d9947dda67afeef9e06db5f6b0309ffaed38997c9374482b7d92c4f5",
+    "chars": 218750,
+    "since": "2026-11-07"
   },
   "paypal/webhooks-integrate": {
     "url": "https://developer.paypal.com/api/rest/webhooks/rest.md",
-    "sha256": "84188c1d161dc636fc2720ee3ada293b36c18daf7bd7aadbaec9c2b2d45bf860",
-    "chars": 10990,
-    "since": "2026-10-29"
+    "sha256": "4a6f651a3274c116ea2feb7209e0e7519f5443bd5c3bb6f6e331b5ec9078343f",
+    "chars": 10974,
+    "since": "2026-11-07"
   },
   "paypal/webhooks-openapi": {
     "url": "https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/HEAD/openapi/notifications_webhooks_v1.json",
@@ -367,9 +367,9 @@
   },
   "senangpay/legacy-secure-hash": {
     "url": "https://raw.githubusercontent.com/senangpay/api_catalog/HEAD/integration-api/manual-integration-api-open-api/generate-secure-hash.md",
-    "sha256": "bef33724bea0fda1ddf28f32adb4b57c4cf4d1d459a30cfa36015f9fb784e898",
-    "chars": 1803,
-    "since": "2026-10-23"
+    "sha256": "324fc9a777b151efdd7283e5729c14bd9775f208685fb3a05e2262e99faf3233",
+    "chars": 1727,
+    "since": "2026-11-07"
   },
   "senangpay/senangpay-doku-faq": {
     "url": "https://senangpay.com/doku-migration-faq/",
@@ -391,9 +391,9 @@
   },
   "stripe/fpx": {
     "url": "https://docs.stripe.com/payments/fpx/accept-a-payment.md?payment-ui=checkout",
-    "sha256": "52dfef3bdfe92cf799d97d3e57435be843bf53a2daf7c3c4ba2ee975e02da9b6",
-    "chars": 4435,
-    "since": "2026-10-23"
+    "sha256": "67882745de9f126ad4e7dff220b18260dbc0340751bf56e618d6b26b0df1d87b",
+    "chars": 4405,
+    "since": "2026-11-07"
   },
   "stripe/webhook-signature": {
     "url": "https://docs.stripe.com/webhooks/signature.md",
@@ -409,21 +409,21 @@
   },
   "xendit/create-session-openapi": {
     "url": "https://docs.xendit.co/apidocs/create-session.md",
-    "sha256": "436303ec811ace8ea4541d60248a6452274d94966732ee3bac04a5d92f86755e",
-    "chars": 42208,
-    "since": "2026-10-23"
+    "sha256": "6d22c7f5951aa395a8135f88c34de46256ecc4cb94025c7a7b6450041725f3bb",
+    "chars": 42200,
+    "since": "2026-11-07"
   },
   "xendit/payment-webhook-openapi": {
     "url": "https://docs.xendit.co/apidocs/payment-webhook-notification.md",
-    "sha256": "6f042bbfb90f396ac12ca0e0ef50ded85ab41de02db5e4feb06602c1af716243",
-    "chars": 19384,
-    "since": "2026-10-23"
+    "sha256": "19f60bc606f953c6246eb97d7a9cb6312cff08f67029b7fd91d09a7b3c029251",
+    "chars": 19376,
+    "since": "2026-11-07"
   },
   "xendit/xendit-ai-sessions": {
     "url": "https://raw.githubusercontent.com/xendit/xendit-ai/HEAD/skills/xendit-integrate/references/sessions.md",
-    "sha256": "aaeb17302dce3b27a5dafc7e1feec9004acb3901300e8cd2098f074923cef838",
-    "chars": 6097,
-    "since": "2026-10-23"
+    "sha256": "d87025444d78d19220a4212f5dcac7f53e2b23d0a150842713ffe5b15be31eda",
+    "chars": 6073,
+    "since": "2026-11-07"
   },
   "xendit/xendit-ai-skill": {
     "url": "https://raw.githubusercontent.com/xendit/xendit-ai/HEAD/skills/xendit-integrate/SKILL.md",
