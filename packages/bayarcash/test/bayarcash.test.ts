@@ -112,6 +112,36 @@ describe('bayarcash: checksum rules from the official SDK', () => {
     )
   })
 
+  it('refuses an order number over 30 characters before calling the API (measured sandbox limit; a UUID does not fit)', async () => {
+    const fake = await startFakeBayarcash(keys)
+    const gw = bayarcash({ ...keys, environment: 'sandbox', baseUrl: fake.url })
+    const sent = fake.requests.length
+    for (const reference of ['x'.repeat(31), '550e8400-e29b-41d4-a716-446655440000']) {
+      await expect(gw.createPayment(sampleInput({ reference }))).rejects.toMatchObject({
+        code: 'INVALID_REFERENCE',
+      })
+    }
+    expect(fake.requests.length).toBe(sent)
+    await gw.createPayment(sampleInput({ reference: 'y'.repeat(30) }))
+    expect((fake.requests.at(-1)?.body as Record<string, unknown> | undefined)?.order_number).toBe(
+      'y'.repeat(30),
+    )
+    await fake.close()
+  })
+
+  it('fake answers an over-long order number with the measured 422', async () => {
+    const fake = await startFakeBayarcash(keys)
+    const res = await fetch(`${fake.url}/payment-intents`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${keys.token}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ portal_key: keys.portalKey, order_number: 'z'.repeat(31), checksum: 'x' }),
+    })
+    expect(res.status).toBe(422)
+    const json = (await res.json()) as { errors: { order_number: string[] } }
+    expect(json.errors.order_number[0]).toMatch(/not be greater than 30 characters/)
+    await fake.close()
+  })
+
   it('sends the idempotency key so a retried request returns the same intent', async () => {
     const fake = await startFakeBayarcash(keys)
     const gw = bayarcash({ ...keys, environment: 'sandbox', baseUrl: fake.url })

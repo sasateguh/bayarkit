@@ -100,6 +100,9 @@ const RETURN_FIELDS = [
   'status_description',
 ] as const
 
+/** Longest `order_number` the API accepts (MEASURED 11 Nov 2026; undocumented). */
+export const REFERENCE_MAX = 30
+
 export function checksum(secretKey: string, fields: Record<string, string>): string {
   return createHmac('sha256', secretKey)
     .update(
@@ -240,6 +243,21 @@ export function bayarcash(config: BayarcashConfig): Gateway & {
       }
       if ((input.currency ?? 'MYR') !== 'MYR')
         throw new GatewayError('only MYR is supported', 'bayarcash', 0, 'CURRENCY')
+      // MEASURED 11 Nov 2026 (sandbox): 30 characters → 201, 31+ → 422 "The order number field must not be greater than
+      // 30 characters." The API reference gives no limit. A UUID (36) does not fit. Sent as given, never cut: confirmPayment
+      // matches the reference later.
+      if (
+        typeof input.reference !== 'string' ||
+        !input.reference ||
+        [...input.reference].length > REFERENCE_MAX
+      ) {
+        throw new GatewayError(
+          `reference must be 1–${REFERENCE_MAX} characters (Bayarcash order_number limit)`,
+          'bayarcash',
+          0,
+          'INVALID_REFERENCE',
+        )
+      }
       const name = input.customer?.name?.trim() ?? ''
       const email = input.customer?.email?.trim() ?? ''
       // Both are part of the signed payload (official SDK checksum fields), so both are required.

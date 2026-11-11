@@ -8,6 +8,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- Bayarcash: `createPayment` now refuses a `reference` longer than 30 characters with `INVALID_REFERENCE` before
+  calling the API. The sandbox answers 422 "The order number field must not be greater than 30 characters." for 31 or
+  more (a UUID is 36); the API reference states no limit (measured 11 Nov 2026). `@bayarkit/testing`'s Bayarcash fake
+  answers the same 422. The spec also notes the Personal Access Token length (984 characters on the sandbox): store
+  it in a TEXT column, not VARCHAR(255).
 - Airwallex (spec and skill only, no adapter): the OpenAPI now marks every scope as API-key and/or OAuth capable;
   every scope the PaymentIntent / Payment Link flow uses accepts an API key, so nothing changes. The Checkout Session
   API is still absent from the OpenAPI. senangPay: the DOKU migration FAQ changed only in its site menu (no change).

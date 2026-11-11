@@ -118,6 +118,12 @@ export async function startFakeBayarcash(opts: {
         return send(401, { message: 'Unauthenticated.' })
 
       if (req.method === 'POST' && path === '/payment-intents') {
+        // MEASURED 11 Nov 2026 on the sandbox: an order_number of 31+ characters (a UUID too) → this exact 422 (whether the
+        // sandbox checks it before the checksum is not measured; the fake does).
+        if ([...String(body.order_number ?? '')].length > 30) {
+          const m = 'The order number field must not be greater than 30 characters.'
+          return send(422, { code: 422, message: m, errors: { order_number: [m] } })
+        }
         const channels = Array.isArray(body.payment_channel)
           ? body.payment_channel.join(',')
           : String(body.payment_channel)
