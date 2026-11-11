@@ -8,6 +8,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- Paddle: notification signatures are now refused when `ts` is more than `toleranceSeconds` (default 5) in the
+  **future**, not only in the past, following paddle-node-sdk, which now bounds the time difference in both
+  directions; a `ts` too large to be a number is refused too. TS and PHP alike. Keep the server clock in sync.
+  `@bayarkit/testing`'s Paddle fake can record a failed attempt with any `error_code` (`decline(id, errorCode)`); the
+  spec notes the new `payment_attempt_expired` code, which leaves the status to the transaction (no change).
 - Bayarcash: `verifyCallback` now returns null for any message that is not a transaction callback or a one-off return
   landing: recurring charge callbacks (`record_type: recurring_charge`) and recurring return landings (`recurring_type`),
   which the official SDK now verifies over their own field lists, are refused even when correctly signed (recurring is

@@ -116,7 +116,10 @@ Sources: create and get pages (status enum), https://developer.paddle.com/webhoo
 - `payments[]` holds every attempt: `amount`, `status` (`authorized`, `authorized_flagged`, `canceled`, `captured`,
   `error`, `action_required`, `pending_no_action_required`, `unknown`), `error_code`, `captured_at`. A declined card adds
   an `error` attempt and fires `transaction.payment_failed`; for a one-time checkout the transaction status does
-  **not** change (only renewals and invoices go `past_due`). *(get page; transaction-payment-failed page)*
+  **not** change (only renewals and invoices go `past_due`). *(get page; transaction-payment-failed page)* The
+  `error_code` list now includes `payment_attempt_expired` (the buyer did not finish before the attempt expired,
+  typically a QR code or another app approving the payment); bayarkit reads the status from the transaction, never
+  from `error_code`, so an expired attempt leaves it pending like a declined card. *(create and get pages, Nov 2026)*
 - `details.adjusted_totals` = totals after adjustments (refunds, credits), with its own `grand_total`. A refunded
   transaction stays `completed`: only the adjusted totals and the adjustments show the refund. *(get page; create
   adjustment page)*
@@ -129,7 +132,7 @@ Sources: create and get pages (status enum), https://developer.paddle.com/webhoo
 | Header `Paddle-Signature: ts=1671552777;h1=eb4d0dc8…`. Split on `;`, then on `=`. | https://developer.paddle.com/webhooks/about/signature-verification.md |
 | Signed payload = `ts` + `:` + **raw body**, HMAC-SHA256, hex, keyed with the notification destination's `endpoint_secret_key` (`pdl_ntfset_…`). Any change to the body, even whitespace, breaks it. | same |
 | "Signatures contain at least one `h1`"; during secret rotation more than one `h1` may be sent. Accept if any matches. | same |
-| Replay: the SDK helpers reject events whose `ts` is more than **five seconds** old. The docs present the check as optional. | same; paddle-node-sdk `src/notifications/helpers/webhooks-validator.ts` (`MAX_VALID_TIME_DIFFERENCE = 5`) |
+| Replay: the SDK helpers reject events whose `ts` is more than **five seconds** away from now in **either direction** (since November 2026: the absolute difference is checked, so a far-future `ts` is refused too, as is a `ts` that does not parse to a finite number), and compare the HMAC in constant time. The docs present the check as optional. bayarkit follows the SDK (TS and PHP). | same; paddle-node-sdk `src/notifications/helpers/webhooks-validator.ts` (`MAX_VALID_TIME_DIFFERENCE = 5`) |
 | Test vector from the SDK test suite: secret `VALID_SECRET`, body `{"data": ["1", "2"]}`, `ts=1698796800` → `h1=a300428748dce5c70e4da19bffd60769591ea969c99dea3105d0ec9612cf43f9` (re-computed here with Node `crypto`). | paddle-node-sdk `src/__tests__/notifications/webhooks-validator.node.test.ts` |
 | Each destination has its own secret; one secret per destination. | signature-verification page |
 | Envelope: `event_id`, `event_type` (e.g. `transaction.completed`), `occurred_at`, `notification_id`, `data` (the full transaction entity, including `custom_data`, `status`, `details.totals`). | https://developer.paddle.com/webhooks/transactions/transaction-completed.md |

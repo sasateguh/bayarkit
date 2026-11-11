@@ -271,9 +271,9 @@
   },
   "paddle/node-sdk-webhooks": {
     "url": "https://raw.githubusercontent.com/PaddleHQ/paddle-node-sdk/HEAD/src/notifications/helpers/webhooks-validator.ts",
-    "sha256": "bbb15b49a8e65f73f24c9f87c8d725b1f5aa0e87dd228199558719ac89f1e609",
-    "chars": 1278,
-    "since": "2026-11-07"
+    "sha256": "81fe289ecea69126ef2ab417de8ace93499edc5e6ba3eb0c98773276179772e1",
+    "chars": 1790,
+    "since": "2026-11-11"
   },
   "paddle/sandbox": {
     "url": "https://developer.paddle.com/sdks/sandbox.md",
@@ -283,15 +283,15 @@
   },
   "paddle/transaction-create": {
     "url": "https://developer.paddle.com/api-reference/transactions/create-transaction.md",
-    "sha256": "241eb274c62958b26c9fefcfc33546db962651c9de827542f9edc094cd908665",
-    "chars": 152017,
-    "since": "2026-11-07"
+    "sha256": "c7cd80361aafd51617272e2ada89fe95cc6b2ad65b865bec69fb936327186a38",
+    "chars": 152223,
+    "since": "2026-11-11"
   },
   "paddle/transaction-get": {
     "url": "https://developer.paddle.com/api-reference/transactions/get-transaction.md",
-    "sha256": "955464e6e0b728efb23cde247e047628fcd05eecc1235175bcf758f5d28118fa",
-    "chars": 100565,
-    "since": "2026-11-07"
+    "sha256": "7e10e2c1cd124886c69b3c0fbc3999eed10b69b6ade6abce29c9b85489f19ff1",
+    "chars": 100771,
+    "since": "2026-11-11"
   },
   "paddle/webhook-signature": {
     "url": "https://developer.paddle.com/webhooks/about/signature-verification.md",

@@ -44,9 +44,11 @@
  *
  * Webhook verification follows the docs and paddle-node-sdk: split `Paddle-Signature` on `;` then `=`, HMAC-SHA256
  * over `${ts}:${rawBody}` keyed with the destination's secret (`pdl_ntfset_…`), hex, constant-time compare against
- * every `h1` (several appear while a secret is rotated), then the age check: older than `toleranceSeconds` (default
- * 5, the SDK's value) is refused. Measured: notifications arrived 0.2 to 2.2 s after their `ts`, and each retry is
- * signed again with a fresh `ts`. Like the Stripe adapter, a future `ts` passes (only the secret can sign one).
+ * every `h1` (several appear while a secret is rotated), then the time check: a `ts` more than `toleranceSeconds`
+ * (default 5, the SDK's value) away from now, older OR in the future, is refused, as paddle-node-sdk does since
+ * November 2026 (a ts too large to be a number is refused too). Measured: notifications arrived 0.2 to 2.2 s after
+ * their `ts`, and each retry is signed again with a fresh `ts`. Unlike the Stripe adapter, which follows Stripe's
+ * one-sided check, so keep the server clock in sync (NTP).
  */
 import { createHmac } from 'node:crypto'
 import {
@@ -137,7 +139,8 @@ export function verifyPaddleSignature(
   if (timestamp < 0 || !signatures.length) return false
   const expected = createHmac('sha256', secret).update(`${timestamp}:${rawBody}`, 'utf8').digest('hex')
   if (!signatures.some((s) => timingSafeEqualText(expected, s))) return false
-  return Math.floor(nowMs / 1000) - timestamp <= toleranceSeconds
+  // Both directions, as paddle-node-sdk: a far-future ts would otherwise stay valid (one HMAC target) for good.
+  return Math.abs(Math.floor(nowMs / 1000) - timestamp) <= toleranceSeconds
 }
 
 type Json = Record<string, unknown>

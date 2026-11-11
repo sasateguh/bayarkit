@@ -110,8 +110,11 @@ export interface FakePaddle extends FakeGateway {
    * `quantity` range, as the picker does not offer it; totals follow, as on the sandbox.
    */
   setQuantity(id: string, quantity: number, line?: number): void
-  /** A declined card: an `error` payment attempt, status unchanged (one-time checkout) [§3]. */
-  decline(id: string): void
+  /**
+   * A failed attempt: an `error` payment attempt, status unchanged (one-time checkout) [§3]. `errorCode` defaults to
+   * `declined` (measured); the docs list others, such as `payment_attempt_expired` (a QR or app approval not completed).
+   */
+  decline(id: string, errorCode?: string): void
   /** The sandbox's periodic approval run: every `pending_approval` refund becomes `approved` [§5]. */
   approveRefunds(): void
 }
@@ -557,14 +560,14 @@ export async function startFakePaddle(opts: {
       obj((t.items as unknown[])[line]).quantity = quantity
       t.updated_at = iso()
     },
-    decline(id) {
+    decline(id, errorCode = 'declined') {
       const t = known(id)
       t.payments.unshift({
         payment_attempt_id: randomBytes(16).toString('hex'),
         stored_payment_method_id: null,
         amount: t.details.totals.grand_total,
         status: 'error',
-        error_code: 'declined',
+        error_code: errorCode,
         method_details: { type: 'card', card: { type: 'visa', last4: '0002' } },
         created_at: iso(),
         captured_at: null,

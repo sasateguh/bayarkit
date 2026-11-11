@@ -49,6 +49,20 @@ describe('paddle: webhook signatures (docs "verify signatures manually" + paddle
     expect(verifyPaddleSignature(vector.body, header, vector.secret, 5, (vector.ts + 5) * 1000)).toBe(true)
   })
 
+  it('refuses a ts further in the future than the tolerance, as paddle-node-sdk does (both directions)', () => {
+    const header = `ts=${vector.ts};h1=${vector.h1}`
+    expect(verifyPaddleSignature(vector.body, header, vector.secret, 5, (vector.ts - 6) * 1000)).toBe(false)
+    expect(verifyPaddleSignature(vector.body, header, vector.secret, 5, (vector.ts - 5) * 1000)).toBe(true)
+    expect(verifyPaddleSignature(vector.body, header, vector.secret, 5, (vector.ts - 1) * 1000)).toBe(true)
+  })
+
+  it('refuses a ts too large to be a number, even when signed over exactly what the adapter hashes', () => {
+    const ts = '9'.repeat(400)
+    const signedAsParsed = hmac(vector.secret, `${Number.parseInt(ts, 10)}:${vector.body}`)
+    const header = `ts=${ts};h1=${signedAsParsed}`
+    expect(verifyPaddleSignature(vector.body, header, vector.secret, 5, vector.ts * 1000)).toBe(false)
+  })
+
   it('accepts when ONE of several h1 values matches (secret rotation), refuses when none does', () => {
     const header = paddleSignature(['pdl_ntfset_old', vector.secret], vector.body, vector.ts)
     expect(parseSignatureHeader(header).signatures).toHaveLength(2)
@@ -161,6 +175,16 @@ describe('paddle: against the fake', () => {
     expect((await gw.getPayment(created.id)).status).toBe('paid')
     t.status = 'something_new'
     expect((await gw.getPayment(created.id)).status).toBe('unknown')
+  })
+
+  it('an expired payment attempt (payment_attempt_expired) leaves the status to the transaction, never paid', async () => {
+    const created = await gw.createPayment(sampleInput())
+    fake.decline(created.id, 'payment_attempt_expired')
+    const t = fake.transaction(created.id)
+    expect(t?.payments[0]).toMatchObject({ status: 'error', error_code: 'payment_attempt_expired' })
+    expect((await gw.getPayment(created.id)).status).toBe('pending')
+    const result = await confirmPayment(gw, fake.callbackFor(created.id), sampleInput())
+    expect(result.ok).toBe(false)
   })
 
   it('a payment_failed notification claims failed; a notification of another kind is refused', async () => {
@@ -286,5 +310,7 @@ describe('paddle: hosts and config', () => {
     const at = (s: number) => paddle({ ...keys, toleranceSeconds: 60, now: () => s * 1000 })
     expect(at(ts + 60).verifyCallback(cb)).toMatchObject({ id, reference: 'R1', claimedStatus: 'paid' })
     expect(at(ts + 61).verifyCallback(cb)).toBeNull()
+    expect(at(ts - 60).verifyCallback(cb)).toMatchObject({ id, reference: 'R1' })
+    expect(at(ts - 61).verifyCallback(cb)).toBeNull()
   })
 })
