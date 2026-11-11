@@ -8,6 +8,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- Bayarcash: `verifyCallback` now returns null for any message that is not a transaction callback or a one-off return
+  landing: recurring charge callbacks (`record_type: recurring_charge`) and recurring return landings (`recurring_type`),
+  which the official SDK now verifies over their own field lists, are refused even when correctly signed (recurring is
+  not supported). The spec also notes the SDK's optional save-card checksum (not used). `@bayarkit/testing`'s Bayarcash
+  fake can produce both recurring messages, signed the SDK's way.
 - Bayarcash: the tracked documentation is now the new API reference (api-reference.bayarcash.com; the old address only
   points there). The spec records the callback retry schedule, and that Direct Debit callbacks (not supported) are
   rejected because they are signed over other fields. No change in behaviour.

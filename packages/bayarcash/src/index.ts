@@ -10,7 +10,8 @@
  * - return-URL parameters carry `payment_intent_id` and `datetime` too; the checksum covers the nine fields below.
  * Not observed: the sandbox mock bank sent no server-to-server callback in six minutes, so the 13 callback fields are
  * still the SDK's (the API reference lists the same 13). Direct Debit callbacks (also `record_type: transaction`)
- * sign other fields, so they fail the checksum here: Direct Debit is not supported.
+ * sign other fields, so they fail the checksum here: Direct Debit is not supported. Recurring payments (SDK, 10 Nov 2026:
+ * `recurring_charge` callbacks over 22 fields, recurring return landings over 12) are not supported and are refused.
  *
  * - checksum = HMAC-SHA256(API secret key, values sorted by field NAME, joined with `|`);
  * - amount = ringgit with two decimals ("25.00"), the same string in the JSON body and in the checksum;
@@ -295,6 +296,11 @@ export function bayarcash(config: BayarcashConfig): Gateway & {
         ) as Record<string, string>
         // Pre-transaction callbacks (record_type "pre_transaction") carry no transaction id: nothing to confirm yet.
         if (body.record_type === 'pre_transaction' || !body.transaction_id) return null
+        // Only a transaction callback or a one-off return landing (no record_type) is a checkout payment. Recurring
+        // charge callbacks (`record_type: recurring_charge`) and recurring return landings (`recurring_type`) sign
+        // other field lists and are not supported; any other record type is not a payment either.
+        if (body.record_type !== undefined && body.record_type !== 'transaction') return null
+        if (body.recurring_type !== undefined) return null
         const kind = body.record_type === 'transaction' ? 'transaction' : 'return'
         if (!verifyChecksum(config.secretKey, body, kind)) return null
         return {

@@ -79,15 +79,15 @@
   },
   "bayarcash/sdk-callback": {
     "url": "https://raw.githubusercontent.com/webimpian/bayarcash-php-sdk/HEAD/src/Actions/CallbackVerifications.php",
-    "sha256": "acb0a1d8f865249615f4dfb0369dafadf08d781fd8084ef5f2222a5261fc24ee",
-    "chars": 5764,
-    "since": "2026-11-07"
+    "sha256": "f863cf3415e6d3c9cac938fea9f89fd6112b06ccfb53cd158d8e9b059c7fbd07",
+    "chars": 8253,
+    "since": "2026-11-11"
   },
   "bayarcash/sdk-checksum": {
     "url": "https://raw.githubusercontent.com/webimpian/bayarcash-php-sdk/HEAD/src/Actions/ChecksumGenerator.php",
-    "sha256": "f323bfae7d70e1e4381e45380d12a6ed8b8ee0f75d826fa5be2e3370e5bd3fb3",
-    "chars": 2031,
-    "since": "2026-10-23"
+    "sha256": "2846c29db830e97ac331b59cec821ca6381077c303e423764182fbf7dd1c6d13",
+    "chars": 2670,
+    "since": "2026-11-11"
   },
   "billplz/api-docs": {
     "url": "https://support.billplz.com/api",

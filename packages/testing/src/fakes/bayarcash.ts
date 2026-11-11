@@ -4,10 +4,14 @@
  * `GET /payment-intents/{id}` answers 201 (a read, still 201) with `status` "unpaid"/"paid" and its `attempts`;
  * `/transactions/{intent id}` is 404 (an intent is not a transaction); a transaction names its portal by NAME (`portal`),
  * not by key. Callback field lists still come from the official PHP SDK: the sandbox sent no server callback.
+ * Recurring payments (SDK, 10 Nov 2026): every charge is a `record_type: recurring_charge` callback signed over 22 fixed
+ * fields, and the payer lands on the recurring return URL with 12 signed fields (`recurring_type`, no `record_type`);
+ * a field the form body drops is signed as ''. The adapter does not support recurring; these let tests prove it refuses.
  */
 import { createHmac } from 'node:crypto'
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
 import type { AddressInfo } from 'node:net'
+import type { CallbackInput } from '@bayarkit/core'
 import { type FakeGateway, flip } from './types.js'
 
 const sign = (secret: string, fields: Record<string, string>) =>
@@ -26,7 +30,53 @@ interface Intent {
   transactionId?: string
 }
 
+const RECURRING_CHARGE_FIELDS = [
+  'record_type',
+  'transaction_id',
+  'exchange_reference_number',
+  'exchange_transaction_id',
+  'order_number',
+  'currency',
+  'amount',
+  'payer_name',
+  'payer_email',
+  'payer_bank_name',
+  'status',
+  'status_description',
+  'datetime',
+  'charge_source',
+  'subscription_id',
+  'installment_id',
+  'customer_id',
+  'card_brand',
+  'card_country',
+  'card_last4',
+  'card_exp_month',
+  'card_exp_year',
+]
+const RECURRING_RETURN_FIELDS = [
+  'recurring_type',
+  'status',
+  'customer_id',
+  'subscription_id',
+  'installment_id',
+  'transaction_id',
+  'exchange_reference_number',
+  'exchange_transaction_id',
+  'currency',
+  'amount',
+  'transaction_status',
+  'transaction_status_description',
+]
+/** The SDK's fixed-field checksum: every listed field, '' when absent (null fields are dropped from a form body). */
+const signFixed = (secret: string, fields: Record<string, string>, names: string[]) =>
+  sign(secret, Object.fromEntries(names.map((k) => [k, fields[k] ?? ''])))
+
 export interface FakeBayarcash extends FakeGateway {
+  /** A successful recurring charge callback (`record_type: recurring_charge`), signed the SDK's way. */
+  recurringChargeCallback(override?: Record<string, string>): CallbackInput
+  /** The payer's landing on the recurring return URL after enrolment, signed the SDK's way. */
+  recurringReturn(override?: Record<string, string>): CallbackInput
   requests: {
     method: string
     path: string
@@ -197,6 +247,66 @@ export async function startFakeBayarcash(opts: {
       const { checksum, ...signed } = fields
       return {
         fields: { ...signed, checksum: checksum ?? sign(opts.secretKey, signed) },
+        rawBody: '',
+        headers: {},
+      }
+    },
+    recurringChargeCallback(override = {}) {
+      // order_number and payer_bank_name are always null on a recurring charge, so the form body leaves them out.
+      const fields: Record<string, string> = {
+        record_type: 'recurring_charge',
+        transaction_id: 'trx_rc_1',
+        exchange_reference_number: '1-rc-1',
+        exchange_transaction_id: 'CCrc1',
+        currency: 'MYR',
+        amount: '25.00',
+        payer_name: 'Payer',
+        payer_email: 'payer@example.test',
+        status: '3',
+        status_description: 'Approved',
+        datetime: '2026-11-10 10:00:00',
+        charge_source: 'subscription',
+        subscription_id: 'sub_1',
+        customer_id: 'cus_1',
+        card_brand: 'visa',
+        card_country: 'MY',
+        card_last4: '4242',
+        card_exp_month: '12',
+        card_exp_year: '2030',
+        ...override,
+      }
+      const { checksum, ...signed } = fields
+      return {
+        fields: {
+          ...signed,
+          checksum: checksum ?? signFixed(opts.secretKey, signed, RECURRING_CHARGE_FIELDS),
+        },
+        rawBody: '',
+        headers: {},
+      }
+    },
+    recurringReturn(override = {}) {
+      const fields: Record<string, string> = {
+        recurring_type: 'subscription',
+        status: 'active',
+        customer_id: 'cus_1',
+        subscription_id: 'sub_1',
+        installment_id: '',
+        transaction_id: 'trx_rc_1',
+        exchange_reference_number: '1-rc-1',
+        exchange_transaction_id: 'CCrc1',
+        currency: 'MYR',
+        amount: '25.00',
+        transaction_status: '3',
+        transaction_status_description: 'Approved',
+        ...override,
+      }
+      const { checksum, ...signed } = fields
+      return {
+        fields: {
+          ...signed,
+          checksum: checksum ?? signFixed(opts.secretKey, signed, RECURRING_RETURN_FIELDS),
+        },
         rawBody: '',
         headers: {},
       }

@@ -74,6 +74,37 @@ describe('bayarcash: checksum rules from the official SDK', () => {
     expect(gw.verifyCallback({ fields: signed, rawBody: '', headers: {} })).toBeNull()
   })
 
+  it('refuses a correctly signed recurring charge callback and recurring return landing (recurring is not supported)', async () => {
+    // The SDK signs these over their own fixed field lists (22 and 12); they must never pass as a one-off payment.
+    const fake = await startFakeBayarcash(keys)
+    const gw = bayarcash({ ...keys, environment: 'sandbox', baseUrl: fake.url })
+    expect(gw.verifyCallback(fake.recurringChargeCallback())).toBeNull()
+    expect(gw.verifyCallback(fake.recurringReturn())).toBeNull()
+    await fake.close()
+  })
+
+  it('treats only record_type "transaction" (or none, a one-off return landing) as a payment', () => {
+    // Fields a one-off return-URL checksum covers, under another record type or with a recurring marker: the record
+    // type, not the field list, decides what kind of message this is.
+    const gw = bayarcash({ ...keys, environment: 'sandbox' })
+    const ret: Record<string, string> = {
+      transaction_id: 'trx_1',
+      exchange_reference_number: '1-x',
+      exchange_transaction_id: 'FPX1',
+      order_number: 'A1',
+      currency: 'MYR',
+      amount: '25.00',
+      payer_bank_name: 'Test Bank',
+      status: '3',
+      status_description: 'Approved',
+    }
+    const signed = { ...ret, checksum: checksum(keys.secretKey, ret) }
+    expect(gw.verifyCallback({ fields: signed, rawBody: '', headers: {} })?.id).toBe('trx_1')
+    for (const extra of [{ record_type: 'recurring_charge' }, { recurring_type: 'subscription' }]) {
+      expect(gw.verifyCallback({ fields: { ...signed, ...extra }, rawBody: '', headers: {} })).toBeNull()
+    }
+  })
+
   it('requires payer name and email, which are part of the signed payload', async () => {
     const gw = bayarcash({ ...keys, environment: 'sandbox', baseUrl: 'http://127.0.0.1:9' })
     await expect(gw.createPayment(sampleInput({ customer: { name: 'A' } }))).rejects.toThrow(
