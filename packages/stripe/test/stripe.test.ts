@@ -70,6 +70,34 @@ describe('stripe: webhook signatures (docs "verify manually" + stripe-node Webho
     expect(gw.verifyCallback({ ...cb, headers: { 'stripe-signature': header } })).toBeNull()
   })
 
+  it('accepts a header with the optional secret/destination/payload debug entries, in any order', async () => {
+    const debug = await startFakeStripe({ ...keys, debugMetadata: true })
+    try {
+      const dgw = stripe({ ...keys, baseUrl: debug.url })
+      const id = (await dgw.createPayment(sampleInput())).id
+      const cb = debug.callbackFor(id)
+      const header = cb.headers['stripe-signature'] ?? ''
+      expect(header).toMatch(
+        /^t=\d+,v1=[0-9a-f]{64},secret=whsec_\*+\w{4},destination=we_\w+,payload=[0-9a-f]{8}$/,
+      )
+      expect(dgw.verifyCallback(cb)).toMatchObject({ id, claimedStatus: 'paid' })
+      const entries = header.split(',')
+      expect(dgw.verifyCallback(withHeader(cb, [...entries].reverse().join(',')))).toMatchObject({ id })
+      expect(parseSignatureHeader(header).signatures).toHaveLength(1)
+      expect(dgw.verifyCallback(debug.tamper(cb))).toBeNull()
+    } finally {
+      await debug.close()
+    }
+  })
+
+  it('refuses a header with debug entries but no v1 (the docs: t and at least one v1 are required)', () => {
+    const cb = fake.callbackFor(paidId)
+    const t = nowS()
+    const full = stripeSignature(keys.webhookSecret, cb.rawBody, t, { debugMetadata: true })
+    expect(gw.verifyCallback(withHeader(cb, full.replace(/,v1=[0-9a-f]+/, '')))).toBeNull()
+    expect(gw.verifyCallback(withHeader(cb, full.replace(/^t=\d+,/, '')))).toBeNull()
+  })
+
   it('refuses a timestamp older than the tolerance (default 300 s) and accepts one inside it', () => {
     const cb = fake.callbackFor(paidId)
     const old = nowS() - 301
@@ -231,8 +259,10 @@ describe('stripe: Checkout Session requests (create doc + endive changelog)', ()
     await expect(gw.createPayment(sampleInput({ expiresAt: at(29 * 60) }))).rejects.toThrow(/30 minutes/)
     await expect(gw.createPayment(sampleInput({ expiresAt: at(24 * 3600 + 60) }))).rejects.toThrow(/24 hours/)
     expect(fake.requests.length).toBe(before)
-    const ok = await gw.createPayment(sampleInput({ expiresAt: at(3600) }))
-    expect(fake.session(ok.id)?.expires_at).toBe(Math.floor(at(3600).getTime() / 1000))
+    // One Date for both sides: two calls to at() can straddle a second boundary.
+    const inAnHour = at(3600)
+    const ok = await gw.createPayment(sampleInput({ expiresAt: inAnHour }))
+    expect(fake.session(ok.id)?.expires_at).toBe(Math.floor(inAnHour.getTime() / 1000))
   })
 
   it('maps expired sessions and refuses to confirm them', async () => {

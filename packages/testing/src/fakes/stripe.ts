@@ -11,9 +11,11 @@
  * - under `2026-09-30.endive`, any `payment_method_types` key → 400, as the endive changelog states [§2.3];
  * - `expires_at` must be 30 min to 24 h after creation; default 24 h [§2.1]; minimum charge 200 sen (MYR) [§5];
  * - `Idempotency-Key`: same key + same params → the same session; same key + other params → error [§2.5];
- * - webhooks: `Stripe-Signature: t=<unix>,v1=<hex HMAC-SHA256(whsec, "<t>.<raw body>")>` [§4].
+ * - webhooks: `Stripe-Signature: t=<unix>,v1=<hex HMAC-SHA256(whsec, "<t>.<raw body>")>` [§4]. With
+ *   `debugMetadata: true` the header also carries the optional `secret`, `destination` and `payload` debug entries
+ *   the docs added in November 2026 (masked secret, endpoint id, suffix of the body's SHA-256 hex) [§4].
  */
-import { createHmac, randomBytes } from 'node:crypto'
+import { createHash, createHmac, randomBytes } from 'node:crypto'
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
 import type { AddressInfo } from 'node:net'
 import { type FakeGateway, flip } from './types.js'
@@ -36,9 +38,23 @@ export interface FakeStripe extends FakeGateway {
   session(id: string): Session | undefined
 }
 
-/** `t=<t>,v1=<hex>` exactly as Stripe builds it: HMAC-SHA256 over `${t}.${rawBody}`, key = the full `whsec_…` string. */
-export function stripeSignature(webhookSecret: string, rawBody: string, t: number): string {
-  return `t=${t},v1=${createHmac('sha256', webhookSecret).update(`${t}.${rawBody}`, 'utf8').digest('hex')}`
+/**
+ * `t=<t>,v1=<hex>` exactly as Stripe builds it: HMAC-SHA256 over `${t}.${rawBody}`, key = the full `whsec_…` string.
+ * `debugMetadata` appends the optional debug entries Stripe documents for some deliveries: the signing secret masked
+ * to its last four characters, the destination (webhook endpoint) id, and a suffix of the hex SHA-256 of the raw
+ * body. They carry no signature; a verifier must ignore them, whatever their position.
+ */
+export function stripeSignature(
+  webhookSecret: string,
+  rawBody: string,
+  t: number,
+  opts: { debugMetadata?: boolean } = {},
+): string {
+  const v1 = createHmac('sha256', webhookSecret).update(`${t}.${rawBody}`, 'utf8').digest('hex')
+  if (!opts.debugMetadata) return `t=${t},v1=${v1}`
+  const secret = `whsec_********${webhookSecret.slice(-4)}`
+  const payload = createHash('sha256').update(rawBody, 'utf8').digest('hex').slice(-8)
+  return `t=${t},v1=${v1},secret=${secret},destination=we_fakeEndpoint,payload=${payload}`
 }
 
 const randomId = (prefix: string) => `${prefix}${randomBytes(12).toString('hex')}`
@@ -46,6 +62,8 @@ const randomId = (prefix: string) => `${prefix}${randomBytes(12).toString('hex')
 export async function startFakeStripe(opts: {
   secretKey: string
   webhookSecret: string
+  /** Sign callbacks with the optional `secret`/`destination`/`payload` debug entries too (see `stripeSignature`). */
+  debugMetadata?: boolean
 }): Promise<FakeStripe> {
   const sessions = new Map<string, Session>()
   const versions = new Map<string, string>()
@@ -270,7 +288,9 @@ export async function startFakeStripe(opts: {
         rawBody,
         headers: {
           'content-type': 'application/json',
-          'stripe-signature': stripeSignature(opts.webhookSecret, rawBody, now()),
+          'stripe-signature': stripeSignature(opts.webhookSecret, rawBody, now(), {
+            debugMetadata: opts.debugMetadata ?? false,
+          }),
         },
       }
     },

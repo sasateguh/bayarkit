@@ -379,9 +379,9 @@
   },
   "stripe/checkout-create": {
     "url": "https://docs.stripe.com/api/checkout/sessions/create.md",
-    "sha256": "cf35aa0a35c1b31850be582ebb945a47abbde28cdc6efd61b2f7cb63a8de2605",
-    "chars": 21793,
-    "since": "2026-11-07"
+    "sha256": "86ae1fc940ed312de6af20824761505ea2a78870088ac93c673dacbd3a8d745c",
+    "chars": 21794,
+    "since": "2026-11-11"
   },
   "stripe/checkout-object": {
     "url": "https://docs.stripe.com/api/checkout/sessions/object.md",
@@ -397,9 +397,9 @@
   },
   "stripe/webhook-signature": {
     "url": "https://docs.stripe.com/webhooks/signature.md",
-    "sha256": "c36fa8f84ac20e5d8f18dcb5d9647ad30e1db039a6913e18183ad05fb30e6513",
-    "chars": 27491,
-    "since": "2026-11-07"
+    "sha256": "c68bd3391b2ef10e103588d0de24302606c328dc0ed238f33536cb35a7aea798",
+    "chars": 28963,
+    "since": "2026-11-11"
   },
   "toyyibpay/api-reference": {
     "url": "https://toyyibpay.com/apireference/",

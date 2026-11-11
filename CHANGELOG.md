@@ -8,6 +8,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- Stripe: `@bayarkit/testing`'s Stripe fake can sign webhooks with the optional `secret`, `destination` and `payload`
+  debug entries that Stripe now documents in the `Stripe-Signature` header (`debugMetadata: true`, or the new fourth
+  argument of `stripeSignature`). The adapter already ignored every entry other than `t` and `v1` in any order; tests
+  now lock that. The spec notes those entries and the secret-rolling window, now up to 7 days. The `checkout-create`
+  docs change was only in a curl example (no change).
 - Paddle: notification signatures are now refused when `ts` is more than `toleranceSeconds` (default 5) in the
   **future**, not only in the past, following paddle-node-sdk, which now bounds the time difference in both
   directions; a `ts` too large to be a number is refused too. TS and PHP alike. Keep the server clock in sync.
