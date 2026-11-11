@@ -8,6 +8,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- Airwallex (spec and skill only, no adapter): the OpenAPI now marks every scope as API-key and/or OAuth capable;
+  every scope the PaymentIntent / Payment Link flow uses accepts an API key, so nothing changes. The Checkout Session
+  API is still absent from the OpenAPI. senangPay: the DOKU migration FAQ changed only in its site menu (no change).
 - Stripe: `@bayarkit/testing`'s Stripe fake can sign webhooks with the optional `secret`, `destination` and `payload`
   debug entries that Stripe now documents in the `Stripe-Signature` header (`debugMetadata: true`, or the new fourth
   argument of `stripeSignature`). The adapter already ignored every entry other than `t` and `v1` in any order; tests

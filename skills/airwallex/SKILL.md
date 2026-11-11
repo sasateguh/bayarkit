@@ -33,7 +33,7 @@ The full contract with a source for every fact: `gateways/airwallex/spec.md` in 
 
 ## Official sources
 
-- [Airwallex Client API OpenAPI 3.1.0 spec (latest = 2026-08-21)](https://raw.githubusercontent.com/airwallex/airwallex-openapi/HEAD/openapi/client-api/latest/airwallex-openapi-latest.json) (fingerprint `a01647345a67`, unchanged since 2026-11-07)
+- [Airwallex Client API OpenAPI 3.1.0 spec (latest = 2026-08-21)](https://raw.githubusercontent.com/airwallex/airwallex-openapi/HEAD/openapi/client-api/latest/airwallex-openapi-latest.json) (fingerprint `c5ad0c147ccb`, unchanged since 2026-11-11)
 - [Listen for webhook events (delivery headers + Check webhook signatures, Markdown export)](https://www.airwallex.com/docs/developer-tools/webhooks/listen-for-webhook-events.md) (fingerprint `20b68088bfb6`, unchanged since 2026-11-07)
 - [Instructions for AI agents - Payments integration notes (amount units, HPP successUrl, hosts)](https://www.airwallex.com/docs/developer-tools/ai-agent-payments-integration.md) (fingerprint `29dd59819b90`, unchanged since 2026-10-23)
 - [FPX payment method properties (MYR, min/max, refunds)](https://www.airwallex.com/docs/payments/payment-methods/apac/fpx.md) (fingerprint `c585148f4ae2`, unchanged since 2026-11-07)

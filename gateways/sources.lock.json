@@ -61,9 +61,9 @@
   },
   "airwallex/openapi": {
     "url": "https://raw.githubusercontent.com/airwallex/airwallex-openapi/HEAD/openapi/client-api/latest/airwallex-openapi-latest.json",
-    "sha256": "a01647345a67dafc613bfe9abd29548677555723a09245c9da565181a61f3563",
-    "chars": 4031153,
-    "since": "2026-11-07"
+    "sha256": "c5ad0c147ccbd803989c07da6d833918b9c6ce8bad9a6286dbf38fa60f4d8595",
+    "chars": 4067704,
+    "since": "2026-11-11"
   },
   "airwallex/webhooks-md": {
     "url": "https://www.airwallex.com/docs/developer-tools/webhooks/listen-for-webhook-events.md",
@@ -373,9 +373,9 @@
   },
   "senangpay/senangpay-doku-faq": {
     "url": "https://senangpay.com/doku-migration-faq/",
-    "sha256": "9a3831e47c48f5a2ec19bf0cb466edce3b6b4e699d0447d236ce3d8abd4a7f4e",
-    "chars": 19521,
-    "since": "2026-11-07"
+    "sha256": "1d41bb007669cc21eaeb24e41ae9f82ab280d4a8247fea2ada14218a0f4e8042",
+    "chars": 19569,
+    "since": "2026-11-11"
   },
   "stripe/checkout-create": {
     "url": "https://docs.stripe.com/api/checkout/sessions/create.md",
