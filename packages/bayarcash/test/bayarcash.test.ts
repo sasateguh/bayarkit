@@ -112,11 +112,23 @@ describe('bayarcash: checksum rules from the official SDK', () => {
     )
   })
 
-  it('refuses an order number over 30 characters before calling the API (measured sandbox limit; a UUID does not fit)', async () => {
+  it('refuses an order number the API would refuse (over 30 characters, a UUID, measured format, edge spaces) before calling it', async () => {
     const fake = await startFakeBayarcash(keys)
     const gw = bayarcash({ ...keys, environment: 'sandbox', baseUrl: fake.url })
     const sent = fake.requests.length
-    for (const reference of ['x'.repeat(31), '550e8400-e29b-41d4-a716-446655440000']) {
+    const refused = [
+      'x'.repeat(31),
+      '550e8400-e29b-41d4-a716-446655440000',
+      'INV#1',
+      'A&B',
+      'Q?1',
+      'é1',
+      'A\tB',
+      ' R1',
+      'R1 ',
+      '',
+    ]
+    for (const reference of refused) {
       await expect(gw.createPayment(sampleInput({ reference }))).rejects.toMatchObject({
         code: 'INVALID_REFERENCE',
       })
@@ -129,7 +141,7 @@ describe('bayarcash: checksum rules from the official SDK', () => {
     await fake.close()
   })
 
-  it('fake answers an over-long order number with the measured 422', async () => {
+  it('fake answers order number errors with the measured 422 messages', async () => {
     const fake = await startFakeBayarcash(keys)
     const res = await fetch(`${fake.url}/payment-intents`, {
       method: 'POST',
@@ -139,6 +151,17 @@ describe('bayarcash: checksum rules from the official SDK', () => {
     expect(res.status).toBe(422)
     const json = (await res.json()) as { errors: { order_number: string[] } }
     expect(json.errors.order_number[0]).toMatch(/not be greater than 30 characters/)
+    const post = async (order_number: string) =>
+      (await (
+        await fetch(`${fake.url}/payment-intents`, {
+          method: 'POST',
+          headers: { authorization: `Bearer ${keys.token}`, 'content-type': 'application/json' },
+          body: JSON.stringify({ portal_key: keys.portalKey, order_number, checksum: 'x' }),
+        })
+      ).json()) as { message: string }
+    expect((await post('INV#1')).message).toBe('The order number field format is invalid.')
+    expect((await post('')).message).toBe('Missing Order Number.')
+    expect((await post('R1')).message).toBe('Data checksum mismatch.')
     await fake.close()
   })
 
@@ -185,7 +208,7 @@ describe('bayarcash: only this portal', () => {
   // Measured 27 Oct 2026: a sandbox transaction names its portal by NAME (`portal`), never by key.
   const named = (portal: string, portals = [{ portal_key: 'portal-a', portal_name: 'Shop A' }]) =>
     make(async (u) =>
-      String(u).endsWith('/portals')
+      new URL(String(u)).pathname.endsWith('/portals')
         ? Response.json({ data: portals })
         : Response.json({
             id: 'trx_1',
@@ -208,6 +231,81 @@ describe('bayarcash: only this portal', () => {
     ).rejects.toMatchObject({
       code: 'FOREIGN_PORTAL',
     })
+  })
+})
+
+describe('bayarcash: GET /portals is paginated (measured 11 Nov 2026: 15 per page, newest first)', () => {
+  it('finds the portal on a later page when the host ignores portal_key and per_page', async () => {
+    const portals = [
+      ...Array.from({ length: 50 }, (_, i) => ({ portal_key: `o${i}`, portal_name: `Other ${i}` })),
+      { portal_key: 'portal-a', portal_name: 'Shop A' },
+    ]
+    const asked: string[] = []
+    const gw = bayarcash({
+      token: 't',
+      secretKey: 's',
+      portalKey: 'portal-a',
+      environment: 'sandbox',
+      baseUrl: 'https://bc.test',
+      fetch: async (u) => {
+        const url = new URL(String(u))
+        if (!url.pathname.endsWith('/portals'))
+          return Response.json({
+            id: 'trx_1',
+            order_number: 'R1',
+            amount: 10.5,
+            currency: 'MYR',
+            status: 3,
+            portal: 'Shop A',
+          })
+        asked.push(url.search)
+        const page = Number(url.searchParams.get('page')) || 1
+        return Response.json({ data: portals.slice((page - 1) * 15, page * 15), meta: { last_page: 4 } })
+      },
+    })
+    expect((await gw.getPayment('trx_1')).status).toBe('paid')
+    expect(asked).toHaveLength(4)
+    expect(asked[0]).toContain('portal_key=portal-a')
+    expect((await gw.listPortals()).length).toBe(51)
+  })
+
+  it('confirms against an account with 200 other portals, and lists them all', async () => {
+    const keys = { token: 't', secretKey: 's', portalKey: 'pk' }
+    const fake = await startFakeBayarcash({ ...keys, otherPortals: 200 })
+    const gw = bayarcash({ ...keys, environment: 'sandbox', baseUrl: fake.url })
+    const p = await gw.createPayment(sampleInput())
+    fake.markPaid(p.id)
+    expect((await gw.getPayment(p.id)).status).toBe('paid')
+    expect((await gw.listPortals()).length).toBe(201)
+    await fake.close()
+  })
+
+  it('does not cache a missing portal (it may be created later)', async () => {
+    let created = false
+    const gw = bayarcash({
+      token: 't',
+      secretKey: 's',
+      portalKey: 'portal-a',
+      environment: 'sandbox',
+      baseUrl: 'https://bc.test',
+      fetch: async (u) =>
+        new URL(String(u)).pathname.endsWith('/portals')
+          ? Response.json({
+              data: created ? [{ portal_key: 'portal-a', portal_name: 'Shop A' }] : [],
+              meta: { last_page: 1 },
+            })
+          : Response.json({
+              id: 'trx_1',
+              order_number: 'R1',
+              amount: 10.5,
+              currency: 'MYR',
+              status: 3,
+              portal: 'Shop A',
+            }),
+    })
+    await expect(gw.getPayment('trx_1')).rejects.toMatchObject({ code: 'FOREIGN_PORTAL' })
+    created = true
+    expect((await gw.getPayment('trx_1')).status).toBe('paid')
   })
 })
 

@@ -100,8 +100,21 @@ const RETURN_FIELDS = [
   'status_description',
 ] as const
 
-/** Longest `order_number` the API accepts (MEASURED 11 Nov 2026; undocumented). */
+/**
+ * `order_number` rules, MEASURED on the sandbox 11 Nov 2026 (the API reference documents none of them):
+ * - at most 30 characters: 31+ → 422 "The order number field must not be greater than 30 characters." (a UUID is 36);
+ * - ASCII letters, digits, space and `"()*,-./:;@\_\`~` only: `!#$%&'+<=>?[]^{|}`, tab and any non-ASCII letter
+ *   (é, emoji) → 422 "The order number field format is invalid.";
+ * - a leading or trailing space → 422 "Data checksum mismatch." (the server trims before it checks the checksum);
+ * - empty → 422 "Missing Order Number."; the same order_number may be sent again (no uniqueness check).
+ */
 export const REFERENCE_MAX = 30
+export const REFERENCE_PUNCTUATION = '"()*,-./:;@\\_`~'
+const REFERENCE = new RegExp(
+  `^(?! )[A-Za-z0-9 ${REFERENCE_PUNCTUATION.replace(/[\\\-\]]/g, '\\$&')}]{1,${REFERENCE_MAX}}(?<! )$`,
+)
+/** Safety cap on GET /portals pages walked (100 per page). */
+const PORTAL_PAGES_MAX = 50
 
 export function checksum(secretKey: string, fields: Record<string, string>): string {
   return createHmac('sha256', secretKey)
@@ -161,27 +174,40 @@ export function bayarcash(config: BayarcashConfig): Gateway & {
     return { res, json }
   }
 
+  // GET /portals is paginated (15 per page by default, newest first; MEASURED 11 Nov 2026: 174 portals over 12 pages
+  // on the shared sandbox, ours on page 4). `portal_key` filters it (undocumented, measured) and `per_page` raises the
+  // page size; every page is still checked by key, and pages are walked, in case a host ignores either parameter.
+  async function* portalPages(query: Record<string, string> = {}) {
+    for (let page = 1; page <= PORTAL_PAGES_MAX; page++) {
+      const qs = new URLSearchParams({ ...query, per_page: '100', page: String(page) })
+      const { res, json } = await request(`/portals?${qs}`, { headers: headers() })
+      const data = json?.data
+      if (!res.ok || !Array.isArray(data))
+        throw new GatewayError(`portals HTTP ${res.status}`, 'bayarcash', res.status)
+      yield { status: res.status, data: data as Record<string, unknown>[] }
+      const meta = json?.meta as { last_page?: unknown } | undefined
+      const last = Number(meta?.last_page)
+      if (!data.length || !Number.isFinite(last) || page >= last) return
+    }
+  }
+
   // The configured portal's NAME, read once: transactions name their portal, the secret is account-wide.
   let portalName: Promise<string> | undefined
   const ourPortalName = () => {
     portalName ??= (async () => {
-      const { res, json } = await request('/portals', { headers: headers() })
-      const data = json?.data
-      if (!res.ok || !Array.isArray(data)) {
+      let status = 0
+      try {
+        for await (const page of portalPages({ portal_key: config.portalKey })) {
+          status = page.status
+          const ours = page.data.find((p) => p?.portal_key === config.portalKey)
+          if (ours && typeof ours.portal_name === 'string') return ours.portal_name
+        }
+      } catch (e) {
         portalName = undefined // a failed lookup is retried on the next call
-        throw new GatewayError(`portals HTTP ${res.status}`, 'bayarcash', res.status)
+        throw e
       }
-      const ours = data.find((p) => (p as Record<string, unknown>)?.portal_key === config.portalKey) as
-        | Record<string, unknown>
-        | undefined
-      if (!ours || typeof ours.portal_name !== 'string')
-        throw new GatewayError(
-          'portal key not found in this account',
-          'bayarcash',
-          res.status,
-          'FOREIGN_PORTAL',
-        )
-      return ours.portal_name
+      portalName = undefined // the portal may be created later; do not cache a miss
+      throw new GatewayError('portal key not found in this account', 'bayarcash', status, 'FOREIGN_PORTAL')
     })()
     return portalName
   }
@@ -243,16 +269,10 @@ export function bayarcash(config: BayarcashConfig): Gateway & {
       }
       if ((input.currency ?? 'MYR') !== 'MYR')
         throw new GatewayError('only MYR is supported', 'bayarcash', 0, 'CURRENCY')
-      // MEASURED 11 Nov 2026 (sandbox): 30 characters → 201, 31+ → 422 "The order number field must not be greater than
-      // 30 characters." The API reference gives no limit. A UUID (36) does not fit. Sent as given, never cut: confirmPayment
-      // matches the reference later.
-      if (
-        typeof input.reference !== 'string' ||
-        !input.reference ||
-        [...input.reference].length > REFERENCE_MAX
-      ) {
+      // Sent as given, never trimmed or cut: confirmPayment matches the reference later.
+      if (typeof input.reference !== 'string' || !REFERENCE.test(input.reference)) {
         throw new GatewayError(
-          `reference must be 1–${REFERENCE_MAX} characters (Bayarcash order_number limit)`,
+          `reference must be 1–${REFERENCE_MAX} characters of A–Z, a–z, 0–9, space and ${REFERENCE_PUNCTUATION}, not starting or ending with a space (Bayarcash order_number rules)`,
           'bayarcash',
           0,
           'INVALID_REFERENCE',
@@ -333,11 +353,9 @@ export function bayarcash(config: BayarcashConfig): Gateway & {
     },
 
     async listPortals() {
-      const { res, json } = await request('/portals', { headers: headers() })
-      const data = json?.data
-      if (!res.ok || !Array.isArray(data))
-        throw new GatewayError(`portals HTTP ${res.status}`, 'bayarcash', res.status)
-      return (data as Record<string, unknown>[]).map((p) => ({
+      const all: Record<string, unknown>[] = []
+      for await (const page of portalPages()) all.push(...page.data)
+      return all.map((p) => ({
         portalKey: String(p.portal_key),
         name: String(p.portal_name),
         channels: ((p.payment_channels as { id: number; name: string }[] | undefined) ?? []).map((c) => ({

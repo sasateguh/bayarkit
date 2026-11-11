@@ -30,6 +30,9 @@ The full contract with a source for every fact: `gateways/bayarcash/spec.md` in 
 - The checkout id is a payment intent (`pi_…`), not a transaction: `GET /transactions/pi_…` is 404. Read it with `GET /payment-intents/{id}` (status and attempts), which answers 201 even though it is a read. *(gateways/bayarcash/spec.md (measured))*
 - The checksum sorts values by field NAME and joins them with `|`; a `payment_channel` list is joined with `,` inside it. *(official PHP SDK ChecksumGenerator + tests)*
 - `amount` is ringgit with two decimals ("25.00") in both the JSON body and the checksum; a callback may carry it as a number. *(official PHP SDK tests)*
+- `order_number` (the reference) takes at most 30 characters of ASCII letters, digits, space and `` "()*,-./:;@\_`~ ``, with no leading or trailing space: a UUID (36) or `#`, `&`, `?`, `+` or a non-ASCII letter is refused with 422. None of this is in the API reference; the adapter refuses such a reference before the request (`INVALID_REFERENCE`). *(gateways/bayarcash/spec.md (measured))*
+- The Personal Access Token is long (984 characters on the sandbox): keep it in a TEXT column or a secret store, not VARCHAR(255); a token cut to 255 characters answers 401 `Unauthenticated.` *(gateways/bayarcash/spec.md (measured))*
+- `GET /portals` is paginated (15 per page, newest first). An integration that reads only the first page loses its portal once the account has more; the adapter asks by `portal_key` and walks every page. *(gateways/bayarcash/spec.md (measured))*
 
 ## Rules that apply to every Malaysian gateway
 

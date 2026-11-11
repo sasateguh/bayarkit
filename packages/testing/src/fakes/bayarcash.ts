@@ -91,6 +91,8 @@ export async function startFakeBayarcash(opts: {
   portalKey: string
   /** Shown as `portal` on every transaction and in GET /portals. */
   portalName?: string
+  /** Other portals in the account, listed BEFORE this one (newest first, as measured), to exercise pagination. */
+  otherPortals?: number
 }): Promise<FakeBayarcash> {
   const portalName = opts.portalName ?? 'Fake portal'
   let n = 0
@@ -118,23 +120,37 @@ export async function startFakeBayarcash(opts: {
         return send(401, { message: 'Unauthenticated.' })
 
       if (req.method === 'POST' && path === '/payment-intents') {
-        // MEASURED 11 Nov 2026 on the sandbox: an order_number of 31+ characters (a UUID too) → this exact 422 (whether the
-        // sandbox checks it before the checksum is not measured; the fake does).
-        if ([...String(body.order_number ?? '')].length > 30) {
-          const m = 'The order number field must not be greater than 30 characters.'
-          return send(422, { code: 422, message: m, errors: { order_number: [m] } })
+        // order_number rules MEASURED on the sandbox 11 Nov 2026 (undocumented). Field errors come before the checksum
+        // (measured: 31 characters with a wrong checksum → the length error first); the server trims before checking
+        // the checksum, so a leading or trailing space → "Data checksum mismatch.".
+        const order = String(body.order_number ?? '').trim()
+        const orderErrors: string[] = []
+        if (!order) orderErrors.push('Missing Order Number.')
+        else {
+          if (!/^[A-Za-z0-9 "()*,\-./:;@\\_`~]*$/.test(order))
+            orderErrors.push('The order number field format is invalid.')
+          if ([...order].length > 30)
+            orderErrors.push('The order number field must not be greater than 30 characters.')
+        }
+        if (orderErrors.length) {
+          const more = orderErrors.length > 1 ? ` (and ${orderErrors.length - 1} more error)` : ''
+          return send(422, {
+            code: 422,
+            message: `${orderErrors[0]}${more}`,
+            errors: { order_number: orderErrors },
+          })
         }
         const channels = Array.isArray(body.payment_channel)
           ? body.payment_channel.join(',')
           : String(body.payment_channel)
         const expected = sign(opts.secretKey, {
           payment_channel: channels,
-          order_number: String(body.order_number ?? ''),
+          order_number: order,
           amount: String(body.amount ?? ''),
           payer_name: String(body.payer_name ?? ''),
           payer_email: String(body.payer_email ?? ''),
         })
-        if (body.checksum !== expected) return send(422, { message: 'Invalid checksum.' })
+        if (body.checksum !== expected) return send(422, { message: 'Data checksum mismatch.' })
         if (body.portal_key !== opts.portalKey) return send(422, { message: 'Invalid portal key.' })
         const id = `pi_fake${++n}`
         intents.set(id, { id, body })
@@ -191,15 +207,24 @@ export async function startFakeBayarcash(opts: {
           payment_intent_id: [...intents.values()].find((i) => i.transactionId === transaction_id)?.id,
         })
       }
-      if (req.method === 'GET' && path === '/portals') {
+      if (req.method === 'GET' && (path === '/portals' || path.startsWith('/portals?'))) {
+        // MEASURED 11 Nov 2026: paginated, 15 per page unless `per_page`; `portal_key` filters (undocumented).
+        const q = new URL(path, 'http://x').searchParams
+        const all = [
+          ...Array.from({ length: opts.otherPortals ?? 0 }, (_, i) => ({
+            portal_key: `other${i}`,
+            portal_name: `Other portal ${i}`,
+            payment_channels: [{ id: 1, name: 'FPX' }],
+          })),
+          { portal_key: opts.portalKey, portal_name: portalName, payment_channels: [{ id: 1, name: 'FPX' }] },
+        ]
+        const filtered = q.has('portal_key') ? all.filter((p) => p.portal_key === q.get('portal_key')) : all
+        const per = Math.max(1, Number(q.get('per_page')) || 15)
+        const page = Math.max(1, Number(q.get('page')) || 1)
+        const last = Math.max(1, Math.ceil(filtered.length / per))
         return send(200, {
-          data: [
-            {
-              portal_key: opts.portalKey,
-              portal_name: portalName,
-              payment_channels: [{ id: 1, name: 'FPX' }],
-            },
-          ],
+          data: filtered.slice((page - 1) * per, page * per),
+          meta: { current_page: page, last_page: last, per_page: per, total: filtered.length },
         })
       }
       send(404, { message: 'Not found.' })

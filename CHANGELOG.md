@@ -8,11 +8,19 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
-- Bayarcash: `createPayment` now refuses a `reference` longer than 30 characters with `INVALID_REFERENCE` before
-  calling the API. The sandbox answers 422 "The order number field must not be greater than 30 characters." for 31 or
-  more (a UUID is 36); the API reference states no limit (measured 11 Nov 2026). `@bayarkit/testing`'s Bayarcash fake
-  answers the same 422. The spec also notes the Personal Access Token length (984 characters on the sandbox): store
-  it in a TEXT column, not VARCHAR(255).
+- Bayarcash: payment checks no longer fail for accounts with more than 15 portals. `GET /portals` is paginated
+  (15 per page, newest first) and the adapter read only the first page, so once the configured portal was not on it,
+  every `getPayment` / `confirmPayment` failed with `FOREIGN_PORTAL` (closed, never a false "paid"). The adapter now
+  asks for that portal by `portal_key` with `per_page=100` and walks every page, checking each portal by key;
+  `listPortals()` returns every page. A missing portal is no longer cached for the life of the gateway. Measured on the
+  sandbox 11 Nov 2026 (174 portals, ours on page 4). `@bayarkit/testing`'s fake paginates the same way
+  (`otherPortals` option).
+- Bayarcash: `createPayment` refuses a `reference` the API would refuse, with `INVALID_REFERENCE`, before calling it:
+  more than 30 characters (a UUID is 36), any character outside ASCII letters, digits, space and ``"()*,-./:;@\_`~``,
+  or a leading/trailing space (the server trims it, then the checksum fails). None of this is in the API reference;
+  all of it was measured on the sandbox 11 Nov 2026, and a paid payment with such punctuation confirmed end to end.
+  The fake answers with the same 422 messages. The spec also notes the Personal Access Token length (984 characters
+  on the sandbox): store it in a TEXT column, not VARCHAR(255).
 - Airwallex (spec and skill only, no adapter): the OpenAPI now marks every scope as API-key and/or OAuth capable;
   every scope the PaymentIntent / Payment Link flow uses accepts an API key, so nothing changes. The Checkout Session
   API is still absent from the OpenAPI. senangPay: the DOKU migration FAQ changed only in its site menu (no change).

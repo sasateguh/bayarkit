@@ -114,6 +114,21 @@
           "text": "`amount` is ringgit with two decimals (\"25.00\") in both the JSON body and the checksum; a callback may carry it as a number.",
           "text_ms": "`amount` ialah ringgit dengan dua tempat perpuluhan (\"25.00\") dalam badan JSON dan dalam checksum; callback mungkin membawanya sebagai nombor.",
           "source": "official PHP SDK tests"
+        },
+        {
+          "text": "`order_number` (the reference) takes at most 30 characters of ASCII letters, digits, space and `` \"()*,-./:;@\\_`~ ``, with no leading or trailing space: a UUID (36) or `#`, `&`, `?`, `+` or a non-ASCII letter is refused with 422. None of this is in the API reference; the adapter refuses such a reference before the request (`INVALID_REFERENCE`).",
+          "text_ms": "`order_number` (rujukan) menerima paling banyak 30 aksara huruf ASCII, digit, ruang dan `` \"()*,-./:;@\\_`~ ``, tanpa ruang di awal atau hujung: UUID (36), atau `#`, `&`, `?`, `+` atau huruf bukan ASCII ditolak dengan 422. Semua ini tiada dalam rujukan API; adapter menolak rujukan begitu sebelum permintaan (`INVALID_REFERENCE`).",
+          "source": "gateways/bayarcash/spec.md (measured)"
+        },
+        {
+          "text": "The Personal Access Token is long (984 characters on the sandbox): keep it in a TEXT column or a secret store, not VARCHAR(255); a token cut to 255 characters answers 401 `Unauthenticated.`",
+          "text_ms": "Personal Access Token panjang (984 aksara pada sandbox): simpan dalam lajur TEXT atau stor rahsia, bukan VARCHAR(255); token yang dipotong ke 255 aksara menjawab 401 `Unauthenticated.`",
+          "source": "gateways/bayarcash/spec.md (measured)"
+        },
+        {
+          "text": "`GET /portals` is paginated (15 per page, newest first). An integration that reads only the first page loses its portal once the account has more; the adapter asks by `portal_key` and walks every page.",
+          "text_ms": "`GET /portals` dibahagi kepada halaman (15 sehalaman, terbaru dahulu). Integrasi yang membaca halaman pertama sahaja kehilangan portalnya bila akaun ada lebih banyak; adapter bertanya ikut `portal_key` dan melalui setiap halaman.",
+          "source": "gateways/bayarcash/spec.md (measured)"
         }
       ]
     },

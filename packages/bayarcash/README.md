@@ -35,6 +35,9 @@ included), and `npx bayarkit-fake bayarcash` runs it as a server for tests in ot
 - The checkout id is a payment intent (`pi_…`), not a transaction: `GET /transactions/pi_…` is 404. Read it with `GET /payment-intents/{id}` (status and attempts), which answers 201 even though it is a read. (gateways/bayarcash/spec.md (measured))
 - The checksum sorts values by field NAME and joins them with `|`; a `payment_channel` list is joined with `,` inside it. (official PHP SDK ChecksumGenerator + tests)
 - `amount` is ringgit with two decimals ("25.00") in both the JSON body and the checksum; a callback may carry it as a number. (official PHP SDK tests)
+- `order_number` (the reference) takes at most 30 characters of ASCII letters, digits, space and `` "()*,-./:;@\_`~ ``, with no leading or trailing space: a UUID (36) or `#`, `&`, `?`, `+` or a non-ASCII letter is refused with 422. None of this is in the API reference; the adapter refuses such a reference before the request (`INVALID_REFERENCE`). (gateways/bayarcash/spec.md (measured))
+- The Personal Access Token is long (984 characters on the sandbox): keep it in a TEXT column or a secret store, not VARCHAR(255); a token cut to 255 characters answers 401 `Unauthenticated.` (gateways/bayarcash/spec.md (measured))
+- `GET /portals` is paginated (15 per page, newest first). An integration that reads only the first page loses its portal once the account has more; the adapter asks by `portal_key` and walks every page. (gateways/bayarcash/spec.md (measured))
 
 The full contract, with a source for every fact: [gateways/bayarcash/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/bayarcash/spec.md).
 
@@ -68,6 +71,9 @@ pelayan.
 - Id checkout ialah payment intent (`pi_…`), bukan transaksi: `GET /transactions/pi_…` memberi 404. Baca dengan `GET /payment-intents/{id}` (status dan percubaan), yang menjawab 201 walaupun ia bacaan. (gateways/bayarcash/spec.md (measured))
 - Checksum mengisih nilai mengikut NAMA medan dan menyambungnya dengan `|`; senarai `payment_channel` disambung dengan `,` di dalamnya. (official PHP SDK ChecksumGenerator + tests)
 - `amount` ialah ringgit dengan dua tempat perpuluhan ("25.00") dalam badan JSON dan dalam checksum; callback mungkin membawanya sebagai nombor. (official PHP SDK tests)
+- `order_number` (rujukan) menerima paling banyak 30 aksara huruf ASCII, digit, ruang dan `` "()*,-./:;@\_`~ ``, tanpa ruang di awal atau hujung: UUID (36), atau `#`, `&`, `?`, `+` atau huruf bukan ASCII ditolak dengan 422. Semua ini tiada dalam rujukan API; adapter menolak rujukan begitu sebelum permintaan (`INVALID_REFERENCE`). (gateways/bayarcash/spec.md (measured))
+- Personal Access Token panjang (984 aksara pada sandbox): simpan dalam lajur TEXT atau stor rahsia, bukan VARCHAR(255); token yang dipotong ke 255 aksara menjawab 401 `Unauthenticated.` (gateways/bayarcash/spec.md (measured))
+- `GET /portals` dibahagi kepada halaman (15 sehalaman, terbaru dahulu). Integrasi yang membaca halaman pertama sahaja kehilangan portalnya bila akaun ada lebih banyak; adapter bertanya ikut `portal_key` dan melalui setiap halaman. (gateways/bayarcash/spec.md (measured))
 
 Kontrak penuh, dengan sumber bagi setiap fakta: [gateways/bayarcash/spec.md](https://github.com/sasateguh/bayarkit/blob/main/gateways/bayarcash/spec.md).
 Dokumentasi penuh: [README.ms.md](https://github.com/sasateguh/bayarkit/blob/main/README.ms.md).
