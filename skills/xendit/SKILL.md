@@ -45,7 +45,7 @@ The full contract with a source for every fact: `gateways/xendit/spec.md` in the
 
 ## Official sources
 
-- [Create a session (Payment Sessions API, embedded OpenAPI 3.0)](https://docs.xendit.co/apidocs/create-session.md) (fingerprint `6d22c7f5951a`, unchanged since 2026-11-07)
+- [Create a session (Payment Sessions API, embedded OpenAPI 3.0)](https://docs.xendit.co/apidocs/create-session.md) (fingerprint `25eb022f0bfc`, unchanged since 2026-11-11)
 - [Payment webhook notification (embedded OpenAPI, x-callback-token header)](https://docs.xendit.co/apidocs/payment-webhook-notification.md) (fingerprint `19f60bc606f9`, unchanged since 2026-11-07)
 - [xendit/xendit-ai skill: auth, test mode, webhooks](https://raw.githubusercontent.com/xendit/xendit-ai/HEAD/skills/xendit-integrate/SKILL.md) (fingerprint `6158785d9214`, unchanged since 2026-10-23)
 - [xendit/xendit-ai skill: Sessions API reference](https://raw.githubusercontent.com/xendit/xendit-ai/HEAD/skills/xendit-integrate/references/sessions.md) (fingerprint `d87025444d78`, unchanged since 2026-11-07)

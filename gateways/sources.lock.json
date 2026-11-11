@@ -409,9 +409,9 @@
   },
   "xendit/create-session-openapi": {
     "url": "https://docs.xendit.co/apidocs/create-session.md",
-    "sha256": "6d22c7f5951aa395a8135f88c34de46256ecc4cb94025c7a7b6450041725f3bb",
-    "chars": 42200,
-    "since": "2026-11-07"
+    "sha256": "25eb022f0bfca3b04a7f053e0a92af1052abf11949541515da9fe56e42c25b69",
+    "chars": 42185,
+    "since": "2026-11-11"
   },
   "xendit/payment-webhook-openapi": {
     "url": "https://docs.xendit.co/apidocs/payment-webhook-notification.md",
