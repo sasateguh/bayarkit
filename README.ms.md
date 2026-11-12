@@ -137,10 +137,10 @@ gateway; tiada adapter yang memangkas atau memotongnya.
 | Curlec          | 1–40 aksara ASCII boleh cetak                                                                    |
 | 2C2P            | 1–50: `A–Z a–z 0–9`                                                                              |
 | Xendit          | 1–64                                                                                             |
-| Billplz         | 1–120                                                                                            |
-| Stripe, Paddle  | 1–200                                                                                            |
+| Billplz         | 1–120, sebarang aksara (diukur)                                                                  |
+| Stripe, Paddle  | 1–200, sebarang aksara (diukur)                                                                  |
 | Gkash           | 1–255: `A–Z 0–9 . _ -` (huruf besar: Gkash tidak menandatangani huruf besar/kecil)               |
-| HitPay, PayPal  | 1–255                                                                                            |
+| HitPay, PayPal  | 1–255 (PayPal: sebarang aksara, diukur)                                                          |
 | CHIP, toyyibPay | tidak dihadkan oleh adapter                                                                      |
 
 ### Paddle dan PayPal (menjual ke luar negara)

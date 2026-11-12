@@ -108,6 +108,7 @@ Source: https://docs.stripe.com/payments/fpx/accept-a-payment?payment-ui=checkou
 | Keys can be pruned once they're **at least 24 hours old**. Reusing a key after pruning creates a new request.                                       | same                                            |
 | Reusing a key with different parameters gives an error. Validation failures and concurrent-conflict requests are NOT saved, so they can be retried. | same                                            |
 | All v1 `POST`s accept the key. Sending it on `GET`/`DELETE` has no effect.                                                                          | same                                            |
+| bayarkit defaults the key to the reference. A header carries printable ASCII and is trimmed: a reference with an emoji threw in `fetch`, and `" R1"` / `"R1 "` collided (`idempotency_error`). Such a reference now gets `ref-<sha256>`. `client_reference_id` itself took an emoji, `#&?/+%` and edge spaces and came back unchanged. MEASURED 12 Nov 2026 (test mode)| [MEASURED]                                      |
 
 ### 2.6 Response (Checkout Session object)
 

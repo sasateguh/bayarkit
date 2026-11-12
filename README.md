@@ -135,10 +135,10 @@ gateway; no adapter trims or cuts one.
 | Curlec          | 1–40 printable ASCII                                                                    |
 | 2C2P            | 1–50: `A–Z a–z 0–9`                                                                     |
 | Xendit          | 1–64                                                                                    |
-| Billplz         | 1–120                                                                                   |
-| Stripe, Paddle  | 1–200                                                                                   |
+| Billplz         | 1–120, any characters (measured)                                                        |
+| Stripe, Paddle  | 1–200, any characters (measured)                                                        |
 | Gkash           | 1–255: `A–Z 0–9 . _ -` (upper case: Gkash does not sign letter case)                    |
-| HitPay, PayPal  | 1–255                                                                                   |
+| HitPay, PayPal  | 1–255 (PayPal: any characters, measured)                                                |
 | CHIP, toyyibPay | not limited by the adapter                                                              |
 
 ### Paddle and PayPal (selling abroad)

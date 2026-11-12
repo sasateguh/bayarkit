@@ -230,6 +230,23 @@ describe('stripe: Checkout Session requests (create doc + endive changelog)', ()
     expect(fake.requests.at(-1)?.headers['idempotency-key']).toBe(input.reference)
   })
 
+  it('derives a header-safe idempotency key from a reference an HTTP header cannot carry (measured 12 Nov 2026)', async () => {
+    const gw = stripe({ ...keys, baseUrl: fake.url })
+    const keysSent: string[] = []
+    for (const reference of ['R1 😀', ' R1', 'R1 ']) {
+      const created = await gw.createPayment(sampleInput({ reference }))
+      expect(created.id).not.toBe('')
+      keysSent.push(String(fake.requests.at(-1)?.headers['idempotency-key']))
+    }
+    for (const k of keysSent) expect(k).toMatch(/^ref-[0-9a-f]{64}$/)
+    expect(new Set(keysSent).size).toBe(3)
+    await gw.createPayment(sampleInput({ reference: ' R1' }))
+    expect(fake.requests.at(-1)?.headers['idempotency-key']).toBe(keysSent[1])
+    await expect(gw.createPayment(sampleInput({ idempotencyKey: 'kunci 😀' }))).rejects.toMatchObject({
+      code: 'INVALID_KEY',
+    })
+  })
+
   it('sends payment_method_types[] only when pinned to a version before endive', async () => {
     const gw = stripe({ ...keys, baseUrl: fake.url, apiVersion: '2026-08-26.dahlia' })
     await gw.createPayment(sampleInput())

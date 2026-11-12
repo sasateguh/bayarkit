@@ -8,8 +8,15 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- Stripe: a reference an HTTP header cannot carry no longer breaks `createPayment`. The reference was the default
+  `Idempotency-Key`, so a reference with an emoji threw inside `fetch` (reported as "unreachable") and `" R1"` /
+  `"R1 "` were sent as the same key (headers are trimmed), giving `idempotency_error`. Such a reference now gets a
+  derived key (`ref-<sha256>`, still one key per reference); a plain reference is still sent as the key. An explicit
+  `idempotencyKey` outside printable ASCII is refused with `INVALID_KEY`. Measured in Stripe test mode 12 Nov 2026,
+  together with the reference limits of Stripe, Billplz, Paddle and PayPal (any characters up to their length).
 - README "Choosing a reference" (EN + BM): the reference rule of every adapter, and the one shape all of them accept
-  (1–20 upper-case letters and digits; a UUID is refused by seven adapters). `@bayarkit/testing`'s conformance suite,
+  (1–20 upper-case letters and digits; a UUID is refused by seven adapters). The length-only rows were measured on
+  the Stripe, Billplz, Paddle and PayPal sandboxes with an emoji, `#&?/+%` and edge spaces. `@bayarkit/testing`'s conformance suite,
   and its PHP twin, now confirm a payment with that portable reference on every gateway; a third-party adapter that
   cannot carry a 20-character upper-case reference now fails that case.
 - Bayarcash: payment checks no longer fail for accounts with more than 15 portals. `GET /portals` is paginated

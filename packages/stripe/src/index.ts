@@ -38,7 +38,7 @@
  * - `payment_status: no_payment_required` reads as `unknown` (never paid);
  * - FPX limits beyond the MYR minimum and the 8-digit maximum are not checked here: Stripe has the final word.
  */
-import { createHmac } from 'node:crypto'
+import { createHash, createHmac } from 'node:crypto'
 import {
   type CallbackInput,
   type CreatedPayment,
@@ -160,6 +160,9 @@ const quote = (json: Record<string, unknown> | null, fallback: string) => {
   return { message: message.replace(SECRETISH, '[redacted]'), code: String(err?.code ?? err?.type ?? '') }
 }
 
+/** Printable ASCII with no space at either end: what survives an HTTP header unchanged. */
+const HEADER_SAFE = /^[\x21-\x7e](?:[\x20-\x7e]*[\x21-\x7e])?$/
+
 export function stripe(config: StripeConfig): Gateway & {
   /** Expire an open Checkout Session (the documented way to cancel; its PaymentIntent cannot be cancelled). */
   expirePayment(id: string): Promise<PaymentRecord>
@@ -239,9 +242,21 @@ export function stripe(config: StripeConfig): Gateway & {
       if (!input.reference || input.reference.length > 200) {
         throw new GatewayError('reference must be 1 to 200 characters', 'stripe', 0, 'INVALID_REFERENCE')
       }
-      const idempotencyKey = input.idempotencyKey ?? input.reference
-      if (idempotencyKey.length > 255)
-        throw new GatewayError('idempotencyKey must be at most 255 characters', 'stripe', 0, 'INVALID_KEY')
+      // An HTTP header carries printable ASCII only, and edges are trimmed on the way: a reference with an emoji
+      // threw inside fetch (reported as "unreachable"), and " R1" / "R1 " became the same key. Such a reference gets
+      // a derived key instead (still one key per reference, so a retry stays idempotent). Measured 12 Nov 2026.
+      const idempotencyKey =
+        input.idempotencyKey ??
+        (HEADER_SAFE.test(input.reference)
+          ? input.reference
+          : `ref-${createHash('sha256').update(input.reference).digest('hex')}`)
+      if (idempotencyKey.length > 255 || !HEADER_SAFE.test(idempotencyKey))
+        throw new GatewayError(
+          'idempotencyKey must be 1 to 255 printable ASCII characters, not starting or ending with a space',
+          'stripe',
+          0,
+          'INVALID_KEY',
+        )
       const email = input.customer?.email?.trim()
       if (email && email.length > 800)
         throw new GatewayError('customer email too long', 'stripe', 0, 'INVALID_EMAIL')
