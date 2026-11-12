@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/testing",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Fake Malaysian payment gateways and the bayarkit conformance suite, for testing without real money.",
   "keywords": [
     "payment",
@@ -51,13 +51,13 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.3.2"
+    "@bayarkit/core": "0.3.3"
   },
   "peerDependencies": {
     "vitest": ">=4"
   },
   "bin": {
-    "bayarkit-fake": "./dist/cli.js"
+    "bayarkit-fake": "dist/cli.js"
   },
   "peerDependenciesMeta": {
     "vitest": {

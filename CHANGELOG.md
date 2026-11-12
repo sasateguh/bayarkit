@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-11-12
+
+### Fixed
+
+- `@bayarkit/testing` 0.3.2 was published without its `bayarkit-fake` command: npm 11.21 rejects a `bin` path written
+  `./dist/cli.js` and drops it while publishing ("was invalid and removed"), so `npx bayarkit-fake` stopped working.
+  The path is now `dist/cli.js`, and the release script refuses to publish any package whose `package.json` npm would
+  rewrite. Use 0.3.3 rather than 0.3.2 for `@bayarkit/testing`; the other packages are unchanged apart from the version.
+
 ## [0.3.2] - 2026-11-12
 
 ### Changed
@@ -322,6 +331,7 @@ that failed first.
   valid signature — a callback that cannot exist. The conformance suite now requires every fake's form/JSON body to say
   what its fields say, tampered or not.
 
+[0.3.3]: https://github.com/sasateguh/bayarkit/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/sasateguh/bayarkit/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/sasateguh/bayarkit/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/sasateguh/bayarkit/compare/v0.2.2...v0.3.0

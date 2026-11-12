@@ -23,6 +23,15 @@ for d in "${order[@]}"; do
     continue
   fi
   echo "→ $name@$version"
+  # npm silently rewrites a package.json it disagrees with, and may DROP fields: npm 11.21 removed the
+  # "./dist/cli.js" bin of @bayarkit/testing 0.3.2 ("was invalid and removed"), so `npx bayarkit-fake` vanished.
+  # Any auto-correction stops the release before that package goes out.
+  check="$(npm publish -w "$name" --dry-run --provenance=false 2>&1 || true)"
+  if grep -q "auto-corrected" <<<"$check"; then
+    grep -A5 "auto-corrected" <<<"$check" >&2
+    echo "✗ npm would rewrite packages/$d/package.json: fix it (npm pkg fix) before publishing" >&2
+    exit 1
+  fi
   # Provenance needs the CI's OIDC token, so a local dry run turns it off; the workflow publishes with it on.
   if [ ${#dry[@]} -gt 0 ]; then
     npm publish -w "$name" "${dry[@]}" --provenance=false >/dev/null
