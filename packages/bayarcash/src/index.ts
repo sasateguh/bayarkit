@@ -185,9 +185,9 @@ export function bayarcash(config: BayarcashConfig): Gateway & {
       if (!res.ok || !Array.isArray(data))
         throw new GatewayError(`portals HTTP ${res.status}`, 'bayarcash', res.status)
       yield { status: res.status, data: data as Record<string, unknown>[] }
-      const meta = json?.meta as { last_page?: unknown } | undefined
-      const last = Number(meta?.last_page)
-      if (!data.length || !Number.isFinite(last) || page >= last) return
+      const last = Number((json?.meta as { last_page?: unknown } | undefined)?.last_page)
+      const next = (json?.links as { next?: unknown } | undefined)?.next
+      if (!data.length || (Number.isFinite(last) ? page >= last : typeof next !== 'string')) return
     }
   }
 

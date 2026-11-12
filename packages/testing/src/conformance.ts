@@ -96,6 +96,19 @@ export function gatewayConformance(name: string, setup: () => Promise<Conformanc
       }
     })
 
+    // The one reference shape every bayarkit gateway accepts (eGHL: 20 characters; 2C2P: letters and digits;
+    // Gkash: upper case). README "Choosing a reference".
+    it('confirms a payment whose reference is the portable shape (20 upper-case letters and digits)', async () => {
+      const reference = `P${Date.now()}${String(counter).padStart(6, '0')}`.slice(0, 20)
+      expect(reference).toMatch(/^[A-Z0-9]{20}$/)
+      const input = sampleInput({ reference })
+      const created = await gateway.createPayment(input)
+      fake.markPaid(created.id)
+      const result = await confirmPayment(gateway, fake.callbackFor(created.id), input)
+      expect(result).toMatchObject({ ok: true })
+      if (result.ok) expect(result.payment.reference).toBe(reference)
+    })
+
     it('refuses a callback whose signature was tampered with', async () => {
       const input = sampleInput()
       const created = await gateway.createPayment(input)

@@ -119,6 +119,30 @@ tanpanya setiap callback ditolak. CHIP menolak `callbackUrl` yang ada port, wala
 `environment` wajib (`'test'` dengan kunci ujian, `'live'` dengan kunci hidup): pembelian daripada mod yang satu lagi,
 atau yang tidak menyatakan modnya, ditolak, jadi bayaran ujian tidak mengesahkan pesanan sebenar.
 
+### Memilih rujukan
+
+Guna **1–20 huruf besar dan digit** (`ORD20261112000042`) dan setiap gateway di sini menerimanya tanpa diubah; suite
+keakuran menyemak bentuk itu pada setiap adapter. Rujukan yang lebih panjang atau lebih banyak jenis aksara gagal pada
+sesetengah gateway, dan UUID (36 aksara huruf kecil dengan `-`) ditolak oleh adapter Bayarcash, eGHL, Fiuu, Gkash, iPay88, senangPay
+dan 2C2P. Bila peraturannya diketahui, adapter menolak rujukan dengan `INVALID_REFERENCE` sebelum memanggil
+gateway; tiada adapter yang memangkas atau memotongnya.
+
+| Gateway         | `reference` yang diterima                                                                        |
+| --------------- | ------------------------------------------------------------------------------------------------ |
+| eGHL            | 1–20: `A–Z a–z 0–9 _ -`                                                                          |
+| Bayarcash       | 1–30: `A–Z a–z 0–9`, ruang, ``"()*,-./:;@\_`~``, tiada ruang di hujung (diukur; tidak didokumen) |
+| iPay88          | 1–30: `A–Z a–z 0–9 . _ -`                                                                        |
+| senangPay       | 1–30: `A–Z a–z 0–9 _ -`                                                                          |
+| Fiuu            | 1–32: `A–Z a–z 0–9 -`                                                                            |
+| Curlec          | 1–40 aksara ASCII boleh cetak                                                                    |
+| 2C2P            | 1–50: `A–Z a–z 0–9`                                                                              |
+| Xendit          | 1–64                                                                                             |
+| Billplz         | 1–120                                                                                            |
+| Stripe, Paddle  | 1–200                                                                                            |
+| Gkash           | 1–255: `A–Z 0–9 . _ -` (huruf besar: Gkash tidak menandatangani huruf besar/kecil)               |
+| HitPay, PayPal  | 1–255                                                                                            |
+| CHIP, toyyibPay | tidak dihadkan oleh adapter                                                                      |
+
 ### Paddle dan PayPal (menjual ke luar negara)
 
 Kedua-duanya tidak mengecaj ringgit secara lalai, jadi tetapkan `currency` pada adapter dan hantar `currency` yang sama

@@ -269,6 +269,39 @@ describe('bayarcash: GET /portals is paginated (measured 11 Nov 2026: 15 per pag
     expect((await gw.listPortals()).length).toBe(51)
   })
 
+  it('follows links.next when the answer has no meta.last_page', async () => {
+    const pages = [
+      [{ portal_key: 'o1', portal_name: 'Other' }],
+      [{ portal_key: 'portal-a', portal_name: 'Shop A' }],
+    ]
+    const gw = bayarcash({
+      token: 't',
+      secretKey: 's',
+      portalKey: 'portal-a',
+      environment: 'sandbox',
+      baseUrl: 'https://bc.test',
+      fetch: async (u) => {
+        const url = new URL(String(u))
+        if (!url.pathname.endsWith('/portals'))
+          return Response.json({
+            id: 'trx_1',
+            order_number: 'R1',
+            amount: 10.5,
+            currency: 'MYR',
+            status: 3,
+            portal: 'Shop A',
+          })
+        const page = Number(url.searchParams.get('page'))
+        return Response.json({
+          data: pages[page - 1] ?? [],
+          links: { next: page < 2 ? 'https://bc.test/portals?page=2' : null },
+        })
+      },
+    })
+    expect((await gw.getPayment('trx_1')).status).toBe('paid')
+    expect((await gw.listPortals()).length).toBe(2)
+  })
+
   it('confirms against an account with 200 other portals, and lists them all', async () => {
     const keys = { token: 't', secretKey: 's', portalKey: 'pk' }
     const fake = await startFakeBayarcash({ ...keys, otherPortals: 200 })

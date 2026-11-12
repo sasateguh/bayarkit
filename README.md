@@ -117,6 +117,30 @@ and pass it as `publicKey`; without it every callback is refused. CHIP rejects a
 `environment` is required (`'test'` with a test key, `'live'` with a live key): a purchase from the other mode, or one
 that does not say which it is, is refused, so a test payment does not confirm a live order.
 
+### Choosing a reference
+
+Use **1–20 upper-case letters and digits** (`ORD20261112000042`) and every gateway here accepts it unchanged; the
+conformance suite checks that shape on every adapter. Longer or richer references fail on some gateways, and a UUID
+(36 lower-case characters with `-`) is refused by the Bayarcash, eGHL, Fiuu, Gkash, iPay88, senangPay and 2C2P
+adapters. Where the rule is known, the adapter refuses a reference with `INVALID_REFERENCE` before calling the
+gateway; no adapter trims or cuts one.
+
+| Gateway         | `reference` accepted                                                                    |
+| --------------- | --------------------------------------------------------------------------------------- |
+| eGHL            | 1–20: `A–Z a–z 0–9 _ -`                                                                 |
+| Bayarcash       | 1–30: `A–Z a–z 0–9`, space, ``"()*,-./:;@\_`~``, no edge space (measured; undocumented) |
+| iPay88          | 1–30: `A–Z a–z 0–9 . _ -`                                                               |
+| senangPay       | 1–30: `A–Z a–z 0–9 _ -`                                                                 |
+| Fiuu            | 1–32: `A–Z a–z 0–9 -`                                                                   |
+| Curlec          | 1–40 printable ASCII                                                                    |
+| 2C2P            | 1–50: `A–Z a–z 0–9`                                                                     |
+| Xendit          | 1–64                                                                                    |
+| Billplz         | 1–120                                                                                   |
+| Stripe, Paddle  | 1–200                                                                                   |
+| Gkash           | 1–255: `A–Z 0–9 . _ -` (upper case: Gkash does not sign letter case)                    |
+| HitPay, PayPal  | 1–255                                                                                   |
+| CHIP, toyyibPay | not limited by the adapter                                                              |
+
 ### Paddle and PayPal (selling abroad)
 
 Neither charges ringgit by default, so set `currency` on the adapter and pass the same `currency` to

@@ -8,13 +8,17 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- README "Choosing a reference" (EN + BM): the reference rule of every adapter, and the one shape all of them accept
+  (1–20 upper-case letters and digits; a UUID is refused by seven adapters). `@bayarkit/testing`'s conformance suite,
+  and its PHP twin, now confirm a payment with that portable reference on every gateway; a third-party adapter that
+  cannot carry a 20-character upper-case reference now fails that case.
 - Bayarcash: payment checks no longer fail for accounts with more than 15 portals. `GET /portals` is paginated
   (15 per page, newest first) and the adapter read only the first page, so once the configured portal was not on it,
   every `getPayment` / `confirmPayment` failed with `FOREIGN_PORTAL` (closed, never a false "paid"). The adapter now
-  asks for that portal by `portal_key` with `per_page=100` and walks every page, checking each portal by key;
-  `listPortals()` returns every page. A missing portal is no longer cached for the life of the gateway. Measured on the
-  sandbox 11 Nov 2026 (174 portals, ours on page 4). `@bayarkit/testing`'s fake paginates the same way
-  (`otherPortals` option).
+  asks for that portal by `portal_key` with `per_page=100` and walks every page (by `meta.last_page`, or `links.next`
+  when there is no `meta`), checking each portal by key; `listPortals()` returns every page. A missing portal is no
+  longer cached for the life of the gateway. Measured on the sandbox 11 Nov 2026 (174 portals, ours on page 4).
+  `@bayarkit/testing`'s fake paginates the same way (`otherPortals` option).
 - Bayarcash: `createPayment` refuses a `reference` the API would refuse, with `INVALID_REFERENCE`, before calling it:
   more than 30 characters (a UUID is 36), any character outside ASCII letters, digits, space and ``"()*,-./:;@\_`~``,
   or a leading/trailing space (the server trims it, then the checksum fails). None of this is in the API reference;
