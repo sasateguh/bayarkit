@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-11-12
+
 ### Changed
 
 - Stripe: a reference an HTTP header cannot carry no longer breaks `createPayment`. The reference was the default
@@ -16,9 +18,9 @@ All notable changes to this project are documented here. The format follows
   together with the reference limits of Stripe, Billplz, Paddle and PayPal (any characters up to their length).
 - README "Choosing a reference" (EN + BM): the reference rule of every adapter, and the one shape all of them accept
   (1–20 upper-case letters and digits; a UUID is refused by seven adapters). The length-only rows were measured on
-  the Stripe, Billplz, Paddle and PayPal sandboxes with an emoji, `#&?/+%` and edge spaces. `@bayarkit/testing`'s conformance suite,
-  and its PHP twin, now confirm a payment with that portable reference on every gateway; a third-party adapter that
-  cannot carry a 20-character upper-case reference now fails that case.
+  the Stripe, Billplz, Paddle and PayPal sandboxes with an emoji, `#&?/+%` and edge spaces. `@bayarkit/testing`'s
+  conformance suite, and its PHP twin, now confirm a payment with that portable reference on every gateway; a
+  third-party adapter that cannot carry a 20-character upper-case reference now fails that case.
 - Bayarcash: payment checks no longer fail for accounts with more than 15 portals. `GET /portals` is paginated
   (15 per page, newest first) and the adapter read only the first page, so once the configured portal was not on it,
   every `getPayment` / `confirmPayment` failed with `FOREIGN_PORTAL` (closed, never a false "paid"). The adapter now
@@ -320,6 +322,7 @@ that failed first.
   valid signature — a callback that cannot exist. The conformance suite now requires every fake's form/JSON body to say
   what its fields say, tampered or not.
 
+[0.3.2]: https://github.com/sasateguh/bayarkit/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/sasateguh/bayarkit/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/sasateguh/bayarkit/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/sasateguh/bayarkit/compare/v0.2.1...v0.2.2

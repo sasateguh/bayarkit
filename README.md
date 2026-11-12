@@ -14,7 +14,7 @@ Your checkout and callback code stay the same when you switch gateways; only the
 
 [Bahasa Melayu](README.ms.md) · **[Try the demo](https://bayarkit.sasateguh.com/en)** (fake gateways, no money)
 
-> **Status:** 0.3.1. Sixteen gateways in TypeScript, all on npm.
+> **Status:** 0.3.2. Sixteen gateways in TypeScript, all on npm.
 > toyyibPay, Billplz, Bayarcash, Stripe, Paddle and PayPal are measured on their sandboxes; the others are written
 > from official sources and have not yet run against a real gateway (the table says which source). PHP/Laravel covers toyyibPay,
 > CHIP, Paddle and PayPal.

@@ -1,6 +1,6 @@
 {
   "name": "@bayarkit/toyyibpay",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "toyyibPay for Node.js and TypeScript: create payments, verify callbacks and confirm each payment with a fresh status query. Zero dependencies, part of bayarkit.",
   "keywords": [
     "payment",
@@ -48,6 +48,6 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@bayarkit/core": "0.3.1"
+    "@bayarkit/core": "0.3.2"
   }
 }
