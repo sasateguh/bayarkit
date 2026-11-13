@@ -12,6 +12,7 @@ All notable changes to this project are documented here. The format follows
   instead of `/\/+$/`, which backtracks quadratically on a long run of slashes that is not at the end (2.7 s for
   50,000 on Node 22; CodeQL `js/polynomial-redos`, 15 alerts). The base URL is the developer's own config, so this was
   never reachable from a payer; the result is the same for every real URL.
+- Release workflow: npm is pinned to 11.21.2 (was `npm@11`, whose 11.21 dropped the testing `bin` in 0.3.2).
 
 ## [0.3.3] - 2026-11-12
 
