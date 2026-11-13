@@ -76,6 +76,7 @@ import {
   timingSafeEqualText,
   toRinggit,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const HOSTS = {
@@ -161,7 +162,7 @@ export function statusOf(text: unknown): PaymentStatus {
 const text = (v: unknown) => (typeof v === 'string' ? v : typeof v === 'number' ? String(v) : '')
 
 export function gkash(config: GkashConfig): Gateway {
-  const base = (config.baseUrl ?? HOSTS[config.environment]).replace(/\/+$/, '')
+  const base = withoutTrailingSlashes(config.baseUrl ?? HOSTS[config.environment])
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
   const version = config.version ?? CHECKOUT_VERSION

@@ -50,6 +50,7 @@ import {
   type PaymentStatus,
   timingSafeEqualText,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const API_VERSION = '2026-09-30.endive'
@@ -167,7 +168,7 @@ export function stripe(config: StripeConfig): Gateway & {
   /** Expire an open Checkout Session (the documented way to cancel; its PaymentIntent cannot be cancelled). */
   expirePayment(id: string): Promise<PaymentRecord>
 } {
-  const base = (config.baseUrl ?? 'https://api.stripe.com').replace(/\/+$/, '')
+  const base = withoutTrailingSlashes(config.baseUrl ?? 'https://api.stripe.com')
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
   const apiVersion = config.apiVersion ?? API_VERSION

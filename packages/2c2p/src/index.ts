@@ -75,6 +75,7 @@ import {
   type PaymentStatus,
   timingSafeEqualText,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const HOSTS = {
@@ -224,7 +225,7 @@ function flat(claims: Record<string, unknown>): Record<string, string> {
 const quote = (v: unknown) => (typeof v === 'string' ? v.slice(0, 300) : '')
 
 export function twoc2p(config: TwoC2PConfig): Gateway {
-  const base = (config.baseUrl ?? HOSTS[config.environment]).replace(/\/+$/, '')
+  const base = withoutTrailingSlashes(config.baseUrl ?? HOSTS[config.environment])
   const version = config.apiVersion ?? '4.3'
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000

@@ -85,6 +85,7 @@ import {
   timingSafeEqualText,
   toRinggit,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const HOSTS = {
@@ -236,7 +237,7 @@ function callbackStatus(status: string): PaymentStatus {
 const chars = (text: string, max: number) => [...text].slice(0, max).join('')
 
 export function ipay88(config: IPay88Config): IPay88Gateway {
-  const base = (config.baseUrl ?? HOSTS[config.environment] ?? '').replace(/\/+$/, '')
+  const base = withoutTrailingSlashes(config.baseUrl ?? HOSTS[config.environment] ?? '')
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
   if (!config.merchantCode || !config.merchantKey || !base) {

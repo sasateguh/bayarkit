@@ -71,6 +71,7 @@ import {
   type PaymentStatus,
   timingSafeEqualText,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const HOSTS = {
@@ -217,7 +218,7 @@ const chars = (value: string, max: number) => [...value].slice(0, max).join('')
 const isoSeconds = (ms: number) => new Date(ms).toISOString().replace(/\.\d{3}Z$/, 'Z')
 
 export function senangpay(config: SenangPayConfig): Gateway {
-  const base = (config.baseUrl ?? HOSTS[config.environment] ?? '').replace(/\/+$/, '')
+  const base = withoutTrailingSlashes(config.baseUrl ?? HOSTS[config.environment] ?? '')
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
   const apiVersion = config.apiVersion ?? API_VERSION

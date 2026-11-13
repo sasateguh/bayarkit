@@ -92,6 +92,7 @@ import {
   type PaymentStatus,
   timingSafeEqualText,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const BASE_URL = 'https://api.xendit.co'
@@ -234,7 +235,7 @@ export function xendit(config: XenditConfig): Gateway & {
   /** Cancel an ACTIVE session (`POST /sessions/{id}/cancel`). A payment arriving afterwards is still collected. */
   cancelPayment(id: string): Promise<PaymentRecord>
 } {
-  const base = (config.baseUrl ?? BASE_URL).replace(/\/+$/, '')
+  const base = withoutTrailingSlashes(config.baseUrl ?? BASE_URL)
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
   const now = config.now ?? Date.now

@@ -66,6 +66,7 @@ import {
   type RefundStatus,
   timingSafeEqualText,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const PADDLE_VERSION = '1'
@@ -191,7 +192,7 @@ export function paddle(config: PaddleConfig): Gateway & {
   if (!config.baseUrl && !host) {
     throw fail('apiKey must be a Paddle key (pdl_sdbx_… or pdl_live_…)', 'CONFIG')
   }
-  const base = (config.baseUrl ?? `https://${host}`).replace(/\/+$/, '')
+  const base = withoutTrailingSlashes(config.baseUrl ?? `https://${host}`)
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
   const tolerance = config.toleranceSeconds ?? 5

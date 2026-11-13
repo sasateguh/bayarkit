@@ -66,6 +66,7 @@ import {
   toRinggit,
   toSen,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const HOSTS = {
@@ -159,7 +160,7 @@ function header(headers: Record<string, string> | undefined, name: string): stri
 }
 
 export function hitpay(config: HitPayConfig): Gateway {
-  const base = (config.baseUrl ?? HOSTS[config.environment]).replace(/\/+$/, '')
+  const base = withoutTrailingSlashes(config.baseUrl ?? HOSTS[config.environment])
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
   const secrets = [config.apiKey, config.apiSalt, config.webhookSalt].filter((s) => s && s.length >= 4)

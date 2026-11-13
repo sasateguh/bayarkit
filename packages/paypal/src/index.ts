@@ -66,6 +66,7 @@ import {
   type RefundRecord,
   type RefundStatus,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 const SANDBOX_HOST = 'api-m.sandbox.paypal.com'
@@ -211,9 +212,8 @@ export function paypal(config: PayPalConfig): Gateway<Promise<VerifiedCallback |
   if (environment !== 'sandbox' && environment !== 'live') {
     throw fail("environment must be 'sandbox' or 'live'", 'CONFIG')
   }
-  const base = (config.baseUrl ?? `https://${environment === 'live' ? LIVE_HOST : SANDBOX_HOST}`).replace(
-    /\/+$/,
-    '',
+  const base = withoutTrailingSlashes(
+    config.baseUrl ?? `https://${environment === 'live' ? LIVE_HOST : SANDBOX_HOST}`,
   )
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000

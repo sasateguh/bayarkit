@@ -78,6 +78,7 @@ import {
   timingSafeEqualText,
   toRinggit,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const HOSTS = {
@@ -247,7 +248,7 @@ const isoSeconds = (ms: number) => new Date(ms).toISOString().replace(/\.\d{3}Z$
 
 export function fiuu(config: FiuuConfig): Gateway {
   const hosts = HOSTS[config.environment]
-  const override = config.baseUrl?.replace(/\/+$/, '')
+  const override = config.baseUrl === undefined ? undefined : withoutTrailingSlashes(config.baseUrl)
   const payBase = override ?? hosts?.pay
   const apiBase = override ?? hosts?.api
   const doFetch = config.fetch ?? fetch

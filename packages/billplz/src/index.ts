@@ -44,6 +44,7 @@ import {
   type PaymentStatus,
   timingSafeEqualText,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const HOSTS = {
@@ -133,7 +134,7 @@ export function billplz(config: BillplzConfig): Gateway & {
    */
   deleteBill(id: string): Promise<void>
 } {
-  const base = (config.baseUrl ?? HOSTS[config.environment]).replace(/\/+$/, '')
+  const base = withoutTrailingSlashes(config.baseUrl ?? HOSTS[config.environment])
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
   const authorization = `Basic ${Buffer.from(`${config.secretKey}:`).toString('base64')}`

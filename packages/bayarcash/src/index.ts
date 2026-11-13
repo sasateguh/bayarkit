@@ -32,6 +32,7 @@ import {
   toRinggit,
   toSen,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const HOSTS = {
@@ -152,7 +153,7 @@ export function bayarcash(config: BayarcashConfig): Gateway & {
   /** Check the token and list portals with their enabled channels. */
   listPortals(): Promise<{ portalKey: string; name: string; channels: { id: number; name: string }[] }[]>
 } {
-  const base = (config.baseUrl ?? HOSTS[config.environment]).replace(/\/+$/, '')
+  const base = withoutTrailingSlashes(config.baseUrl ?? HOSTS[config.environment])
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
   const channels = config.channels?.length ? config.channels : [1]

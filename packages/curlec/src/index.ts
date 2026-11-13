@@ -67,6 +67,7 @@ import {
   type PaymentStatus,
   timingSafeEqualText,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const API_BASE = 'https://api.razorpay.com'
@@ -187,7 +188,7 @@ export function curlec(config: CurlecConfig): Gateway & {
     notes?: Record<string, string>
   }): Promise<{ id: string; raw: unknown }>
 } {
-  const base = (config.baseUrl ?? API_BASE).replace(/\/+$/, '')
+  const base = withoutTrailingSlashes(config.baseUrl ?? API_BASE)
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
   const now = config.now ?? Date.now

@@ -45,6 +45,7 @@ import {
   type PaymentRecord,
   type PaymentStatus,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const BASE_URL = 'https://gate.chip-in.asia/api/v1'
@@ -207,7 +208,7 @@ export function chip(config: ChipConfig): Gateway & {
       'CONFIG',
     )
   }
-  const base = (config.baseUrl ?? BASE_URL).replace(/\/+$/, '')
+  const base = withoutTrailingSlashes(config.baseUrl ?? BASE_URL)
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
   const key = config.publicKey ? rsaKey(config.publicKey) : null

@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Every adapter trims trailing slashes from its base URL with `withoutTrailingSlashes` (new in `@bayarkit/core`)
+  instead of `/\/+$/`, which backtracks quadratically on a long run of slashes that is not at the end (2.7 s for
+  50,000 on Node 22; CodeQL `js/polynomial-redos`, 15 alerts). The base URL is the developer's own config, so this was
+  never reachable from a payer; the result is the same for every real URL.
+
 ## [0.3.3] - 2026-11-12
 
 ### Fixed

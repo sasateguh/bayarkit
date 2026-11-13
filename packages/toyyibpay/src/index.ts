@@ -35,6 +35,7 @@ import {
   timingSafeEqualText,
   toSen,
   type VerifiedCallback,
+  withoutTrailingSlashes,
 } from '@bayarkit/core'
 
 export const HOSTS = { sandbox: 'https://dev.toyyibpay.com', production: 'https://toyyibpay.com' } as const
@@ -80,7 +81,7 @@ export function toyyibpay(config: ToyyibPayConfig): Gateway & {
   /** Check the secret key and category without creating a bill. */
   checkConnection(): Promise<{ categoryName: string }>
 } {
-  const host = (config.baseUrl ?? HOSTS[config.environment]).replace(/\/+$/, '')
+  const host = withoutTrailingSlashes(config.baseUrl ?? HOSTS[config.environment])
   const doFetch = config.fetch ?? fetch
   const timeoutMs = config.timeoutMs ?? 15_000
 

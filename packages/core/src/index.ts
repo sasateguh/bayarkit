@@ -22,3 +22,4 @@ export type {
   VerifiedCallback,
   VerifyResult,
 } from './types.js'
+export { withoutTrailingSlashes } from './url.js'
