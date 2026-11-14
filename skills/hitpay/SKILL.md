@@ -45,7 +45,7 @@ The full contract with a source for every fact: `gateways/hitpay/spec.md` in the
 
 ## Official sources
 
-- [HitPay API OpenAPI 3.1 spec](https://docs.hitpayapp.com/openapi.json) (fingerprint `8a287f28864f`, unchanged since 2026-11-07)
+- [HitPay API OpenAPI 3.1 spec](https://docs.hitpayapp.com/openapi.json) (fingerprint `00435fa60f94`, unchanged since 2026-11-14)
 - [Webhooks (event webhooks + validation, Markdown export)](https://docs.hitpayapp.com/apis/guide/events.md) (fingerprint `bce43278d09e`, unchanged since 2026-11-07)
 - [Online Payments guide (Markdown export)](https://docs.hitpayapp.com/apis/guide/online-payments.md) (fingerprint `ba8477fbaa40`, unchanged since 2026-11-07)
 - [Official PHP SDK Client.php (v1 hmac generateSignatureArray)](https://raw.githubusercontent.com/hit-pay/php-sdk/HEAD/src/Client.php) (fingerprint `40c8014f3d29`, unchanged since 2026-10-23)

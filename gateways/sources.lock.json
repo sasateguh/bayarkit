@@ -103,9 +103,9 @@
   },
   "chip/llms": {
     "url": "https://docs.chip-in.asia/llms.txt",
-    "sha256": "146fbcbf0311714e7a522c55bb9f1bd8442c091d3bf5f6b952b99d3124eb0b5f",
-    "chars": 2520,
-    "since": "2026-11-07"
+    "sha256": "67e35a547159a044817b5dd63db5f0515d31f7d763f6dc908928047fd17dc183",
+    "chars": 2713,
+    "since": "2026-11-14"
   },
   "chip/openapi": {
     "url": "https://docs.chip-in.asia/openapi/chip-collect.yaml",
@@ -223,9 +223,9 @@
   },
   "hitpay/openapi": {
     "url": "https://docs.hitpayapp.com/openapi.json",
-    "sha256": "8a287f28864fdbaeedea34edc0e36d3a92f0cc13d7bd17001234998a3ab2d4af",
-    "chars": 381964,
-    "since": "2026-11-07"
+    "sha256": "00435fa60f94ddeaf4347e0e440a51de7d0c1410b7b0ad78b0332d87b0fe96bd",
+    "chars": 382056,
+    "since": "2026-11-14"
   },
   "hitpay/php-sdk-client": {
     "url": "https://raw.githubusercontent.com/hit-pay/php-sdk/HEAD/src/Client.php",
