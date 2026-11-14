@@ -8,6 +8,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- `@bayarkit/bayarcash` reads transaction statuses 5 Abandoned (`expired`), 6 Authorized (`pending`), 7 Void
+  (`cancelled`) and 8 Refund (`unknown`), which the API reference now lists in its callback status table; they were
+  all `unknown` before. None of them is ever `paid`. `@bayarkit/testing`: the fake Bayarcash has
+  `setTransactionStatus(id, status)`.
+
 - Every adapter trims trailing slashes from its base URL with `withoutTrailingSlashes` (new in `@bayarkit/core`)
   instead of `/\/+$/`, which backtracks quadratically on a long run of slashes that is not at the end (2.7 s for
   50,000 on Node 22; CodeQL `js/polynomial-redos`, 15 alerts). The base URL is the developer's own config, so this was

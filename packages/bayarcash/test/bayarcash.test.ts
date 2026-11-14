@@ -1,3 +1,4 @@
+import { confirmPayment } from '@bayarkit/core'
 import { gatewayConformance, sampleInput, startFakeBayarcash } from '@bayarkit/testing'
 import { describe, expect, it } from 'vitest'
 import { bayarcash, checksum, verifyChecksum } from '../src/index.js'
@@ -361,4 +362,39 @@ describe('bayarcash: the payment id from checkout (a payment intent)', () => {
       await fake.close()
     }
   })
+})
+
+describe('bayarcash: transaction statuses 5 Abandoned, 6 Authorized, 7 Void and 8 Refund (API reference since 10 Nov 2026)', () => {
+  const keys = { token: 't', secretKey: 's', portalKey: 'pk' }
+  it.each([
+    ['5', 'expired'],
+    ['6', 'pending'],
+    ['7', 'cancelled'],
+    ['8', 'unknown'],
+  ])(
+    'reads status %s as %s, from the API and from a signed callback, and never as paid',
+    async (code, expected) => {
+      const fake = await startFakeBayarcash(keys)
+      try {
+        const gw = bayarcash({ ...keys, environment: 'sandbox', baseUrl: fake.url })
+        const input = sampleInput({ amount: 1500 })
+        const created = await gw.createPayment(input)
+        fake.setTransactionStatus(created.id, code)
+        const callback = fake.callbackFor(created.id, { status: code })
+        const record = await gw.getPayment(`trx_${created.id}`)
+        expect(record.status).toBe(expected)
+        expect((await gw.verifyCallback(callback))?.claimedStatus).toBe(expected)
+        // The intent has no attempt with status 3: still pending, never paid.
+        expect((await gw.getPayment(created.id)).status).toBe('pending')
+        const confirmed = await confirmPayment(gw, callback, {
+          reference: input.reference,
+          amount: 1500,
+          currency: 'MYR',
+        })
+        expect(confirmed.ok).toBe(false)
+      } finally {
+        await fake.close()
+      }
+    },
+  )
 })

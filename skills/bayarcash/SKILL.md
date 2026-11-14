@@ -48,7 +48,7 @@ The full contract with a source for every fact: `gateways/bayarcash/spec.md` in 
 
 ## Official sources
 
-- [Bayarcash API v3 reference (full Markdown export)](https://api-reference.bayarcash.com/llms-full.txt) (fingerprint `96c7399c4600`, unchanged since 2026-11-07)
+- [Bayarcash API v3 reference (full Markdown export)](https://api-reference.bayarcash.com/llms-full.txt) (fingerprint `4570f3b07656`, unchanged since 2026-11-14)
 - [Official PHP SDK: ChecksumGenerator](https://raw.githubusercontent.com/webimpian/bayarcash-php-sdk/HEAD/src/Actions/ChecksumGenerator.php) (fingerprint `2846c29db830`, unchanged since 2026-11-11)
 - [Official PHP SDK: CallbackVerifications](https://raw.githubusercontent.com/webimpian/bayarcash-php-sdk/HEAD/src/Actions/CallbackVerifications.php) (fingerprint `f863cf3415e6`, unchanged since 2026-11-11)
 

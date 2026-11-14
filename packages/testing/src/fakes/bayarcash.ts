@@ -72,11 +72,28 @@ const RECURRING_RETURN_FIELDS = [
 const signFixed = (secret: string, fields: Record<string, string>, names: string[]) =>
   sign(secret, Object.fromEntries(names.map((k) => [k, fields[k] ?? ''])))
 
+// Descriptions are the fake's own wording (the reference names the codes, not the text a transaction carries).
+const DESCRIPTIONS: Record<string, string> = {
+  '2': 'Failed',
+  '3': 'Approved',
+  '4': 'Cancelled',
+  '5': 'Abandoned',
+  '6': 'Authorized',
+  '7': 'Void',
+  '8': 'Refund',
+}
+
 export interface FakeBayarcash extends FakeGateway {
   /** A successful recurring charge callback (`record_type: recurring_charge`), signed the SDK's way. */
   recurringChargeCallback(override?: Record<string, string>): CallbackInput
   /** The payer's landing on the recurring return URL after enrolment, signed the SDK's way. */
   recurringReturn(override?: Record<string, string>): CallbackInput
+  /**
+   * Give the intent's transaction a numeric status (as a string, e.g. '6'). API reference statuses: 0 New · 1 Pending ·
+   * 2 Failed · 3 Success · 4 Cancelled · 5 Abandoned · 6 Authorized · 7 Void · 8 Refund (5–8 in the callback table since
+   * 10 Nov 2026).
+   */
+  setTransactionStatus(id: string, status: string): void
   requests: {
     method: string
     path: string
@@ -252,7 +269,7 @@ export async function startFakeBayarcash(opts: {
       payer_email: String(i.body.payer_email ?? ''),
       payer_bank_name: 'Test Bank',
       status,
-      status_description: status === '3' ? 'Approved' : 'Pending',
+      status_description: DESCRIPTIONS[status] ?? 'Pending',
       datetime: '2026-10-23 10:00:00',
     }
     transactions.set(i.transactionId, t)
@@ -264,6 +281,9 @@ export async function startFakeBayarcash(opts: {
     requests,
     markPaid(id) {
       transaction(intent(id), '3')
+    },
+    setTransactionStatus(id, status) {
+      transaction(intent(id), status)
     },
     callbackFor(id, override = {}) {
       const i = intent(id)

@@ -54,13 +54,20 @@ export interface BayarcashConfig {
   timeoutMs?: number
 }
 
-// Official transaction statuses: 0 New · 1 Pending · 2 Failed · 3 Success · 4 Cancelled.
+// Official transaction statuses: 0 New · 1 Pending · 2 Failed · 3 Success · 4 Cancelled · 5 Abandoned · 6 Authorized ·
+// 7 Void · 8 Refund (5–8 in the callback status table since 10 Nov 2026; not measured). Abandoned = the payer left
+// without finishing (expired); Authorized = a card held, not charged (pending); Void = the hold released (cancelled);
+// Refund = money came and went back: no normalised state fits, so it is `unknown` and never `paid` (as CHIP `refunded`).
 const STATUS: Record<string, PaymentStatus> = {
   '0': 'pending',
   '1': 'pending',
   '2': 'failed',
   '3': 'paid',
   '4': 'cancelled',
+  '5': 'expired',
+  '6': 'pending',
+  '7': 'cancelled',
+  '8': 'unknown',
 }
 
 export const info: GatewayInfo = {

@@ -73,9 +73,9 @@
   },
   "bayarcash/api-docs": {
     "url": "https://api-reference.bayarcash.com/llms-full.txt",
-    "sha256": "96c7399c46001bc53e5a1c9f872ba49986820ec9b4722925995954662ea041df",
-    "chars": 43363,
-    "since": "2026-11-07"
+    "sha256": "4570f3b07656def62ba1c9b06fba9de2d29b388fdc0a6a9d1b15af069bd616ca",
+    "chars": 128045,
+    "since": "2026-11-14"
   },
   "bayarcash/sdk-callback": {
     "url": "https://raw.githubusercontent.com/webimpian/bayarcash-php-sdk/HEAD/src/Actions/CallbackVerifications.php",
