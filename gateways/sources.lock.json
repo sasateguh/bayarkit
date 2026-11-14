@@ -61,9 +61,9 @@
   },
   "airwallex/openapi": {
     "url": "https://raw.githubusercontent.com/airwallex/airwallex-openapi/HEAD/openapi/client-api/latest/airwallex-openapi-latest.json",
-    "sha256": "c5ad0c147ccbd803989c07da6d833918b9c6ce8bad9a6286dbf38fa60f4d8595",
-    "chars": 4067704,
-    "since": "2026-11-11"
+    "sha256": "c13e35e370c06ea4823c9df279cf44e216094b2a7e1579b1171be1c02b94afd9",
+    "chars": 4078662,
+    "since": "2026-11-14"
   },
   "airwallex/webhooks-md": {
     "url": "https://www.airwallex.com/docs/developer-tools/webhooks/listen-for-webhook-events.md",
