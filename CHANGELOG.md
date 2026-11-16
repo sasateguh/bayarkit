@@ -6,6 +6,23 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `@bayarkit/sampan`: Sampan Pay, invoices priced in US dollars that the buyer pays in Bitcoin Cash from any wallet;
+  Sampan converts each payment to PUSD and sends it to the merchant's own address. Amounts are US cents, like every
+  other adapter; any currency other than USD is refused before a request. A payment is paid only when Sampan says
+  `paid`, `overpaid` or `paid_late` and a PUSD conversion is on record; `underpaid` stays pending, so
+  `confirmPayment` refuses it. Webhooks are verified as Standard Webhooks (`webhook-id`, `webhook-timestamp`,
+  `webhook-signature`). No refunds: Sampan holds no funds. Written from the Sampan Pay API design, not measured yet
+  (evidence `docs`); on a branch, not published to npm. TypeScript only, no PHP twin.
+- `@bayarkit/testing`: `startFakeSampan` (and `bayarkit-fake sampan`), with `pay` for a partial, full or late
+  payment, `expire`, and signed `callbackFor` events.
+
+### Fixed
+
+- The README status line, generated from the registry, is counted in words up to twenty and read back from digits,
+  so a seventeenth adapter no longer fails the generated-files check.
+
 ### Changed
 
 - `@bayarkit/bayarcash` reads transaction statuses 5 Abandoned (`expired`), 6 Authorized (`pending`), 7 Void

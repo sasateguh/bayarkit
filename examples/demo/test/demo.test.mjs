@@ -1,7 +1,10 @@
 // The demo end to end, for EVERY gateway: pay → paid; signed callback without payment → not paid; forged → refused;
 // another order's paid callback → mismatch.
+import { readFileSync } from 'node:fs'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { startDemo } from '../app.mjs'
+
+const registry = JSON.parse(readFileSync(new URL('../../../gateways/registry.json', import.meta.url), 'utf8'))
 
 let demo
 beforeAll(async () => {
@@ -36,6 +39,10 @@ describe('demo', () => {
     const html = await (await get('/')).text()
     expect(demo.gateways.size).toBeGreaterThanOrEqual(14)
     for (const id of demo.gateways.keys()) expect(html).toContain(`value="${id}"`)
+    // None skipped: a new adapter (one priced in USD and paid in Bitcoin Cash included) is offered as soon as it is
+    // in the registry with its smoke setup.
+    const withAdapter = registry.gateways.filter((g) => g.adapter).map((g) => g.id)
+    expect([...demo.gateways.keys()].sort()).toEqual(withAdapter.sort())
   })
 
   it('runs all four scenarios on every gateway and only "pay" ends paid', async () => {
