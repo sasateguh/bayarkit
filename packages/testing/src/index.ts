@@ -25,6 +25,13 @@ export {
   type PayPalRefund,
   startFakePayPal,
 } from './fakes/paypal.js'
+export {
+  type FakeSampan,
+  type SampanInvoice,
+  type SampanStatus,
+  sampanSignature,
+  startFakeSampan,
+} from './fakes/sampan.js'
 export { dokuSignature, type FakeSenangPay, startFakeSenangPay } from './fakes/senangpay.js'
 export { type FakeStripe, startFakeStripe, stripeSignature } from './fakes/stripe.js'
 export { type FakeToyyibPay, startFakeToyyibPay } from './fakes/toyyibpay.js'
