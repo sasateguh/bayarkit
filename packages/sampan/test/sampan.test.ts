@@ -119,7 +119,7 @@ describe('sampan: the adapter against the fake', () => {
     }
     expect(fake.requests.length).toBe(before)
     expect(gw().info.currency).toBe('USD')
-    expect(info.evidence.kind).toBe('docs')
+    expect(info.evidence).toMatchObject({ kind: 'measured', date: '2026-11-16' })
   })
 
   it('reads the invoice: reference, amount in cents, USD, the invoice address in raw', async () => {

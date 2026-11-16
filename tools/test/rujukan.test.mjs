@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fillGatewayCount, normalise } from '../rujukan.mjs'
+import { evidenceText, fillGatewayCount, normalise } from '../rujukan.mjs'
 
 describe('rujukan normalise', () => {
   it('makes links to the page’s own site relative, so docs flipping between the two is not a change', () => {
@@ -111,5 +111,19 @@ describe('rujukan README status line: gateway count', () => {
 
   it('still fails loudly when the status line is missing', () => {
     expect(() => fillGatewayCount('README.md', 'no status here', 17)).toThrow(/status line/)
+  })
+})
+
+describe('rujukan skill: where an adapter was measured', () => {
+  const gw = (adapter) => ({ id: 'x', adapter: { package: '@bayarkit/x', ...adapter } })
+
+  it('says sandbox by default, and the place the registry names for a gateway without one', () => {
+    expect(evidenceText(gw({ evidence: 'measured' }), 'Paddle')).toBe('measured on the Paddle sandbox')
+    expect(evidenceText(gw({ evidence: 'measured', measuredOn: 'mainnet' }), 'Sampan Pay')).toBe(
+      'measured on mainnet',
+    )
+    expect(evidenceText(gw({ evidence: 'docs' }), 'CHIP')).toBe(
+      'written from the official docs, not yet measured on the sandbox',
+    )
   })
 })

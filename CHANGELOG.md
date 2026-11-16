@@ -14,9 +14,9 @@ All notable changes to this project are documented here. The format follows
   payment is paid only when Sampan says `paid`, `overpaid` or `paid_late` and every payment has a PUSD conversion on
   record; `paid_late` also needs the full amount, because Sampan reports any late payment that way whatever its size;
   `underpaid` stays pending, so `confirmPayment` refuses it. Webhooks are verified as Standard Webhooks
-  (`webhook-id`, `webhook-timestamp`, `webhook-signature`). No refunds: Sampan holds no funds. Request and answer
-  shapes matched against the live API with one unpaid invoice; no payment or webhook measured yet (evidence `docs`);
-  on a branch, not published to npm. TypeScript only, no PHP twin.
+  (`webhook-id`, `webhook-timestamp`, `webhook-signature`). No refunds: Sampan holds no funds. Measured on mainnet
+  (evidence `measured`): one USD 0.20 invoice paid in Bitcoin Cash, read back paid, its signed webhook verified and
+  `confirmPayment` ok; underpaid, overpaid and late payments not measured. On a branch, not published to npm. TypeScript only, no PHP twin.
 - `@bayarkit/testing`: `startFakeSampan` (and `bayarkit-fake sampan`), with `pay` for a partial, full or late
   payment, `expire`, and signed `callbackFor` events. It answers what the live API answered: `usd` as a number,
   satoshi amounts as strings, `orderId`/`returnUrl` null when not sent, limits USD 0.20 to 250, and its error words.

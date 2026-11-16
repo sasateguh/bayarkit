@@ -7,7 +7,7 @@ description: Integrate Sampan Pay payments (from Malaysia) safely. Use when addi
 
 ## Use the bayarkit adapter
 
-Install `@bayarkit/core` and `@bayarkit/sampan`. Evidence: **written from the official docs, not yet measured on the sandbox**.
+Install `@bayarkit/core` and `@bayarkit/sampan`. Evidence: **measured on mainnet**.
 
 ```ts
 import { checkoutResponse, confirmPayment, readCallback } from '@bayarkit/core'

@@ -2,15 +2,19 @@
  * Sampan Pay adapter: USD invoices the buyer pays in Bitcoin Cash from any wallet; Sampan converts each payment to PUSD
  * and sends it to the merchant's own address. Raw REST (no Sampan or BCH library, zero runtime dependencies).
  *
- * Matched against the live API on 16 November 2026 through this adapter: one unpaid USD 0.20 invoice (create answers
- * 200, `getPayment` = pending with Sampan's `open`), its GET answer and the error answers. No payment and no webhook
- * were measured, so `evidence.kind` stays `docs`. Found live, unlike the first plan: `usd` is a JSON number in the
- * request (a string only passes by coercion), `requiredSats`/`paidSats`/payment sats are decimal strings, `orderId`
- * and `returnUrl` are null when not sent, the limits are USD 0.20 to 250, a key under 24 bytes is refused, ids are 32
- * hex digits, and Sampan's own errors are `{ error, message }` with `below_min`, `above_max`, `bad_request`,
- * `not_found` (also while pay is off), while a body the schema refuses gets the framework's `error: 'Bad Request'`.
- * From Sampan's code, not measured: the webhook body is `{ type, timestamp, data }` with `data` = the GET answer
- * without `webhook`.
+ * Measured on mainnet, 16 November 2026, invoice fd078c7ff4b8a7e9613289d5e8d76408, USD 0.20, through this adapter:
+ * created, read back pending (`open`), paid with one BCH transaction (dd58ea8d…a6ec, 99180 sats); about 15 seconds
+ * later `getPayment` read `paid` with one PUSD 0.20 conversion, Sampan posted one `invoice.paid` webhook (delivered on
+ * the first attempt), `verifyCallback` accepted its signature, `confirmPayment` answered ok for the reference, 20
+ * cents and USD, a body with one byte changed was refused, and one cent more was a mismatch. The webhook body is
+ * compact JSON `{ type, timestamp, data }` with `data` = the GET answer without `webhook`, `webhook-id` is `msg_` and
+ * 32 hex digits, one `v1` signature. Earlier the same day, unpaid invoices and error answers showed what the first
+ * plan had wrong: `usd` is a JSON number in the request (a string only passes by coercion),
+ * `requiredSats`/`paidSats`/payment sats are decimal strings, `orderId` and `returnUrl` are null when not sent, the
+ * limits are USD 0.20 to 250, a key under 24 bytes is refused, ids are 32 hex digits, and Sampan's own errors are
+ * `{ error, message }` with `below_min`, `above_max`, `bad_request`, `not_found` (also while pay is off), while a body
+ * the schema refuses gets the framework's `error: 'Bad Request'`. Not measured: underpaid, overpaid and late payments
+ * (from Sampan's code; the fake follows it) and webhook retries.
  *
  * - There are no accounts and no API key: an invoice names the merchant by `merchantAddress` (a token-aware Bitcoin
  *   Cash address, where the PUSD goes). Every invoice carries `webhookSecret` from the config, so one secret signs
@@ -77,10 +81,10 @@ export const info: GatewayInfo = {
   minimumAmount: 20,
   currency: 'USD',
   evidence: {
-    kind: 'docs',
+    kind: 'measured',
     date: '2026-11-16',
     source:
-      'Sampan Pay invoice API, request and answer shapes matched against the live API (one unpaid invoice); no payment or webhook measured',
+      'Sampan Pay on mainnet: one USD 0.20 invoice paid in BCH, read back paid, its signed webhook verified and confirmPayment ok',
   },
 }
 

@@ -1316,7 +1316,8 @@
       "adapter": {
         "package": "@bayarkit/sampan",
         "factory": "sampan",
-        "evidence": "docs",
+        "evidence": "measured",
+        "measuredOn": "mainnet",
         "configExample": "{ merchantAddress: 'bitcoincash:z…', webhookSecret: 'whsec_…' }",
         "currency": "USD",
         "flow": {
@@ -1329,8 +1330,8 @@
           "ms": "Sampan Pay (Bitcoin Cash, invois USD)"
         },
         "summary": {
-          "en": "Request and answer shapes matched against the live API with one unpaid invoice (16 Nov 2026); no payment or webhook measured yet; charges in USD (0.20 to 250), paid in Bitcoin Cash",
-          "ms": "Bentuk permintaan dan jawapan dipadankan dengan API hidup menggunakan satu invois yang belum dibayar (16 Nov 2026); tiada bayaran atau webhook diukur lagi; caj dalam USD (0.20 hingga 250), dibayar dengan Bitcoin Cash"
+          "en": "Measured on mainnet, 16 Nov 2026: one USD 0.20 invoice paid in BCH, its webhook and `confirmPayment`; underpaid and late payments not measured; charges in USD (0.20 to 250)",
+          "ms": "Diukur di mainnet, 16 Nov 2026: satu invois USD 0.20 dibayar dengan BCH, webhooknya dan `confirmPayment`; bayaran kurang dan lewat belum diukur; caj dalam USD (0.20 hingga 250)"
         }
       },
       "sources": [

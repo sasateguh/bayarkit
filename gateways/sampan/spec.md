@@ -12,8 +12,8 @@ sandbox: the API runs on mainnet only.
 
 ## Measured on the live API (16 November 2026)
 
-Two unpaid USD 0.20 invoices (one through the adapter, one with `curl`) and the error answers below. Nothing was paid
-and no webhook was received, so the adapter's evidence stays `docs`.
+Unpaid USD 0.20 invoices (through the adapter and with `curl`) and the error answers below; then one invoice paid on
+mainnet through the adapter (next section), so the adapter's evidence is `measured`.
 
 | Fact | Result |
 | --- | --- |
@@ -72,7 +72,25 @@ The adapter maps `paid` and `overpaid` to paid only when every payment has a con
 `paidSats` at least `requiredSats`. `open` and `underpaid` are pending, `expired` is expired. `confirmPayment` is the
 only way to "paid".
 
-## Webhooks (not measured yet)
+## A paid invoice (measured on mainnet, 16 November 2026)
+
+One USD 0.20 invoice created through `@bayarkit/sampan`, id `fd078c7ff4b8a7e9613289d5e8d76408`, with a `webhookUrl` on
+a public HTTPS tunnel, paid with one Bitcoin Cash transaction from a wallet that is not Sampan's.
+
+| Fact | Result |
+| --- | --- |
+| Before paying | `getPayment` = pending, Sampan `open` |
+| Payment | one transaction, `dd58ea8d3deca0fc4fd43e86d468ab2a2f9185d5158152e3011a7dc51e88a6ec`, 99180 sats (`requiredSats`) |
+| About 15 seconds later | GET `status: "paid"`, `paidSats: "99180"`, `payments: [{txid, sats: "99180"}]`, `convert: [{txid, pusd: "0.20"}]` |
+| Webhook | one `POST`, `invoice.paid`, sent at the same moment as the paid status; `webhook` became `{state: "delivered", attempts: 1}` |
+| Webhook headers | `content-type: application/json`, `user-agent: Sampan-Webhooks/1`, `webhook-id: msg_<32 hex>`, `webhook-timestamp` (unix seconds), `webhook-signature` with one `v1,<base64>` |
+| Webhook body | compact JSON `{type, timestamp, data}`; `data` = the GET answer without `webhook`; no secret in it |
+| `verifyCallback` | accepted; the body with one byte changed = `null` |
+| `confirmPayment` | ok for the reference, 20 cents and USD; one cent more = `mismatch` |
+
+Not measured: underpaid, overpaid and late payments, and webhook retries (the rows below come from Sampan's code).
+
+## Webhooks
 
 Standard Webhooks: headers `webhook-id`, `webhook-timestamp` (unix seconds), `webhook-signature` (`v1,<base64>`,
 space separated), HMAC-SHA256 over `id.timestamp.body` keyed with the base64 after `whsec_`. The body is
