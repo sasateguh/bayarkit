@@ -467,7 +467,7 @@ const README_LANG = {
     lang: 'en',
     header: ['Gateway', 'Package', 'Evidence'],
     count: [
-      /(\*\*Status:\*\* [0-9.]+\. )[A-Za-z]+( gateways)/,
+      /(\*\*Status:\*\* [0-9.]+\. )[A-Za-z0-9]+( gateways)/,
       [
         'Zero',
         'One',
@@ -486,6 +486,10 @@ const README_LANG = {
         'Fourteen',
         'Fifteen',
         'Sixteen',
+        'Seventeen',
+        'Eighteen',
+        'Nineteen',
+        'Twenty',
       ],
     ],
   },
@@ -493,7 +497,7 @@ const README_LANG = {
     lang: 'ms',
     header: ['Gateway', 'Pakej', 'Bukti'],
     count: [
-      /(\*\*Status:\*\* [0-9.]+\. )[A-Za-z ]+?( gateway dalam)/,
+      /(\*\*Status:\*\* [0-9.]+\. )[A-Za-z0-9 ]+?( gateway dalam)/,
       [
         'Sifar',
         'Satu',
@@ -512,9 +516,20 @@ const README_LANG = {
         'Empat belas',
         'Lima belas',
         'Enam belas',
+        'Tujuh belas',
+        'Lapan belas',
+        'Sembilan belas',
+        'Dua puluh',
       ],
     ],
   },
+}
+
+/** The gateway count in a README status line, in words (digits past the word list); reads either form back. */
+export function fillGatewayCount(file, text, n) {
+  const [pattern, words] = README_LANG[file].count
+  if (!pattern.test(text)) throw new Error(`${file}: status line with the gateway count not found`)
+  return text.replace(pattern, `$1${words[n] ?? n}$2`)
 }
 
 /** README gateway tables + the gateway count in the status line, both from the registry. */
@@ -536,11 +551,8 @@ function readmes(registry) {
     const b = text.indexOf(end)
     if (a < 0 || b < a) throw new Error(`${file}: gateways:table markers missing`)
     const open = text.slice(a, text.indexOf('\n', a) + 1)
-    let out = `${text.slice(0, a)}${open}${table(cfg.header, rows)}\n${text.slice(b)}`
-    const [pattern, words] = cfg.count
-    if (!pattern.test(out)) throw new Error(`${file}: status line with the gateway count not found`)
-    out = out.replace(pattern, `$1${words[adapters.length] ?? adapters.length}$2`)
-    return [path, out]
+    const out = `${text.slice(0, a)}${open}${table(cfg.header, rows)}\n${text.slice(b)}`
+    return [path, fillGatewayCount(file, out, adapters.length)]
   })
 }
 

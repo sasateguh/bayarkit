@@ -14,7 +14,7 @@ Your checkout and callback code stay the same when you switch gateways; only the
 
 [Bahasa Melayu](README.ms.md) · **[Try the demo](https://bayarkit.sasateguh.com/en)** (fake gateways, no money)
 
-> **Status:** 0.3.3. Sixteen gateways in TypeScript, all on npm.
+> **Status:** 0.3.3. Seventeen gateways in TypeScript, all on npm except Sampan Pay (on a branch, not published).
 > toyyibPay, Billplz, Bayarcash, Stripe, Paddle and PayPal are measured on their sandboxes; the others are written
 > from official sources and have not yet run against a real gateway (the table says which source). PHP/Laravel covers toyyibPay,
 > CHIP, Paddle and PayPal.
@@ -52,6 +52,7 @@ Your checkout and callback code stay the same when you switch gateways; only the
 | eGHL (ADAPTIS e-Commerce)                        | `@bayarkit/eghl`      | Official eGHL public code (hash class, merchant-api QUERY, Omnipay HashValue2 test vector; no public API guide exists); not yet measured on the test host                                       |
 | Paddle Billing (merchant of record, no MYR)      | `@bayarkit/paddle`    | Measured on the sandbox, 30 Oct 2026: card paid and declined, real signed webhooks, full and partial refunds; charges in USD or another Paddle currency, never MYR                              |
 | PayPal Orders v2 (approve, then capture)         | `@bayarkit/paypal`    | Measured on the sandbox, 30 Oct 2026: buyer approval, captures in USD and MYR, real webhooks verified by PayPal's postback, full and partial refunds; paid only when the capture is `COMPLETED` |
+| Sampan Pay (Bitcoin Cash, USD invoices)          | `@bayarkit/sampan`    | From the Sampan Pay invoice API design (not yet public), not yet measured (the API was not live on 16 Nov 2026); charges in USD, paid in Bitcoin Cash                                           |
 <!-- /gateways:table -->
 
 Researched but without an adapter yet: Adyen and Airwallex (specs in [gateways/README.md](gateways/README.md)). An adapter is

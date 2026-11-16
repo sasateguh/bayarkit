@@ -1,7 +1,7 @@
 /**
  * A fake Sampan Pay: USD invoices paid in Bitcoin Cash, converted by Sampan to PUSD at the merchant's own address.
  *
- * Written from Sampan's published plan for the invoice API (16 November 2026), NOT measured: the API was not live yet.
+ * Written from the Sampan Pay invoice API design (16 November 2026, not yet public), NOT measured: the API was not live yet.
  * What the plan fixes, and this fake keeps: `POST /api/pay/invoice` takes `{usd, merchantAddress, webhookUrl?,
  * webhookSecret?, orderId?, returnUrl?}` and answers `{id, address, bip21, qrSvgUrl, statusUrl, requiredSats, expiresAt,
  * webhookSecret?}` (the secret only when Sampan generated it); `GET /api/pay/invoice/:id` answers the status with

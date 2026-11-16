@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { normalise } from '../rujukan.mjs'
+import { fillGatewayCount, normalise } from '../rujukan.mjs'
 
 describe('rujukan normalise', () => {
   it('makes links to the page’s own site relative, so docs flipping between the two is not a change', () => {
@@ -72,5 +72,44 @@ describe('rujukan normalise: format and metadata noise', () => {
     expect(t('if (a > 0) {')).not.toBe(t('if (a < 0) {'))
     expect(t('/** Signs the body. */ sign(**opts)')).toBe('/** Signs the body. */ sign(**opts)')
     expect(t('[tab](https://example.test/tab) [card]: /x')).toBe('[tab](https://example.test/tab) [card]: /x')
+  })
+})
+
+describe('rujukan README status line: gateway count', () => {
+  const en = '> **Status:** 0.3.3. Sixteen gateways in TypeScript.\n'
+  const ms = '> **Status:** 0.3.3. Enam belas gateway dalam TypeScript.\n'
+
+  it('writes the count in words past sixteen', () => {
+    expect(fillGatewayCount('README.md', en, 17)).toBe(
+      '> **Status:** 0.3.3. Seventeen gateways in TypeScript.\n',
+    )
+    expect(fillGatewayCount('README.ms.md', ms, 17)).toBe(
+      '> **Status:** 0.3.3. Tujuh belas gateway dalam TypeScript.\n',
+    )
+  })
+
+  it('is idempotent: its own output is valid input for the next run', () => {
+    for (const [file, text] of [
+      ['README.md', en],
+      ['README.ms.md', ms],
+    ]) {
+      for (const n of [17, 20, 21, 25]) {
+        const once = fillGatewayCount(file, text, n)
+        expect(fillGatewayCount(file, once, n)).toBe(once)
+      }
+    }
+  })
+
+  it('reads a status line that holds digits and writes words back', () => {
+    expect(fillGatewayCount('README.md', '> **Status:** 0.3.3. 17 gateways in TypeScript.', 17)).toBe(
+      '> **Status:** 0.3.3. Seventeen gateways in TypeScript.',
+    )
+    expect(fillGatewayCount('README.ms.md', '> **Status:** 0.3.3. 17 gateway dalam TypeScript.', 17)).toBe(
+      '> **Status:** 0.3.3. Tujuh belas gateway dalam TypeScript.',
+    )
+  })
+
+  it('still fails loudly when the status line is missing', () => {
+    expect(() => fillGatewayCount('README.md', 'no status here', 17)).toThrow(/status line/)
   })
 })

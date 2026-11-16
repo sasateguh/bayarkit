@@ -1307,6 +1307,32 @@
           "source": "Payments v2 OpenAPI captures.refund"
         }
       ]
+    },
+    {
+      "id": "sampan",
+      "name": "Sampan Pay",
+      "site": "https://sampan.sasateguh.com",
+      "sandbox": "none: mainnet only (Bitcoin Cash); test with small invoices (USD 0.20) or the fake",
+      "adapter": {
+        "package": "@bayarkit/sampan",
+        "factory": "sampan",
+        "evidence": "docs",
+        "configExample": "{ merchantAddress: 'bitcoincash:z…', webhookSecret: 'whsec_…' }",
+        "currency": "USD",
+        "flow": {
+          "en": "A USD invoice: `payment.url` is Sampan's payment page with the Bitcoin Cash address, QR code and amount (the address and BIP21 URI are also in `payment.raw`). The buyer pays BCH from any wallet; Sampan converts it to PUSD and sends it to your `merchantAddress`, then posts a signed webhook (Standard Webhooks) to `callbackUrl`, which must be HTTPS. Every invoice carries your `webhookSecret`. Underpaid stays pending; there are no refunds through the API.",
+          "ms": "Invois USD: `payment.url` ialah halaman bayaran Sampan dengan alamat Bitcoin Cash, kod QR dan amaun (alamat dan URI BIP21 juga dalam `payment.raw`). Pembeli membayar BCH dari mana-mana dompet; Sampan menukarnya kepada PUSD dan menghantarnya ke `merchantAddress` anda, kemudian menghantar webhook bertandatangan (Standard Webhooks) ke `callbackUrl`, yang mesti HTTPS. Setiap invois membawa `webhookSecret` anda. Bayaran kurang kekal belum selesai; tiada bayaran balik melalui API."
+        },
+        "fake": "startFakeSampan",
+        "label": {
+          "en": "Sampan Pay (Bitcoin Cash, USD invoices)",
+          "ms": "Sampan Pay (Bitcoin Cash, invois USD)"
+        },
+        "summary": {
+          "en": "From the Sampan Pay invoice API design (not yet public), not yet measured (the API was not live on 16 Nov 2026); charges in USD, paid in Bitcoin Cash",
+          "ms": "Daripada reka bentuk API invois Sampan Pay (belum awam), belum diukur (API belum hidup pada 16 Nov 2026); caj dalam USD, dibayar dengan Bitcoin Cash"
+        }
+      }
     }
   ]
 }

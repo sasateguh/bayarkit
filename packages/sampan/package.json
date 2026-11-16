@@ -1,0 +1,53 @@
+{
+  "name": "@bayarkit/sampan",
+  "version": "0.3.3",
+  "description": "Sampan Pay for Node.js and TypeScript: USD invoices paid in Bitcoin Cash, PUSD to your own address; verify Standard Webhooks signatures and confirm each payment with a fresh status query. Zero dependencies, part of bayarkit.",
+  "keywords": [
+    "payment",
+    "payment-gateway",
+    "malaysia",
+    "fpx",
+    "duitnow",
+    "webhook",
+    "checkout",
+    "typescript",
+    "nodejs",
+    "sampan"
+  ],
+  "homepage": "https://github.com/sasateguh/bayarkit/tree/main/packages/sampan#readme",
+  "bugs": {
+    "url": "https://github.com/sasateguh/bayarkit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sasateguh/bayarkit.git",
+    "directory": "packages/sampan"
+  },
+  "license": "MIT",
+  "author": "Muhammad Aiman (https://github.com/aimanmalib)",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@bayarkit/core": "0.3.3"
+  }
+}

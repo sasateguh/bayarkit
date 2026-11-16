@@ -13,7 +13,7 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 
 [English](README.md) · **[Cuba demo](https://bayarkit.sasateguh.com/)** (gateway palsu, tiada wang)
 
-> **Status:** 0.3.3. Enam belas gateway dalam TypeScript, semuanya di npm.
+> **Status:** 0.3.3. Tujuh belas gateway dalam TypeScript, semuanya di npm kecuali Sampan Pay (di cawangan, belum diterbitkan).
 > toyyibPay, Billplz, Bayarcash, Stripe, Paddle dan PayPal diukur pada sandbox masing-masing; yang lain ditulis daripada
 > sumber rasmi dan belum dijalankan terhadap gateway sebenar (jadual menyatakan sumbernya). PHP/Laravel meliputi toyyibPay, CHIP,
 > Paddle dan PayPal.
@@ -53,6 +53,7 @@ Kod checkout dan callback anda kekal sama bila anda menukar gateway; hanya adapt
 | eGHL (ADAPTIS e-Commerce)                      | `@bayarkit/eghl`      | Kod awam rasmi eGHL (kelas hash, QUERY merchant-api, vektor ujian HashValue2 Omnipay; tiada panduan API awam); belum diukur pada hos ujian                                                                   |
 | Paddle Billing (penjual rasmi, tiada MYR)      | `@bayarkit/paddle`    | Diukur pada sandbox, 30 Okt 2026: kad dibayar dan ditolak, webhook bertandatangan sebenar, bayaran balik penuh dan separa; caj dalam USD atau mata wang Paddle lain, bukan MYR                               |
 | PayPal Orders v2 (lulus, kemudian tangkap)     | `@bayarkit/paypal`    | Diukur pada sandbox, 30 Okt 2026: kelulusan pembeli, tangkapan dalam USD dan MYR, webhook sebenar disahkan melalui postback PayPal, bayaran balik penuh dan separa; dibayar hanya bila tangkapan `COMPLETED` |
+| Sampan Pay (Bitcoin Cash, invois USD)          | `@bayarkit/sampan`    | Daripada reka bentuk API invois Sampan Pay (belum awam), belum diukur (API belum hidup pada 16 Nov 2026); caj dalam USD, dibayar dengan Bitcoin Cash                                                         |
 <!-- /gateways:table -->
 
 Sudah dikaji tetapi belum ada adapter: Adyen dan Airwallex (spesifikasi dalam [gateways/README.md](gateways/README.md)). Satu
