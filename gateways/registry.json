@@ -1329,10 +1329,19 @@
           "ms": "Sampan Pay (Bitcoin Cash, invois USD)"
         },
         "summary": {
-          "en": "From the Sampan Pay invoice API design (not yet public), not yet measured (the API was not live on 16 Nov 2026); charges in USD, paid in Bitcoin Cash",
-          "ms": "Daripada reka bentuk API invois Sampan Pay (belum awam), belum diukur (API belum hidup pada 16 Nov 2026); caj dalam USD, dibayar dengan Bitcoin Cash"
+          "en": "Request and answer shapes matched against the live API with one unpaid invoice (16 Nov 2026); no payment or webhook measured yet; charges in USD (0.20 to 250), paid in Bitcoin Cash",
+          "ms": "Bentuk permintaan dan jawapan dipadankan dengan API hidup menggunakan satu invois yang belum dibayar (16 Nov 2026); tiada bayaran atau webhook diukur lagi; caj dalam USD (0.20 hingga 250), dibayar dengan Bitcoin Cash"
         }
-      }
+      },
+      "sources": [
+        {
+          "id": "pay-js",
+          "title": "Sampan Pay button script (pay.js)",
+          "url": "https://sampan.sasateguh.com/pay.js",
+          "mustContain": ["/api/pay/invoice", "merchantAddress", "usd: Number(", "statusUrl"]
+        }
+      ],
+      "spec": true
     }
   ]
 }

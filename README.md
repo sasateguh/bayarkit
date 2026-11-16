@@ -52,7 +52,7 @@ Your checkout and callback code stay the same when you switch gateways; only the
 | eGHL (ADAPTIS e-Commerce)                        | `@bayarkit/eghl`      | Official eGHL public code (hash class, merchant-api QUERY, Omnipay HashValue2 test vector; no public API guide exists); not yet measured on the test host                                       |
 | Paddle Billing (merchant of record, no MYR)      | `@bayarkit/paddle`    | Measured on the sandbox, 30 Oct 2026: card paid and declined, real signed webhooks, full and partial refunds; charges in USD or another Paddle currency, never MYR                              |
 | PayPal Orders v2 (approve, then capture)         | `@bayarkit/paypal`    | Measured on the sandbox, 30 Oct 2026: buyer approval, captures in USD and MYR, real webhooks verified by PayPal's postback, full and partial refunds; paid only when the capture is `COMPLETED` |
-| Sampan Pay (Bitcoin Cash, USD invoices)          | `@bayarkit/sampan`    | From the Sampan Pay invoice API design (not yet public), not yet measured (the API was not live on 16 Nov 2026); charges in USD, paid in Bitcoin Cash                                           |
+| Sampan Pay (Bitcoin Cash, USD invoices)          | `@bayarkit/sampan`    | Request and answer shapes matched against the live API with one unpaid invoice (16 Nov 2026); no payment or webhook measured yet; charges in USD (0.20 to 250), paid in Bitcoin Cash            |
 <!-- /gateways:table -->
 
 Researched but without an adapter yet: Adyen and Airwallex (specs in [gateways/README.md](gateways/README.md)). An adapter is

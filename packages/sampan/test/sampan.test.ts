@@ -83,11 +83,13 @@ describe('sampan: the adapter against the fake', () => {
     sampan({ ...config, baseUrl: fake.url, now: () => clock(), ...over })
   const lastBody = () => JSON.parse(fake.requests.at(-1)?.body ?? '{}') as Record<string, unknown>
 
-  it('sends the amount as a dollar string, the reference as orderId, and the one merchant secret', async () => {
+  it('sends the amount as a JSON number of dollars, the reference as orderId, and the one merchant secret', async () => {
     const input = sampleInput({ amount: 20 })
     const created = await gw().createPayment(input)
+    // The live schema types usd as a number (a string only passes by coercion, measured 16 Nov 2026).
+    expect(fake.requests.at(-1)?.body).toContain('"usd":0.2,')
     expect(lastBody()).toEqual({
-      usd: '0.20',
+      usd: 0.2,
       merchantAddress: MERCHANT,
       orderId: input.reference,
       webhookUrl: input.callbackUrl,
@@ -139,7 +141,8 @@ describe('sampan: the adapter against the fake', () => {
 
   it('an underpaid invoice is pending, never paid, and confirmPayment refuses it', async () => {
     const { input, id, sats } = await invoice()
-    fake.pay(id, sats - 1)
+    // Short by more than Sampan's 50 bps tolerance.
+    fake.pay(id, Math.floor(sats * 0.99))
     expect((await gw().getPayment(id)).status).toBe('pending')
     expect((await gw().getPayment(id)).raw).toMatchObject({ status: 'underpaid' })
     expect(await confirmPayment(gw(), fake.callbackFor(id), input)).toMatchObject({
@@ -176,10 +179,49 @@ describe('sampan: the adapter against the fake', () => {
     })
   })
 
+  it('a SHORT payment after expiry is paid_late at Sampan, but pending here: paid_late ignores the amount', async () => {
+    const { input, id, sats } = await invoice()
+    fake.expire(id)
+    fake.pay(id, Math.floor(sats / 2))
+    const record = await gw().getPayment(id)
+    expect(record.raw).toMatchObject({ status: 'paid_late' })
+    expect(record.status).toBe('pending')
+    expect(await confirmPayment(gw(), fake.callbackFor(id, { type: 'paid_late' }), input)).toMatchObject({
+      ok: false,
+      reason: 'not_paid',
+    })
+  })
+
   it('an unpaid invoice past its time is expired', async () => {
     const { id } = await invoice()
     fake.expire(id)
     expect((await gw().getPayment(id)).status).toBe('expired')
+  })
+
+  it('two payments add up to paid, but only one is converted yet: pending until both are', async () => {
+    const { input, id, sats } = await invoice()
+    fake.pay(id, Math.floor(sats / 2))
+    fake.pay(id, Math.ceil(sats / 2), { converted: false })
+    const record = await gw().getPayment(id)
+    expect(record.raw).toMatchObject({ status: 'paid' })
+    expect(record.status).toBe('pending')
+    expect(await confirmPayment(gw(), fake.callbackFor(id), input)).toMatchObject({
+      ok: false,
+      reason: 'not_paid',
+    })
+  })
+
+  it('the smallest invoice is the live minimum, USD 0.20, refused before calling Sampan', async () => {
+    expect(info.minimumAmount).toBe(20)
+    expect(gw().info.minimumAmount).toBe(20)
+    const before = fake.requests.length
+    await expect(gw().createPayment(sampleInput({ amount: 19 }))).rejects.toMatchObject({
+      code: 'INVALID_AMOUNT',
+    })
+    expect(fake.requests.length).toBe(before)
+    await expect(gw().createPayment(sampleInput({ amount: 20 }))).resolves.toMatchObject({
+      id: expect.any(String),
+    })
   })
 
   it('"paid" without a PUSD conversion on record is not paid', async () => {
@@ -246,7 +288,9 @@ describe('sampan: the adapter against the fake', () => {
   })
 
   it('refuses a webhook secret that is not whsec_<base64>, without quoting it', () => {
-    for (const webhookSecret of ['', 'hunter2-plain-secret', 'whsec_', 'whsec_!!!!not-base64!!!!']) {
+    // Sampan refuses a key shorter than 24 bytes (measured), so the adapter does at start-up.
+    const short = `whsec_${Buffer.alloc(23, 9).toString('base64')}`
+    for (const webhookSecret of ['', 'hunter2-plain-secret', 'whsec_', 'whsec_!!!!not-base64!!!!', short]) {
       let err: unknown
       try {
         sampan({ ...config, webhookSecret })
@@ -264,7 +308,7 @@ describe('sampan: the adapter against the fake', () => {
     const bad = gw({ merchantAddress: 'bitcoincash:qnot-a-token-address' })
     const err = await bad.createPayment(sampleInput()).catch((e: unknown) => e)
     expect(err).toBeInstanceOf(GatewayError)
-    expect(err).toMatchObject({ status: 400, code: 'bad_address' })
+    expect(err).toMatchObject({ status: 400, code: 'bad_request' })
     expect((err as Error).message).toContain('token-aware')
     expect((err as Error).message).not.toContain(SECRET.slice(6, 20))
   })
@@ -284,13 +328,13 @@ describe('sampan: the adapter against the fake', () => {
     expect(err.message).not.toContain(SECRET.slice(6))
   })
 
-  it('reports the closed pay flag as an error with its code', async () => {
+  it('reports the closed pay flag (404 not_found) as an error with its code', async () => {
     const closed = await startFakeSampan({ pay: false })
     try {
       const err = await sampan({ ...config, baseUrl: closed.url })
         .createPayment(sampleInput())
         .catch((e: unknown) => e)
-      expect(err).toMatchObject({ status: 404, code: 'flow_closed' })
+      expect(err).toMatchObject({ status: 404, code: 'not_found' })
     } finally {
       await closed.close()
     }
@@ -298,7 +342,16 @@ describe('sampan: the adapter against the fake', () => {
 
   it('refuses an invoice id that could leave the path, before calling Sampan', async () => {
     const before = fake.requests.length
-    for (const id of ['../health', 'a/b', '', 'x'.repeat(200)]) {
+    // Live ids are 32 lowercase hex digits; anything else is refused here, not by Sampan's schema.
+    for (const id of [
+      '../health',
+      'a/b',
+      '',
+      'x'.repeat(200),
+      'A'.repeat(32),
+      'a'.repeat(31),
+      'z'.repeat(32),
+    ]) {
       await expect(gw().getPayment(id)).rejects.toMatchObject({ code: 'INVALID_ID' })
     }
     expect(fake.requests.length).toBe(before)

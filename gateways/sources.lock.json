@@ -353,6 +353,12 @@
     "chars": 50107,
     "since": "2026-10-29"
   },
+  "sampan/pay-js": {
+    "url": "https://sampan.sasateguh.com/pay.js",
+    "sha256": "22639acd2b88dc0a8694c6c7622172712e85a6d19e05feaa3288e182ae1b760a",
+    "chars": 2754,
+    "since": "2026-11-16"
+  },
   "senangpay/doku-notification-global": {
     "url": "https://doku-developers.apidog.io/sample-notification-global-44767704e0.md",
     "sha256": "5155970d3c196dd972cb32f5501b96f889739beaeb7daef6663047c359f3b03c",

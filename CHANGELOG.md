@@ -10,13 +10,16 @@ All notable changes to this project are documented here. The format follows
 
 - `@bayarkit/sampan`: Sampan Pay, invoices priced in US dollars that the buyer pays in Bitcoin Cash from any wallet;
   Sampan converts each payment to PUSD and sends it to the merchant's own address. Amounts are US cents, like every
-  other adapter; any currency other than USD is refused before a request. A payment is paid only when Sampan says
-  `paid`, `overpaid` or `paid_late` and a PUSD conversion is on record; `underpaid` stays pending, so
-  `confirmPayment` refuses it. Webhooks are verified as Standard Webhooks (`webhook-id`, `webhook-timestamp`,
-  `webhook-signature`). No refunds: Sampan holds no funds. Written from the Sampan Pay API design, not measured yet
-  (evidence `docs`); on a branch, not published to npm. TypeScript only, no PHP twin.
+  other adapter (smallest USD 0.20, as on the live API); any currency other than USD is refused before a request. A
+  payment is paid only when Sampan says `paid`, `overpaid` or `paid_late` and every payment has a PUSD conversion on
+  record; `paid_late` also needs the full amount, because Sampan reports any late payment that way whatever its size;
+  `underpaid` stays pending, so `confirmPayment` refuses it. Webhooks are verified as Standard Webhooks
+  (`webhook-id`, `webhook-timestamp`, `webhook-signature`). No refunds: Sampan holds no funds. Request and answer
+  shapes matched against the live API with one unpaid invoice; no payment or webhook measured yet (evidence `docs`);
+  on a branch, not published to npm. TypeScript only, no PHP twin.
 - `@bayarkit/testing`: `startFakeSampan` (and `bayarkit-fake sampan`), with `pay` for a partial, full or late
-  payment, `expire`, and signed `callbackFor` events.
+  payment, `expire`, and signed `callbackFor` events. It answers what the live API answered: `usd` as a number,
+  satoshi amounts as strings, `orderId`/`returnUrl` null when not sent, limits USD 0.20 to 250, and its error words.
 
 ### Fixed
 

@@ -3,7 +3,7 @@
 Sampan Pay (Bitcoin Cash, USD invoices) for [bayarkit](https://github.com/sasateguh/bayarkit): one interface for Malaysian and global payment gateways, and a checked way to confirm a
 payment. [Bahasa Melayu](#bahasa-melayu)
 
-**Evidence:** From the Sampan Pay invoice API design (not yet public), not yet measured (the API was not live on 16 Nov 2026); charges in USD, paid in Bitcoin Cash.
+**Evidence:** Request and answer shapes matched against the live API with one unpaid invoice (16 Nov 2026); no payment or webhook measured yet; charges in USD (0.20 to 250), paid in Bitcoin Cash.
 
 ```bash
 npm install @bayarkit/core @bayarkit/sampan
@@ -44,7 +44,7 @@ If you would rather not wire up a payment gateway yourself, Sasa Teguh, the stud
 Sampan Pay (Bitcoin Cash, invois USD) untuk [bayarkit](https://github.com/sasateguh/bayarkit): satu antara muka untuk gateway pembayaran Malaysia dan global, dan cara bersemak untuk
 mengesahkan bayaran.
 
-**Bukti:** Daripada reka bentuk API invois Sampan Pay (belum awam), belum diukur (API belum hidup pada 16 Nov 2026); caj dalam USD, dibayar dengan Bitcoin Cash.
+**Bukti:** Bentuk permintaan dan jawapan dipadankan dengan API hidup menggunakan satu invois yang belum dibayar (16 Nov 2026); tiada bayaran atau webhook diukur lagi; caj dalam USD (0.20 hingga 250), dibayar dengan Bitcoin Cash.
 
 ```bash
 npm install @bayarkit/core @bayarkit/sampan
