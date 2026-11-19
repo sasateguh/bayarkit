@@ -91,10 +91,13 @@ describe('2c2p: amounts are decimal ringgit at the edge, integer sen inside', ()
     expect(JSON.stringify({ amount: toAmount(1) })).toBe('{"amount":0.01}')
     expect(JSON.stringify({ amount: toAmount(10) })).toBe('{"amount":0.1}')
     expect(JSON.stringify({ amount: toAmount(999_999_999) })).toBe('{"amount":9999999.99}')
+    // One assertion over the whole range: 200k expect() calls timed out on a busy host.
+    const wrong: number[] = []
     for (let sen = 0; sen <= 200_000; sen += 1) {
       const text = JSON.stringify(toAmount(sen))
-      expect(/^\d+(\.\d{1,2})?$/.test(text) && parseAmount(JSON.parse(text)) === sen).toBe(true)
+      if (!(/^\d+(\.\d{1,2})?$/.test(text) && parseAmount(JSON.parse(text)) === sen)) wrong.push(sen)
     }
+    expect(wrong).toEqual([])
     expect(() => toAmount(10.5)).toThrow(RangeError)
     expect(() => toAmount(1_000_000_000)).toThrow(RangeError)
   })
