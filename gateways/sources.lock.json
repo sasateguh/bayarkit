@@ -223,9 +223,9 @@
   },
   "hitpay/openapi": {
     "url": "https://docs.hitpayapp.com/openapi.json",
-    "sha256": "00435fa60f94ddeaf4347e0e440a51de7d0c1410b7b0ad78b0332d87b0fe96bd",
-    "chars": 382056,
-    "since": "2026-11-14"
+    "sha256": "e90512d05c9e7db02837a162000c70faba9cd94cfe742c3fadc45c7e77dc011a",
+    "chars": 382586,
+    "since": "2026-11-19"
   },
   "hitpay/php-sdk-client": {
     "url": "https://raw.githubusercontent.com/hit-pay/php-sdk/HEAD/src/Client.php",
@@ -409,9 +409,9 @@
   },
   "xendit/create-session-openapi": {
     "url": "https://docs.xendit.co/apidocs/create-session.md",
-    "sha256": "25eb022f0bfca3b04a7f053e0a92af1052abf11949541515da9fe56e42c25b69",
-    "chars": 42185,
-    "since": "2026-11-11"
+    "sha256": "159913ee48445ed417b961dc11308d48c497b52da8141b884b781dcc70f7deb8",
+    "chars": 42392,
+    "since": "2026-11-19"
   },
   "xendit/payment-webhook-openapi": {
     "url": "https://docs.xendit.co/apidocs/payment-webhook-notification.md",
