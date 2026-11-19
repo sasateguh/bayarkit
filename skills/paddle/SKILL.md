@@ -51,7 +51,7 @@ The full contract with a source for every fact: `gateways/paddle/spec.md` in the
 
 - [Create a transaction](https://developer.paddle.com/api-reference/transactions/create-transaction.md) (fingerprint `c7cd80361aaf`, unchanged since 2026-11-11)
 - [Get a transaction](https://developer.paddle.com/api-reference/transactions/get-transaction.md) (fingerprint `7e10e2c1cd12`, unchanged since 2026-11-11)
-- [Verify webhook signatures](https://developer.paddle.com/webhooks/about/signature-verification.md) (fingerprint `5ded0805c6b6`, unchanged since 2026-11-07)
+- [Verify webhook signatures](https://developer.paddle.com/webhooks/about/signature-verification.md) (fingerprint `681f652bafeb`, unchanged since 2026-11-19)
 - [Create an adjustment](https://developer.paddle.com/api-reference/adjustments/create-adjustment.md) (fingerprint `7fdb4c85f645`, unchanged since 2026-11-07)
 - [Supported currencies](https://developer.paddle.com/concepts/sell/supported-currencies.md) (fingerprint `9860e0bb7e53`, unchanged since 2026-11-07)
 - [Sandbox](https://developer.paddle.com/sdks/sandbox.md) (fingerprint `e3e8450cfc70`, unchanged since 2026-11-07)

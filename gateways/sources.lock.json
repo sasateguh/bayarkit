@@ -25,15 +25,15 @@
   },
   "adyen/checkout-openapi-v72": {
     "url": "https://raw.githubusercontent.com/Adyen/adyen-openapi/HEAD/json/CheckoutService-v72.json",
-    "sha256": "25b2228a050a1c268a4a01013bf9068fab2eb7d552d26db5af216840dc5f60c6",
-    "chars": 735175,
-    "since": "2026-11-07"
+    "sha256": "4ac13f2dad57c5ce5a74b42440c1ed7268c280b449bee4253fb08ccca712ee85",
+    "chars": 742642,
+    "since": "2026-11-19"
   },
   "adyen/hosted-checkout-md": {
     "url": "https://docs.adyen.com/standard/integration/hosted-checkout.md",
-    "sha256": "5bb876a397e3fae20822e60d64f5c37a1428135023fa4a082e938fed4d8a7f02",
-    "chars": 42849,
-    "since": "2026-11-07"
+    "sha256": "8d940b73694858b0705aceec68fcdf55ff700b037ce948cfc879e1f4a383bbd8",
+    "chars": 42869,
+    "since": "2026-11-19"
   },
   "adyen/node-hmac-spec": {
     "url": "https://raw.githubusercontent.com/Adyen/adyen-node-api-library/HEAD/src/__tests__/hmacValidator.spec.ts",
@@ -295,9 +295,9 @@
   },
   "paddle/webhook-signature": {
     "url": "https://developer.paddle.com/webhooks/about/signature-verification.md",
-    "sha256": "5ded0805c6b6c175b1c4e14eb8bab422080cdd732af321511d032294fa8ae652",
-    "chars": 33440,
-    "since": "2026-11-07"
+    "sha256": "681f652bafebb45388ddb3db9bd30ddbcc2fe6c7bf743051e36fd224ca3c9763",
+    "chars": 33641,
+    "since": "2026-11-19"
   },
   "paypal/authentication": {
     "url": "https://developer.paypal.com/api/rest/authentication.md",
