@@ -61,9 +61,9 @@
   },
   "airwallex/openapi": {
     "url": "https://raw.githubusercontent.com/airwallex/airwallex-openapi/HEAD/openapi/client-api/latest/airwallex-openapi-latest.json",
-    "sha256": "c13e35e370c06ea4823c9df279cf44e216094b2a7e1579b1171be1c02b94afd9",
-    "chars": 4078662,
-    "since": "2026-11-14"
+    "sha256": "0775ed6127f2b16bb84770ed22adb328f629b72052c51be69243954950817c77",
+    "chars": 4089131,
+    "since": "2026-11-21"
   },
   "airwallex/webhooks-md": {
     "url": "https://www.airwallex.com/docs/developer-tools/webhooks/listen-for-webhook-events.md",
@@ -379,9 +379,9 @@
   },
   "stripe/checkout-create": {
     "url": "https://docs.stripe.com/api/checkout/sessions/create.md",
-    "sha256": "86ae1fc940ed312de6af20824761505ea2a78870088ac93c673dacbd3a8d745c",
-    "chars": 21794,
-    "since": "2026-11-11"
+    "sha256": "3dfcd328a0f50adb5303998dcf8fc17c1b0aab2a01ba644837d1c9957a3d6cbe",
+    "chars": 22085,
+    "since": "2026-11-21"
   },
   "stripe/checkout-object": {
     "url": "https://docs.stripe.com/api/checkout/sessions/object.md",
@@ -397,9 +397,9 @@
   },
   "stripe/webhook-signature": {
     "url": "https://docs.stripe.com/webhooks/signature.md",
-    "sha256": "c68bd3391b2ef10e103588d0de24302606c328dc0ed238f33536cb35a7aea798",
-    "chars": 28963,
-    "since": "2026-11-11"
+    "sha256": "2442ad55df3519903830e2c27f7e5074541745e3d1034e9f9e74362f42be45be",
+    "chars": 28722,
+    "since": "2026-11-21"
   },
   "toyyibpay/api-reference": {
     "url": "https://toyyibpay.com/apireference/",
