@@ -161,7 +161,7 @@ source = amount200|callback_urlhttps://example.com/webhook|collection_idinbmmepb
 x_signature = ef5e54a22af0925cba88fab467119742e90262e3646eea1dee3949938daf3a38   (reproduced ✔)
 ```
 
-(V5 Payment Order callbacks are different: HMAC-**SHA512** over values in a fixed order, no keys and no `|`. Not relevant to bills. [API]#section-payment-completion-payment-order-callback)
+(V5 and V6 Payment Order callbacks are different: HMAC-**SHA512** over values in a fixed order, no keys and no `|`. Not relevant to bills. Payment Order (payouts) is outside the adapter: per the docs, accounts opened from 23 November 2026 get Payment Order V6 (`/api/v6/payment_orders`, `/api/v6/payment_order_collections`, `/api/v6/payment_order_limit`), older accounts stay on V5; the Bills V3 endpoints and the X Signature above are unchanged by that release. [API]#section-payment-completion-payment-order-callback)
 
 ## 6. Delete, rate limits, errors, sandbox
 
