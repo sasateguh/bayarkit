@@ -91,9 +91,10 @@ const contactList = (offer, cls) =>
 
 /**
  * One whole HTML document. `t` translates (already escaped), `here` is the path the theme switch returns to,
- * `offer` is supportFor(config, lang) or null when the offer is switched off.
+ * `offer` is supportFor(config, lang) or null when the offer is switched off, `head` the icon and link-preview tags
+ * (meta.mjs headTags).
  */
-export function shell({ lang, t, other, theme, here: path, offer, title, body, kind }) {
+export function shell({ lang, t, other, theme, here: path, offer, title, body, kind, head = '' }) {
   const prefix = lang === 'en' ? '/en' : ''
   const back = encodeURIComponent(safeBack(path))
   const themeLinks = THEMES.map(
@@ -113,7 +114,7 @@ export function shell({ lang, t, other, theme, here: path, offer, title, body, k
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <meta name="color-scheme" content="light dark">
 <title>${title} · ${t('title')}</title><meta name="description" content="${t('tagline')}">
-<meta property="og:title" content="${t('title')}"><meta property="og:description" content="${t('tagline')}">${fonts}<link rel="stylesheet" href="/demo.css"></head>
+<meta property="og:title" content="${t('title')}"><meta property="og:description" content="${t('tagline')}">${head}${fonts}<link rel="stylesheet" href="/demo.css"></head>
 <body class="page-${kind}"><a class="skip-link" href="#main">${t('skip')}</a>
 <header class="top"><div class="bar"><a class="brand" href="${prefix}/">${ICONS.mark}<span class="word">bayarkit</span><span class="tag">demo</span></a>
 <nav class="prefs" aria-label="${t('theme.label')}"><span class="theme">${themeLinks}</span>

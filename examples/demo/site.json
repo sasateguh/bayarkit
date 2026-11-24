@@ -1,0 +1,9 @@
+{
+  "origin": "https://bayarkit.sasateguh.com",
+  "siteName": "bayarkit",
+  "twitterCard": "summary_large_image",
+  "locales": { "ms": "ms_MY", "en": "en_MY" },
+  "icons": { "svg": "favicon.svg", "ico": "favicon.ico", "touch": "apple-touch-icon.png" },
+  "cards": { "ms": "og-ms.png", "en": "og-en.png" },
+  "cardSize": { "width": 1200, "height": 630 }
+}

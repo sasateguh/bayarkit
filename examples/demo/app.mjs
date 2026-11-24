@@ -24,6 +24,7 @@ import {
 } from '@bayarkit/core'
 import * as testing from '@bayarkit/testing'
 import { loadSupport, supportFor } from '../../tools/support.mjs'
+import { headTags, loadSite } from './meta.mjs'
 import { esc, FONTS, shell, themeFrom, themeRoute } from './shell.mjs'
 import { errorView, homeView, orderView, payView } from './views.mjs'
 
@@ -45,7 +46,8 @@ const CUSTOMER = { name: 'Pelanggan Demo', email: 'demo@example.com', phone: '01
 const CHOICES = ['pay', 'decline', 'forge', 'swap']
 // Served with every response. `no-transform`: behind Cloudflare, without it CF injects its analytics beacon into HTML.
 const NO_CACHE = 'no-store, no-transform'
-// Fonts never change under the same name (a new font = a new file name), so browsers may keep them for a week.
+// Fonts never change under the same name (a new font = a new file name), so browsers may keep them for a week. Icons
+// and preview cards too: their URLs in <head> carry a content hash (?v=), so a new image is a new URL.
 const FONT_CACHE = 'public, max-age=604800, no-transform'
 // Sent with every page and the stylesheet. Nothing is embedded, framed or loaded from elsewhere, so all of it is the strictest value.
 const SECURITY = {
@@ -58,6 +60,8 @@ const SECURITY = {
   'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()',
   'x-permitted-cross-domain-policies': 'none',
 }
+// Icons and preview cards are fetched by link previewers (WhatsApp, Telegram, X…) from their own origins.
+const PUBLIC_ASSET = { ...SECURITY, 'cross-origin-resource-policy': 'cross-origin' }
 
 /** Display name without the parenthesised company ("iPay88 (NTT DATA …)" → "iPay88"); the registry keeps the full one. */
 const shortName = (g, lang) => String(g.label[lang] ?? g.label.en).replace(/\s*\(.*\)\s*$/, '')
@@ -109,13 +113,16 @@ function agentFetch(agent) {
 /**
  * Start every fake + adapter listed in the registry. `support` replaces docs/support.json (tests); a config that
  * fails its checks stops the demo before any fake starts. `cookieSecure` adds Secure to the theme cookie (HTTPS hosts).
+ * `publicOrigin` replaces site.json's origin for og:image/og:url (DEMO_PUBLIC_ORIGIN); it must be a bare https origin.
  */
 export async function startDemo({
   perGeneration = PER_GENERATION,
   support,
   cookieSecure = process.env.COOKIE_SECURE === '1',
+  publicOrigin = process.env.DEMO_PUBLIC_ORIGIN,
 } = {}) {
   const offerConfig = loadSupport(fileURLToPath(root), support)
+  const site = loadSite({ publicOrigin })
   const registry = JSON.parse(readFileSync(new URL('gateways/registry.json', root), 'utf8'))
   async function startGeneration() {
     const set = new Map()
@@ -201,6 +208,7 @@ export async function startDemo({
       title,
       body,
       kind,
+      head: headTags(site, lang, ctx.t),
     })
     return new Response(html, {
       status,
@@ -433,6 +441,12 @@ export async function startDemo({
       return new Response(FONTS.get(url.pathname), {
         headers: { 'content-type': 'font/woff2', 'cache-control': FONT_CACHE, ...SECURITY },
       })
+    if (request.method === 'GET' && site.assets.has(url.pathname)) {
+      const asset = site.assets.get(url.pathname)
+      return new Response(asset.body, {
+        headers: { 'content-type': asset.type, 'cache-control': FONT_CACHE, ...PUBLIC_ASSET },
+      })
+    }
     if (request.method === 'GET' && path === '/theme') return themeRoute(url, { secure: cookieSecure })
     if (request.method === 'GET' && url.pathname === '/healthz')
       return new Response('ok', { headers: { 'content-type': 'text/plain', 'cache-control': NO_CACHE } })

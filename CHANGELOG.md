@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The demo has a tab icon and link previews: `examples/demo/site.json` holds its public origin, card type and asset
+  file names, and every page's `<head>` links an SVG and ICO favicon and a touch icon, and carries Open Graph and X card
+  tags with an absolute `og:image` (the Malay card on `/`, the English one on `/en`). Asset URLs carry a content hash
+  (`?v=`); the files are served by exact name with a week of cache and `cross-origin-resource-policy: cross-origin` so
+  previewers can fetch them. `DEMO_PUBLIC_ORIGIN` replaces the origin for another host; the demo refuses to start if
+  it is not a bare `https://` origin. Pages stay `noindex` and unchanged.
+
 ### Changed
 
 - `@bayarkit/bayarcash` reads transaction statuses 5 Abandoned (`expired`), 6 Authorized (`pending`), 7 Void

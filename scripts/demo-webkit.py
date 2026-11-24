@@ -7,13 +7,16 @@
 #   and the page has not crashed 8 s after loading (WebKit crashes on animated filters a few seconds in).
 # Before the browser, plain HTTP (BM + EN home, CSS): security headers and a CSP that allows no script, no-transform on
 #   HTML, no Cloudflare analytics beacon, the seal linking to exactly the contacts in docs/support.json and no other
-#   contact link on the page; on the hosted demo also compression and HSTS.
+#   contact link on the page; on the hosted demo also compression and HSTS. The public meta from examples/demo/site.json:
+#   og:image absolute https on the configured origin, the card in the page's language, twitter:card as configured,
+#   every icon and card linked from <head> (and /favicon.ico) answering 200 image/*, under 300 KB, fetchable cross-origin.
 # Needs `npm run demo` running and Python Playwright with WebKit.
 # Not part of the gate (CI runners have no WebKit); run it after any change to examples/demo.
 #   python3 scripts/demo-webkit.py <screenshot dir> [base url]
 import gzip
 import json
 import sys
+import urllib.error
 import urllib.request
 import zlib
 from html.parser import HTMLParser
@@ -69,6 +72,8 @@ def start(pg, prefix, gateway, amount=None):
 # only on the hosted demo (https); the local `npm run demo` serves neither.
 remote = base.startswith('https:')
 support = json.loads((Path(__file__).resolve().parent.parent / 'docs' / 'support.json').read_text())
+site = json.loads((Path(__file__).resolve().parent.parent / 'examples' / 'demo' / 'site.json').read_text())
+PREVIEW_LIMIT = 300 * 1024  # WhatsApp drops a preview image over about 300 KB
 
 SAFARI = ('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 '
           '(KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1')
@@ -79,6 +84,32 @@ def get(path, encoding='gzip, br', accept='text/html,*/*'):
         'User-Agent': SAFARI, 'Accept': accept, 'Accept-Encoding': encoding})
     with urllib.request.urlopen(req, timeout=20) as r:
         return r.status, {k.lower(): v for k, v in r.headers.items()}, r.read()
+
+
+class Head(HTMLParser):
+    """<meta property|name> → content, and the hrefs of <link rel=icon|apple-touch-icon>."""
+
+    def __init__(self):
+        super().__init__()
+        self.meta, self.icons = {}, []
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        key = a.get('property') or a.get('name')
+        if tag == 'meta' and key: self.meta.setdefault(key, []).append(a.get('content') or '')
+        if tag == 'link' and a.get('rel') in ('icon', 'apple-touch-icon'): self.icons.append(a.get('href') or '')
+
+
+def check_asset(label, path):
+    try:
+        status, h, body = get(path, encoding='identity', accept='image/*')
+    except urllib.error.HTTPError as e:
+        problems.append(f'{label} {path}: HTTP {e.code}'); return
+    if status != 200: problems.append(f'{label} {path}: HTTP {status}')
+    if not h.get('content-type', '').startswith('image/'): problems.append(f'{label} {path}: content-type {h.get("content-type")}')
+    if len(body) > PREVIEW_LIMIT: problems.append(f'{label} {path}: {len(body)} bytes, over the 300 KB preview limit')
+    if h.get('cross-origin-resource-policy') != 'cross-origin':
+        problems.append(f'{label} {path}: CORP "{h.get("cross-origin-resource-policy")}", previewers need cross-origin')
 
 
 class Links(HTMLParser):
@@ -132,6 +163,29 @@ for path, lang in (('/', 'ms'), ('/en', 'en')):
     if sorted(p.seal) != sorted(want): problems.append(f'{path}: seal links {p.seal}, config says {want}')
     stray = [x for x in p.all if is_contact(x) and x not in want]
     if stray: problems.append(f'{path}: contact links not from docs/support.json: {stray}')
+    hd = Head()
+    hd.feed(html)
+
+    def one(k):
+        found = hd.meta.get(k, [])
+        if len(found) != 1: problems.append(f'{path}: {len(found)} × {k}, want exactly one')
+        return found[0] if found else ''
+
+    image = one('og:image')
+    want_image = f'{site["origin"]}/{site["cards"][lang]}?v='
+    if not image.startswith(want_image): problems.append(f'{path}: og:image {image!r}, want {want_image}…')
+    if one('twitter:image') != image: problems.append(f'{path}: twitter:image differs from og:image')
+    if one('twitter:card') != site['twitterCard']: problems.append(f'{path}: twitter:card is not {site["twitterCard"]}')
+    if one('robots') != 'noindex': problems.append(f'{path}: robots meta is not noindex')
+    for k in ('og:title', 'og:description', 'og:image:alt', 'og:url'):
+        if not one(k).strip(): problems.append(f'{path}: {k} empty')
+    # The card is fetched from this server by its path: the hosted origin is the same host; locally it proves the file.
+    if image.startswith('https://'): check_asset(path, '/' + image.split('/', 3)[3])
+    if len(hd.icons) != 3: problems.append(f'{path}: {len(hd.icons)} icon links, want 3 (svg, ico, touch)')
+    for href in hd.icons:
+        if not href.startswith('/') or href.startswith('//'): problems.append(f'{path}: icon link {href!r} not on this site')
+        else: check_asset(path, href)
+check_asset('tab icon', '/favicon.ico')
 
 
 with sync_playwright() as p:
