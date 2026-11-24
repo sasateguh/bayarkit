@@ -126,5 +126,10 @@
     "order": "Pesanan",
     "gateway": "Gateway palsu",
     "result": "Keputusan"
+  },
+  "og": {
+    "headline": "Dibayar hanya bila gateway sendiri mengesahkannya.",
+    "kicker": "Demo dengan gateway palsu. Tiada wang bergerak.",
+    "alt": "Kad bayarkit: Dibayar hanya bila gateway sendiri mengesahkannya. Demo dengan gateway palsu, tiada wang bergerak."
   }
 }

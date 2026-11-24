@@ -126,5 +126,10 @@
     "order": "Order",
     "gateway": "Fake gateway",
     "result": "Result"
+  },
+  "og": {
+    "headline": "Paid only when the gateway itself confirms it.",
+    "kicker": "A demo with fake gateways. No money moves.",
+    "alt": "bayarkit card: Paid only when the gateway itself confirms it. A demo with fake gateways, no money moves."
   }
 }
