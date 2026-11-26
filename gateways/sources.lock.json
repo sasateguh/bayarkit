@@ -25,9 +25,9 @@
   },
   "adyen/checkout-openapi-v72": {
     "url": "https://raw.githubusercontent.com/Adyen/adyen-openapi/HEAD/json/CheckoutService-v72.json",
-    "sha256": "4ac13f2dad57c5ce5a74b42440c1ed7268c280b449bee4253fb08ccca712ee85",
-    "chars": 742642,
-    "since": "2026-11-19"
+    "sha256": "67349d3ee08bbe370a4fa1a596d04c0d1f1b1aec140fd9659bebf1f047a63495",
+    "chars": 734710,
+    "since": "2026-11-26"
   },
   "adyen/hosted-checkout-md": {
     "url": "https://docs.adyen.com/standard/integration/hosted-checkout.md",
@@ -67,9 +67,9 @@
   },
   "airwallex/webhooks-md": {
     "url": "https://www.airwallex.com/docs/developer-tools/webhooks/listen-for-webhook-events.md",
-    "sha256": "20b68088bfb690ba54a4b6138442d1fc3d858d418f61b0909da2b2b7a2e94c13",
-    "chars": 11317,
-    "since": "2026-11-07"
+    "sha256": "a9d206cf6374cb4830b86a9f64f553593f895358bb970e042090d272da27612f",
+    "chars": 10599,
+    "since": "2026-11-26"
   },
   "bayarcash/api-docs": {
     "url": "https://api-reference.bayarcash.com/llms-full.txt",

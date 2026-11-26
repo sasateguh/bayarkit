@@ -115,7 +115,7 @@ Required fields: `title`, `reusable`. Fixed pricing adds `amount`+`currency`, an
 | Compare | The docs use plain `equals`/`!=`/`===`. SFCC uses a constant-time compare. | WH:132,160,183; SFCC:26-33 |
 | Ack | Return `200 OK` immediately. Anything else or a timeout is a failure. | WH:71; WO:15 |
 | Retries | Exponential back-off for **about 3 days**. Events may be duplicated (dedupe on `id`) and come **out of order** (order by `created_at`). | WO:15,17,18 |
-| Source IPs | 25 production IPs and 6 sandbox IPs are listed (e.g. sandbox `35.240.211.132`). | WH:196-233 |
+| Source IPs | Since 2026-11-24 WH no longer lists the IPs; it links to a separate page, `/docs/developer-tools/webhook-ip-addresses.md` (not tracked here), to allow-list per environment. The earlier WH copy listed 25 production and 6 sandbox IPs (e.g. sandbox `35.240.211.132`). Signing is unchanged. | WH (Whitelist IP addresses section) |
 | OpenAPI | `webhooks` lists event names only, with **no** headers/signature. There are no `checkout_session.*` events in OA. | OA `webhooks` |
 | Official test vector | **None published.** WH has no fixed body/secret/signature. The SFCC test computes its expected value at runtime with `Date.now()` (secret `test-webhook-secret-key`, payload `{"id":"evt_123","name":"payment_intent.succeeded"}`). | SFCC `__tests__/signatureHelper.test.ts:27-31,53-55` |
 | Derived vector (**not official**, computed here with Python `hmac` and `openssl dgst` on 2026-10-23) | ts `1357872222592` (WH:35 example) + body `{"id":"evt_123","name":"payment_intent.succeeded"}` + secret `test-webhook-secret-key` (both from the SFCC test) → `264eba909b8601a09f3edb36b528d20e26e4bed7686cc769c59268edbbf82ecf` | derived |
